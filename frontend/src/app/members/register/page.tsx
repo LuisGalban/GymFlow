@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DashboardLayout from "@/app/components/DashboardLayout";
 import { useAuth, api } from "@/app/context/AuthContext";
 import { Loader2, AlertCircle, UserPlus, CreditCard, CheckCircle2 } from "lucide-react";
@@ -10,20 +10,34 @@ export default function RegisterMemberPage() {
   const [cedula, setCedula] = useState("");
   const [nombre, setNombre] = useState("");
   const [telefono, setTelefono] = useState("");
-  const [planId, setPlanId] = useState(""); // assuming plans are fetched elsewhere
+  const [plans, setPlans] = useState<any[]>([]);
+  const [planId, setPlanId] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  // Fetch available plans on mount
+  useEffect(() => {
+    if (!token) return;
+    api
+      .get("/api/v1/planes", { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => setPlans(res.data))
+      .catch(() => setPlans([]));
+  }, [token]);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!planId) {
+      setError("Debe seleccionar un plan inicial para el atleta.");
+      return;
+    }
     setLoading(true);
     setError("");
     setSuccess("");
     try {
       await api.post(
         "/api/v1/members",
-        { cedula, nombre, telefono, plan_id: planId },
+        { cedula, nombre, telefono, plan_id: Number(planId) },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setSuccess("Atleta registrado exitosamente.");
@@ -92,6 +106,23 @@ export default function RegisterMemberPage() {
               placeholder="0414‑1234567"
               className="w-full bg-white/5 border border-white/8 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-400/50"
             />
+          </div>
+          {/* Seleccionar Plan Inicial */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-medium text-white/50 uppercase">Plan Inicial</label>
+            <select
+              value={planId}
+              onChange={(e) => setPlanId(e.target.value)}
+              required
+              className="w-full bg-white/5 border border-white/8 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-400/50"
+            >
+              <option value="">Seleccione un plan</option>
+              {plans.map((plan) => (
+                <option key={plan.id} value={plan.id}>
+                  {plan.nombre} - ${plan.precio_usd} ({plan.duracion_dias} días)
+                </option>
+              ))}
+            </select>
           </div>
           {/* Botón */}
           <button

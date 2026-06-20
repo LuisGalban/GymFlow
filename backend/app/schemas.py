@@ -18,6 +18,8 @@ class PaymentMethodEnum(str, Enum):
     transferencia = "transferencia"
     efectivo_usd = "efectivo_usd"
     efectivo_bs = "efectivo_bs"
+    zelle = "zelle"
+    binance = "binance"
 
 class MembershipStatusEnum(str, Enum):
     activo = "activo"
@@ -87,7 +89,7 @@ class MiembroBase(BaseModel):
     telefono: Optional[str] = Field(None, max_length=20)
 
 class MiembroCreate(MiembroBase):
-    pass
+    plan_id: int = Field(..., description="ID del plan seleccionado inicialmente")
 
 class MiembroResponse(MiembroBase):
     id: int
@@ -123,7 +125,7 @@ class PagoCreate(BaseModel):
     membresia_miembro_id: int
     monto_original: Decimal = Field(..., gt=0, decimal_places=2)
     moneda: PaymentCurrencyEnum
-    tasa_cambio: Decimal = Field(..., gt=0, decimal_places=4)
+    tasa_cambio: Optional[Decimal] = Field(None, description="Tasa de cambio (requerida si la moneda es VES)")
     metodo_pago: PaymentMethodEnum
     referencia: Optional[str] = Field(None, max_length=50, description="Referencia de pago")
     observaciones: Optional[str] = Field(None, max_length=255)
@@ -133,7 +135,7 @@ class PagoCedulaCreate(BaseModel):
     planSeleccionado_id: int = Field(..., description="ID del plan que se está pagando")
     monto_original: Decimal = Field(..., gt=0, decimal_places=2)
     moneda: PaymentCurrencyEnum = Field(default=PaymentCurrencyEnum.USD, description="Moneda del pago (USD por defecto)")
-    tasa_cambio: Decimal = Field(..., gt=0, decimal_places=4)
+    tasa_cambio: Optional[Decimal] = Field(None, description="Tasa de cambio (requerida si la moneda es VES)")
     metodo_pago: PaymentMethodEnum = Field(default=PaymentMethodEnum.pago_movil, description="Método de pago (pago_movil por defecto)")
     referencia: Optional[str] = Field(None, max_length=50, description="Referencia de pago")
 

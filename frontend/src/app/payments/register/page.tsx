@@ -24,6 +24,8 @@ export default function RegisterPaymentPage() {
   const [cedula, setCedula] = useState("") // Cédula del miembro
   const [plans, setPlans] = useState<any[]>([])
   const [selectedPlanId, setSelectedPlanId] = useState<number | "">("")
+  const [moneda, setMoneda] = useState<"USD" | "VES">("USD")
+  const [metodoPago, setMetodoPago] = useState<string>("efectivo_usd")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
@@ -39,7 +41,7 @@ export default function RegisterPaymentPage() {
 
   const montoNumber = parseFloat(monto) || 0
   const tasaNumber = parseFloat(tasaUsd) || 0
-  const totalUsd = tasaNumber ? (montoNumber / tasaNumber).toFixed(2) : ""
+  const totalUsd = moneda === "USD" ? montoNumber.toFixed(2) : (tasaNumber ? (montoNumber / tasaNumber).toFixed(2) : "")
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -47,19 +49,28 @@ export default function RegisterPaymentPage() {
         setError('Debe seleccionar un plan antes de registrar el pago')
         return
     }
+    if (moneda === "VES" && (!tasaNumber || tasaNumber <= 0)) {
+        setError('Debe ingresar una tasa de cambio válida mayor a cero para pagos en Bolívares (VES)')
+        return
+    }
     setLoading(true)
     setError('')
     setSuccess('')
     try {
+        const payload: any = {
+            cedula,
+            planSeleccionado_id: selectedPlanId,
+            monto_original: montoNumber,
+            moneda,
+            metodo_pago: metodoPago,
+            referencia: referencia || undefined,
+        }
+        if (moneda === "VES") {
+            payload.tasa_cambio = tasaNumber
+        }
         await api.post(
             '/api/v1/payments/by-cedula',
-            {
-                cedula,
-                planSeleccionado_id: selectedPlanId,
-                monto_original: montoNumber,
-                referencia,
-                tasa_cambio: tasaNumber,
-            },
+            payload,
             { headers: { Authorization: `Bearer ${token}` } }
         )
         setSuccess('Pago registrado exitosamente.')
@@ -68,6 +79,8 @@ export default function RegisterPaymentPage() {
         setTasaUsd('')
         setCedula('')
         setSelectedPlanId('')
+        setMoneda('USD')
+        setMetodoPago('efectivo_usd')
     } catch (err: any) {
         setError(formatError(err))
     } finally {
@@ -111,74 +124,140 @@ export default function RegisterPaymentPage() {
                ))}
              </select>
            </div>
-          {/* Cédula del Miembro */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-medium text-white/50 uppercase">Cédula del Miembro</label>
-            <input
-              type="text"
-              value={cedula}
-              onChange={(e) => setCedula(e.target.value)}
-              required
-              placeholder="Ej. V-25111222"
-              className="w-full bg-white/5 border border-white/8 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-400/50"
-            />
-          </div>
-          {/* Monto */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-medium text-white/50 uppercase">Monto (Moneda Local)</label>
-            <input
-              type="number"
-              value={monto}
-              onChange={(e) => setMonto(e.target.value)}
-              required
-              placeholder="1000"
-              className="w-full bg-white/5 border border-white/8 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-400/50"
-            />
-          </div>
-          {/* Tasa USD */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-medium text-white/50 uppercase">Tasa de Conversión a USD</label>
-            <input
-              type="number"
-              step="any"
-              value={tasaUsd}
-              onChange={(e) => setTasaUsd(e.target.value)}
-              required
-              placeholder="24.50"
-              className="w-full bg-white/5 border border-white/8 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-400/50"
-            />
-          </div>
-          {/* Referencia */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-medium text-white/50 uppercase">Referencia (Pago Móvil)</label>
-            <input
-              type="text"
-              value={referencia}
-              onChange={(e) => setReferencia(e.target.value)}
-              required
-              placeholder="REF123456"
-              className="w-full bg-white/5 border border-white/8 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-400/50"
-            />
-          </div>
-          {/* USD Calculado */}
-          {totalUsd && (
-            <div className="text-sm text-white/70">
-              <DollarSign className="inline w-4 h-4 mr-1" />
-              Aproximado en USD: <span className="font-medium text-white">${totalUsd}</span>
-            </div>
-          )}
-          {/* Botón */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? (
-              <><Loader2 className="w-4 h-4 animate-spin" /> Registrando…</>
-            ) : (
-              <><span>Registrar Pago</span> <CreditCard className="w-4 h-4" /></>
-            )}
-          </button>
+           {/* Cédula del Miembro */}
+           <div className="flex flex-col gap-1.5">
+             <label className="text-xs font-medium text-white/50 uppercase">Cédula del Miembro</label>
+             <input
+               type="text"
+               value={cedula}
+               onChange={(e) => setCedula(e.target.value)}
+               required
+               placeholder="Ej. V-25111222"
+               className="w-full bg-white/5 border border-white/8 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-400/50"
+             />
+           </div>
+           {/* Moneda del Pago */}
+           <div className="flex flex-col gap-1.5">
+             <label className="text-xs font-medium text-white/50 uppercase">Moneda del Pago</label>
+             <div className="flex gap-6 mt-1">
+               <label className="flex items-center gap-2 text-sm text-white cursor-pointer select-none">
+                 <input
+                   type="radio"
+                   name="moneda"
+                   value="USD"
+                   checked={moneda === "USD"}
+                   onChange={() => {
+                     setMoneda("USD")
+                     setMetodoPago("efectivo_usd")
+                     setTasaUsd("")
+                   }}
+                   className="w-4 h-4 accent-indigo-500 cursor-pointer"
+                 />
+                 Divisas (Dólares)
+               </label>
+               <label className="flex items-center gap-2 text-sm text-white cursor-pointer select-none">
+                 <input
+                   type="radio"
+                   name="moneda"
+                   value="VES"
+                   checked={moneda === "VES"}
+                   onChange={() => {
+                     setMoneda("VES")
+                     setMetodoPago("pago_movil")
+                   }}
+                   className="w-4 h-4 accent-indigo-500 cursor-pointer"
+                 />
+                 Bolívares (Bs)
+               </label>
+             </div>
+           </div>
+           {/* Método de Pago */}
+           <div className="flex flex-col gap-1.5">
+             <label className="text-xs font-medium text-white/50 uppercase">Método de Pago</label>
+             <select
+               value={metodoPago}
+               onChange={(e) => setMetodoPago(e.target.value)}
+               required
+               className="w-full bg-white/5 border border-white/8 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-400/50"
+             >
+               {moneda === "USD" ? (
+                 <>
+                   <option value="efectivo_usd">Efectivo USD</option>
+                   <option value="zelle">Zelle</option>
+                   <option value="binance">Binance</option>
+                 </>
+               ) : (
+                 <>
+                   <option value="pago_movil">Pago Móvil</option>
+                   <option value="efectivo_bs">Efectivo Bs</option>
+                   <option value="transferencia">Transferencia</option>
+                 </>
+               )}
+             </select>
+           </div>
+           {/* Monto */}
+           <div className="flex flex-col gap-1.5">
+             <label className="text-xs font-medium text-white/50 uppercase">
+               Monto ({moneda === "USD" ? "Dólares $" : "Bolívares Bs"})
+             </label>
+             <input
+               type="number"
+               step="any"
+               value={monto}
+               onChange={(e) => setMonto(e.target.value)}
+               required
+               placeholder={moneda === "USD" ? "Ej. 30" : "Ej. 1200"}
+               className="w-full bg-white/5 border border-white/8 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-400/50"
+             />
+           </div>
+           {/* Tasa USD (Solo si la moneda es VES) */}
+           {moneda === "VES" && (
+             <div className="flex flex-col gap-1.5">
+               <label className="text-xs font-medium text-white/50 uppercase">Tasa de Conversión a USD</label>
+               <input
+                 type="number"
+                 step="any"
+                 value={tasaUsd}
+                 onChange={(e) => setTasaUsd(e.target.value)}
+                 required
+                 placeholder="Ej. 36.50"
+                 className="w-full bg-white/5 border border-white/8 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-400/50"
+               />
+             </div>
+           )}
+           {/* Referencia */}
+           <div className="flex flex-col gap-1.5">
+             <label className="text-xs font-medium text-white/50 uppercase">
+               Referencia {metodoPago !== "efectivo_usd" && metodoPago !== "efectivo_bs" ? "(Requerido)" : "(Opcional)"}
+             </label>
+             <input
+               type="text"
+               value={referencia}
+               onChange={(e) => setReferencia(e.target.value)}
+               required={metodoPago !== "efectivo_usd" && metodoPago !== "efectivo_bs"}
+               placeholder="Ej. REF123456"
+               className="w-full bg-white/5 border border-white/8 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-400/50"
+             />
+           </div>
+           {/* USD Calculado */}
+           {totalUsd && totalUsd !== "0.00" && (
+             <div className="text-sm text-white/70">
+               <DollarSign className="inline w-4 h-4 mr-1 animate-pulse text-indigo-400" />
+               Monto en USD: <span className="font-medium text-white">${totalUsd}</span>
+             </div>
+           )}
+           {/* Botón */}
+           <button
+             type="submit"
+             disabled={loading}
+             className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+           >
+             {loading ? (
+               <><Loader2 className="w-4 h-4 animate-spin" /> Registrando…</>
+             ) : (
+               <><span>Registrar Pago</span> <CreditCard className="w-4 h-4" /></>
+             )}
+           </button>
         </form>
       </div>
     </DashboardLayout>

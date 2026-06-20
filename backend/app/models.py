@@ -22,6 +22,8 @@ class PaymentMethod(str, enum.Enum):
     transferencia = "transferencia"
     efectivo_usd = "efectivo_usd"
     efectivo_bs = "efectivo_bs"
+    zelle = "zelle"
+    binance = "binance"
 
 class MembershipStatus(str, enum.Enum):
     activo = "activo"

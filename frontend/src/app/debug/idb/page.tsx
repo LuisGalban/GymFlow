@@ -15,7 +15,7 @@ export default function IdbDebugPage() {
     setError("");
     try {
       const data = await getAllPendingCheckins();
-      setPending(data);
+      setPending(data as any);
     } catch (e: any) {
       setError(e?.message || "Error reading IndexedDB");
     } finally {

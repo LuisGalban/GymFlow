@@ -183,6 +183,11 @@ def search_member_by_cedula(cedula: str, db: Session = Depends(get_db)):
 
 @app.post("/api/v1/members", response_model=MiembroResponse, dependencies=[Depends(requerir_trabajador)])
 def register_member(payload: MiembroCreate, db: Session = Depends(get_db)):
+    # Verificar si el plan existe
+    plan = db.query(Plan).filter(Plan.id == payload.plan_id, Plan.estado_logico == True).first()
+    if not plan:
+        raise HTTPException(status_code=404, detail="Plan no encontrado")
+
     # Verificar si ya existe la cédula
     existe = db.query(Miembro).filter(Miembro.cedula == payload.cedula).first()
     if existe:
@@ -193,6 +198,18 @@ def register_member(payload: MiembroCreate, db: Session = Depends(get_db)):
             existe.telefono = payload.telefono
             db.commit()
             db.refresh(existe)
+            
+            # Crear nueva membresía vencida con el plan escogido
+            nueva_membresia = MembresiaMiembro(
+                miembro_id=existe.id,
+                plan_id=plan.id,
+                fecha_inicio=date.today(),
+                fecha_vencimiento=date.today() + timedelta(days=plan.duracion_dias),
+                estatus_pago="vencido",
+            )
+            db.add(nueva_membresia)
+            db.commit()
+            
             return MiembroResponse(
                 id=existe.id,
                 cedula=existe.cedula,
@@ -200,7 +217,9 @@ def register_member(payload: MiembroCreate, db: Session = Depends(get_db)):
                 telefono=existe.telefono,
                 estado_logico=existe.estado_logico,
                 estatus_actual="vencido",
-                dias_restantes_gracia=None
+                dias_restantes_gracia=None,
+                plan_nombre=plan.nombre,
+                plan_id=plan.id
             )
         raise HTTPException(status_code=400, detail="Ya existe un miembro activo con esta cédula")
         
@@ -214,6 +233,17 @@ def register_member(payload: MiembroCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(nuevo_miembro)
     
+    # Crear membresía inicial
+    nueva_membresia = MembresiaMiembro(
+        miembro_id=nuevo_miembro.id,
+        plan_id=plan.id,
+        fecha_inicio=date.today(),
+        fecha_vencimiento=date.today() + timedelta(days=plan.duracion_dias),
+        estatus_pago="vencido",
+    )
+    db.add(nueva_membresia)
+    db.commit()
+    
     return MiembroResponse(
         id=nuevo_miembro.id,
         cedula=nuevo_miembro.cedula,
@@ -221,7 +251,9 @@ def register_member(payload: MiembroCreate, db: Session = Depends(get_db)):
         telefono=nuevo_miembro.telefono,
         estado_logico=nuevo_miembro.estado_logico,
         estatus_actual="vencido",
-        dias_restantes_gracia=None
+        dias_restantes_gracia=None,
+        plan_nombre=plan.nombre,
+        plan_id=plan.id
     )
 
 @app.delete("/api/v1/members/{id}", dependencies=[Depends(requerir_admin)])
@@ -248,23 +280,35 @@ def register_payment(payload: PagoCreate, db: Session = Depends(get_db), usuario
     if not plan:
         raise HTTPException(status_code=404, detail="Plan no encontrado")
         
-    # 1. Normalización contable estricta a USD (monto_original / tasa_cambio)
-    monto_usd_calculado = Decimal(payload.monto_original) / Decimal(payload.tasa_cambio)
+    # Validaciones según moneda
+    if payload.moneda == PaymentCurrencyEnum.USD:
+        tasa_usd_final = Decimal("1.0000")
+        monto_usd_calculado = payload.monto_original
+        if payload.monto_original < plan.precio_usd:
+            raise HTTPException(status_code=400, detail="Pago insuficiente, será revisado por el gerente")
+    else:
+        if not payload.tasa_cambio or payload.tasa_cambio <= 0:
+            raise HTTPException(status_code=400, detail="La tasa de cambio es requerida y debe ser mayor a cero para pagos en bolívares (VES)")
+        tasa_usd_final = payload.tasa_cambio
+        precio_local = plan.precio_usd * tasa_usd_final
+        if payload.monto_original < precio_local:
+            raise HTTPException(status_code=400, detail="Pago insuficiente, será revisado por el gerente")
+        monto_usd_calculado = Decimal(payload.monto_original) / Decimal(tasa_usd_final)
     
-    # 2. Registrar el Pago al 100% (No se permiten abonos, se registra completo)
+    # Registrar el Pago al 100% (No se permiten abonos, se registra completo)
     nuevo_pago = Pago(
         membresia_miembro_id=payload.membresia_miembro_id,
         registrado_por=usuario_actual.id,
         monto_original=payload.monto_original,
         moneda=payload.moneda.value,
-        tasa_cambio=payload.tasa_cambio,
+        tasa_cambio=tasa_usd_final,
         monto_usd=round(monto_usd_calculado, 2),
         metodo_pago=payload.metodo_pago.value,
         referencia=payload.referencia,
         fecha_pago=datetime.utcnow()
     )
     
-    # 3. Actualizar fechas de vigencia y estatus de la membresía contratada
+    # Actualizar fechas de vigencia y estatus de la membresía contratada
     hoy = date.today()
     # Si la membresía actual estaba activa o en gracia, extender desde la fecha de vencimiento previa
     # Si ya estaba vencida, arranca hoy
@@ -316,25 +360,28 @@ def register_payment_by_cedula(payload: PagoCedulaCreate, db: Session = Depends(
         membresia.plan_id = plan.id
     if not plan:
         raise HTTPException(status_code=404, detail="Plan no encontrado")
-    # Validar que el monto en la moneda elegida coincida con el precio del plan
-    # El precio del plan está en USD (plan.precio_usd). Si el usuario paga en VES, usamos tasa_cambio.
+    
+    # Validaciones según moneda
     if payload.moneda == PaymentCurrencyEnum.USD:
-        # monto_original debe ser al menos el precio del plan en USD
+        tasa_usd_final = Decimal("1.0000")
+        monto_usd_calculado = payload.monto_original
         if payload.monto_original < plan.precio_usd:
             raise HTTPException(status_code=400, detail="Pago insuficiente, será revisado por el gerente")
     else:
-        # Convertir el precio del plan a la moneda local usando la tasa_cambio proporcionada
-        precio_local = plan.precio_usd * payload.tasa_cambio
+        if not payload.tasa_cambio or payload.tasa_cambio <= 0:
+            raise HTTPException(status_code=400, detail="La tasa de cambio es requerida y debe ser mayor a cero para pagos en bolívares (VES)")
+        tasa_usd_final = payload.tasa_cambio
+        precio_local = plan.precio_usd * tasa_usd_final
         if payload.monto_original < precio_local:
             raise HTTPException(status_code=400, detail="Pago insuficiente, será revisado por el gerente")
-    # Normalizar a USD
-    monto_usd_calculado = Decimal(payload.monto_original) / Decimal(payload.tasa_cambio)
+        monto_usd_calculado = Decimal(payload.monto_original) / Decimal(tasa_usd_final)
+
     nuevo_pago = Pago(
         membresia_miembro_id=membresia.id,
         registrado_por=usuario_actual.id,
         monto_original=payload.monto_original,
         moneda=payload.moneda.value,
-        tasa_cambio=payload.tasa_cambio,
+        tasa_cambio=tasa_usd_final,
         monto_usd=round(monto_usd_calculado, 2),
         metodo_pago=payload.metodo_pago.value,
         referencia=payload.referencia,
