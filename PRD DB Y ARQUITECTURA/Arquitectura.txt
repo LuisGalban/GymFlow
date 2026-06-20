@@ -1,0 +1,27 @@
+
+gymflow-analytics/
+├── docs/ # Documentación técnica y reglas de negocio
+│ ├── PRD.md # Documento Maestro de Requerimientos
+│ ├── business_rules.md # Reglas de negocio (período de gracia,
+semáforo, etc.)
+│ ├── tech_spec.md # Stack tecnológico y arquitectura
+│ └── api_reference.md # Esquemas de endpoints (opcional)
+├── backend/ # Backend: Python/FastAPI
+│ ├── app/
+│ │ ├── auth/ # Lógica de login, JWT y hashing
+│ │ ├── database.py # Conexión a PostgreSQL (SQLAlchemy)
+│ │ ├── models.py # Modelos de base de datos
+│ │ ├── schemas.py # Esquemas de Pydantic
+│ │ └── main.py # Archivo principal
+│ ├── alembic/ # Migraciones
+│ ├── .env # Variables de entorno
+│ └── requirements.txt # Dependencias
+├── frontend/ # Frontend: React/Next.js/Tailwind
+│ ├── src/
+│ │ ├── components/ # Componentes UI (Recepción, Tarjetas,
+etc.)
+│ │ ├── pages/ # Login, Dashboard, etc.
+│ │ └── styles/ # Configuración CSS
+│ ├── package.json
+│ └── tailwind.config.js
+└── README.md # Resumen del proyecto
