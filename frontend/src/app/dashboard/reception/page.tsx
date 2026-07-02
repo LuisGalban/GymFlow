@@ -133,7 +133,7 @@ export default function ReceptionPage() {
   return (
     <DashboardLayout title="Control de Acceso — Recepción">
       <div className="max-w-2xl mx-auto flex flex-col gap-6">
-        
+
         {/* Barra de búsqueda grande */}
         <form onSubmit={buscar} className="flex gap-3">
           <div className="relative flex-1">

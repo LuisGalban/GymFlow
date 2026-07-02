@@ -167,7 +167,7 @@
         "Prueba de estrés offline que valide la persistencia y correcta sincronización posterior de fechas de check-ins locales.",
         "Prueba de regresión de roles que compruebe la restricción a rutas protegidas frente a JWTs de rol worker."
       ],
-      "status": "pending"
+      "status": "done"
     }
   ]
 }
