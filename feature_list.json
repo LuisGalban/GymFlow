@@ -1,0 +1,173 @@
+{
+  "project_name": "GymFlow Analytics",
+  "description": "Plataforma SaaS para la gestión y analítica de gimnasios adaptada a la dinámica socioeconómica de Maracaibo, Zulia. Permite el control de acceso en tiempo real, normalización de ingresos multidivisa a USD, persistencia resiliente en modo offline y auditoría mediante borrado lógico.",
+  "global_rules": {
+    "one_feature_at_a_time": true,
+    "require_tests": true
+  },
+  "features": [
+    {
+      "id": "F-01",
+      "name": "Modelado de Base de Datos y Persistencia",
+      "description": "Modelado relacional en PostgreSQL (3FN) con tablas para usuarios, miembros, planes, membresías, pagos y asistencias, aplicando restricciones financieras de no-negatividad.",
+      "criteria_to_accept": [
+        "Tablas creadas y migradas en PostgreSQL con sus restricciones de clave foránea.",
+        "Restricciones de tipo CHECK en columnas de importes monetarios para evitar valores negativos.",
+        "Tipos de datos de alta precisión (NUMERIC/Decimal) para evitar errores de redondeo de punto flotante."
+      ],
+      "status": "done"
+    },
+    {
+      "id": "F-02",
+      "name": "Optimización de Consultas mediante Índices",
+      "description": "Creación de índices de rendimiento clave en PostgreSQL para búsquedas críticas de recepción y administración.",
+      "criteria_to_accept": [
+        "Índice B-Tree filtrado 'idx_miembros_cedula_activa' sobre miembros(cedula) donde estado_logico = true para resolver la búsqueda en menos de 50ms.",
+        "Índice compuesto 'idx_membresias_vencimiento_status' para el motor de reglas diarias.",
+        "Índice 'idx_asistencias_fecha_entrada' para reportes de horas pico."
+      ],
+      "status": "done"
+    },
+    {
+      "id": "F-03",
+      "name": "Mecanismo de Borrado Lógico Obligatorio",
+      "description": "Implementación de la columna 'estado_logico' en las tablas de negocio para desactivación lógica de datos sin pérdida de histórico transaccional.",
+      "criteria_to_accept": [
+        "Columna 'estado_logico' (booleano) presente en las entidades 'miembros' y 'usuarios'.",
+        "Los endpoints de listado y búsqueda filtran y ocultan los registros desactivados de forma predeterminada.",
+        "El histórico de pagos y asistencias del miembro desactivado se conserva en base de datos para fines de auditoría."
+      ],
+      "status": "done"
+    },
+    {
+      "id": "F-04",
+      "name": "Autenticación JWT y Roles RBAC",
+      "description": "Implementación de cifrado de contraseñas con bcrypt y generación de tokens de acceso JWT de corta duración (máximo 8 horas) con segregación de roles admin y worker.",
+      "criteria_to_accept": [
+        "Las contraseñas de los usuarios se guardan encriptadas con bcrypt.",
+        "Ruta '/api/v1/auth/login' para el intercambio seguro de credenciales por un JWT.",
+        "Decoradores o dependencias de FastAPI que bloqueen accesos a rutas financieras y analíticas para usuarios que no sean de rol 'admin'."
+      ],
+      "status": "done"
+    },
+    {
+      "id": "F-05",
+      "name": "Motor Automático de Período de Gracia",
+      "description": "Algoritmo de estados temporales en el backend que otorga 5 días calendario de gracia a los miembros antes de bloquear su acceso.",
+      "criteria_to_accept": [
+        "Cálculo en backend del estado del miembro en base a su fecha de vencimiento.",
+        "Retorno del estado 'activo' cuando la membresía está al día.",
+        "Retorno de 'por_vencer' en los últimos 3 días de vigencia de la membresía.",
+        "Retorno del estado 'en_gracia' e indicación de días restantes durante los primeros 5 días post-vencimiento.",
+        "Retorno del estado 'vencido' y bloqueo del check-in a partir del día 6 de vencimiento."
+      ],
+      "status": "done"
+    },
+    {
+      "id": "F-06",
+      "name": "Endpoint de Caja y Normalización Multidivisa",
+      "description": "Endpoint de cobro que fuerza la conversión de VES a USD usando la tasa de cambio vigente y asegura pagos completos al 100%.",
+      "criteria_to_accept": [
+        "Registro forzado de montos de transacciones normalizados en USD en base de datos.",
+        "Validación en el backend para rechazar transacciones por montos menores a la tarifa correspondiente (sin abonos parciales).",
+        "Cálculo correcto de la conversión cuando se registra el pago en bolívares (VES)."
+      ],
+      "status": "done"
+    },
+    {
+      "id": "F-07",
+      "name": "Tarea Diaria de Sincronización de Estatus (Cron Job)",
+      "description": "Ejecución programada a las 00:00:00 horas para marcar membresías como 'vencido' cuando exceden el período de gracia.",
+      "criteria_to_accept": [
+        "Endpoint '/api/v1/cron/update-statuses' operativo que muta el estado de membresías expiradas a 'vencido'.",
+        "Modificación exitosa del estatus al cumplirse el sexto día de mora."
+      ],
+      "status": "done"
+    },
+    {
+      "id": "F-08",
+      "name": "Vista de Inicio de Sesión (Frontend)",
+      "description": "Pantalla de acceso al sistema con formulario de autenticación para personal de gimnasio.",
+      "criteria_to_accept": [
+        "Formulario ubicado en '/login' con campos de correo y contraseña.",
+        "Control de errores y mensajes visuales claros ante credenciales inválidas."
+      ],
+      "status": "done"
+    },
+    {
+      "id": "F-09",
+      "name": "Vista de Recepción y Control de Acceso (Semáforo Visual)",
+      "description": "Módulo principal de recepción para la búsqueda rápida por cédula y registro de check-in en un clic utilizando el Semáforo UI.",
+      "criteria_to_accept": [
+        "Buscador por cédula en '/dashboard/reception' vinculado a evento onSubmit.",
+        "Renderizado de la tarjeta del miembro con el Semáforo de 3 Estados (Activo = verde, En Gracia/Por Vencer = ámbar, Vencido = rojo).",
+        "Bloqueo visual y del botón de entrada al estar en estado 'vencido'.",
+        "Registrar entrada con un botón interactivo de check-in para estados válidos."
+      ],
+      "status": "done"
+    },
+    {
+      "id": "F-10",
+      "name": "Vista de Tabla de Miembros con Borrado Lógico",
+      "description": "Listado general de deportistas registrados con control visual de desactivación.",
+      "criteria_to_accept": [
+        "Tabla ubicada en '/members/list' que renderiza los atletas del sistema.",
+        "Efecto de opacidad reducida al 40% y bloqueo de interacción de fila para miembros eliminados lógicamente."
+      ],
+      "status": "done"
+    },
+    {
+      "id": "F-11",
+      "name": "Vista de Registro de Miembros",
+      "description": "Formulario de primera inscripción para capturar datos maestros e iniciar membresía en el gimnasio.",
+      "criteria_to_accept": [
+        "Formulario interactivo en '/members/register' que valida la entrada de datos mediante Zod.",
+        "Creación automática de membresía inicial en estado 'vencido' esperando el primer pago."
+      ],
+      "status": "done"
+    },
+    {
+      "id": "F-12",
+      "name": "Vista de Registro de Pagos (Caja)",
+      "description": "Formulario de captura de pago con simulación de conversión de divisas en tiempo real.",
+      "criteria_to_accept": [
+        "Formulario en '/payments/register' con campos de membresía, método de pago, referencia y tasa de cambio si aplica.",
+        "Panel estático visual (bg-slate-100) que renderiza el pre-cálculo estimado en USD antes de confirmar el envío de la transacción."
+      ],
+      "status": "done"
+    },
+    {
+      "id": "F-13",
+      "name": "Dashboard del Administrador",
+      "description": "Pantalla analítica móvil responsiva que expone KPIs críticos y el historial consolidado de caja.",
+      "criteria_to_accept": [
+        "Ubicado en '/dashboard/admin', adaptativo para supervisión móvil.",
+        "Visualización en tiempo real de: Ingresos Netos del Mes (USD), Atletas Activos y Alertas de Vencidos.",
+        "Lista del flujo de caja con ingresos detallados en orden cronológico."
+      ],
+      "status": "done"
+    },
+    {
+      "id": "F-14",
+      "name": "Tolerancia a Fallas Offline de Red",
+      "description": "Uso de IndexedDB para almacenar la cola de check-ins offline y sincronizar mediante batch al recuperar conexión, así como cachear miembros para búsqueda offline.",
+      "criteria_to_accept": [
+        "Creación y uso de almacén local 'members_cache' en IndexedDB para búsquedas locales offline en recepción.",
+        "Almacenamiento de asistencias locales en 'offline_checkins_queue' cuando no hay conexión.",
+        "Listener de red en frontend que ejecuta flush automático en lote a '/api/v1/asistencias/batch' al transicionar a online y purga la cola local."
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "F-15",
+      "name": "Protocolo de QA y Pruebas Unitarias/Integración",
+      "description": "Suite de validación de calidad técnica según requerimientos funcionales y no funcionales del PRD.",
+      "criteria_to_accept": [
+        "Prueba de latencia que certifique la búsqueda de miembros en menos de 1.5 segundos con ráfagas concurrentes.",
+        "Prueba de estrés offline que valide la persistencia y correcta sincronización posterior de fechas de check-ins locales.",
+        "Prueba de regresión de roles que compruebe la restricción a rutas protegidas frente a JWTs de rol worker."
+      ],
+      "status": "pending"
+    }
+  ]
+}
