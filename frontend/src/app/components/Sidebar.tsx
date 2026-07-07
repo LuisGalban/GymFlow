@@ -19,6 +19,7 @@ const navItems = [
   { href: "/members/register", label: "Registrar Atleta", icon: UserPlus, roles: ["admin", "worker"] },
   { href: "/payments/register", label: "Registrar Pago", icon: CreditCard, roles: ["admin", "worker"] },
   { href: "/dashboard/admin", label: "Panel Admin", icon: BarChart3, roles: ["admin"] },
+  { href: "/staff/list", label: "Gestionar Personal", icon: Users, roles: ["admin"] },
 ];
 
 export default function Sidebar() {

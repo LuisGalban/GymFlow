@@ -106,6 +106,50 @@ def register_user(payload: UserCreate, db: Session = Depends(get_db)):
     db.refresh(nuevo_usuario)
     return nuevo_usuario
 
+@app.get("/api/v1/users", response_model=List[UserResponse], dependencies=[Depends(requerir_admin)])
+def list_users(db: Session = Depends(get_db)):
+    return db.query(Usuario).filter(Usuario.estado_logico == True).order_by(Usuario.id).all()
+
+@app.get("/api/v1/users/{id}", response_model=UserResponse, dependencies=[Depends(requerir_admin)])
+def get_user(id: int, db: Session = Depends(get_db)):
+    usuario = db.query(Usuario).filter(Usuario.id == id, Usuario.estado_logico == True).first()
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    return usuario
+
+@app.put("/api/v1/users/{id}", response_model=UserResponse, dependencies=[Depends(requerir_admin)])
+def update_user(id: int, payload: UserUpdate, db: Session = Depends(get_db)):
+    usuario = db.query(Usuario).filter(Usuario.id == id).first()
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    if not usuario.estado_logico:
+        raise HTTPException(status_code=400, detail="No se puede modificar un usuario inactivo")
+    if payload.nombre is not None:
+        usuario.nombre = payload.nombre
+    if payload.correo is not None:
+        existe_correo = db.query(Usuario).filter(Usuario.correo == payload.correo, Usuario.id != id).first()
+        if existe_correo:
+            raise HTTPException(status_code=400, detail="El correo ya está en uso")
+        usuario.correo = payload.correo
+    if payload.rol is not None:
+        usuario.rol = payload.rol.value
+    if payload.password is not None:
+        usuario.password_hash = obtener_password_hash(payload.password)
+    if payload.estado_logico is not None:
+        usuario.estado_logico = payload.estado_logico
+    db.commit()
+    db.refresh(usuario)
+    return usuario
+
+@app.delete("/api/v1/users/{id}", dependencies=[Depends(requerir_admin)])
+def logical_delete_user(id: int, db: Session = Depends(get_db)):
+    usuario = db.query(Usuario).filter(Usuario.id == id).first()
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    usuario.estado_logico = False
+    db.commit()
+    return {"message": f"Usuario {usuario.nombre} desactivado lógicamente"}
+
 # --- ENDPOINTS DE PLANES (Lectura: Trabajador, Escritura: Admin) ---
 @app.get("/api/v1/planes", response_model=List[PlanResponse], dependencies=[Depends(requerir_trabajador)])
 def list_plans(db: Session = Depends(get_db)):

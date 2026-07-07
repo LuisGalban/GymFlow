@@ -7,6 +7,34 @@
   },
   "features": [
     {
+      "id": "F-17",
+      "name": "Gestión de Recepcionistas (Staff) por Administrador",
+      "description": "El administrador debe poder crear, listar, editar y desactivar (borrado lógico) cuentas de recepcionistas (rol worker). Los recepcionistas deben poder acceder a todas las funciones operativas (Recepción, Miembros, Registrar Atleta, Registrar Pago) pero NO al Panel de Administración ni a endpoints financieros/KPIs.",
+      "criteria_to_accept": [
+        "Endpoint 'GET /api/v1/users' que retorne la lista de usuarios del sistema (admin y worker), filtrando por defecto los registros inactivos ('estado_logico = False'), accesible solo por administradores.",
+        "Endpoint 'GET /api/v1/users/{id}' para obtener detalle de un usuario específico, accesible solo por administradores.",
+        "Endpoint 'PUT /api/v1/users/{id}' para actualizar nombre, correo, rol y/o contraseña de un usuario, con la restricción de que solo un admin puede cambiar el rol a 'admin'. Respeta borrado lógico: no permite modificar un usuario con 'estado_logico = False'.",
+        "Endpoint 'DELETE /api/v1/users/{id}' que aplique borrado lógico (estado_logico = False) en lugar de eliminación física, conservando el histórico de pagos y asistencias registrados por ese usuario para trazabilidad de auditoría.",
+        "Página '/staff/list' en el frontend que liste todos los usuarios del sistema en una tabla con columnas: Cédula, Nombre, Correo, Rol, Estado. Debe aplicar el efecto visual de borrado lógico (opacidad reducida al 40%) para usuarios inactivos, similar al patrón usado en '/members/list'.",
+        "Página '/staff/register' en el frontend con formulario validado con Zod para crear un nuevo recepcionista (rol worker) con campos: Cédula, Nombre, Correo y Contraseña. El rol se fuerza a 'worker' desde el frontend para evitar que un formulario malicioso cree admins.",
+        "Opción 'Gestionar Personal' en el Sidebar visible únicamente para usuarios con rol 'admin', que enlace a '/staff/list'.",
+        "El botón de 'Cerrar sesión' y la navegación del Sidebar deben respetar el rol del usuario redirigiendo a un worker a '/dashboard/reception' si intenta acceder a '/staff/*' manualmente.",
+        "Prueba automática (ciclo Rojo-Verde) que verifique: (1) creación exitosa de un worker vía API, (2) un worker no puede acceder a GET /api/v1/users (debe recibir 403), (3) el borrado lógico de un usuario no elimina sus pagos asociados de la base de datos."
+      ],
+      "status": "done"
+    },
+    {
+      "id": "F-14",
+      "name": "Tolerancia a Fallas Offline de Red",
+      "description": "Uso de IndexedDB para almacenar la cola de check-ins offline y sincronizar mediante batch al recuperar conexión, así como cachear miembros para búsqueda offline.",
+      "criteria_to_accept": [
+        "Creación y uso de almacén local 'members_cache' en IndexedDB para búsquedas locales offline en recepción.",
+        "Almacenamiento de asistencias locales en 'offline_checkins_queue' cuando no hay conexión.",
+        "Listener de red en frontend que ejecuta flush automático en lote a '/api/v1/asistencias/batch' al transicionar a online y purga la cola local."
+      ],
+      "status": "pending"
+    },
+    {
       "id": "F-01",
       "name": "Modelado de Base de Datos y Persistencia",
       "description": "Modelado relacional en PostgreSQL (3FN) con tablas para usuarios, miembros, planes, membresías, pagos y asistencias, aplicando restricciones financieras de no-negatividad.",
@@ -148,17 +176,6 @@
       "status": "done"
     },
     {
-      "id": "F-14",
-      "name": "Tolerancia a Fallas Offline de Red",
-      "description": "Uso de IndexedDB para almacenar la cola de check-ins offline y sincronizar mediante batch al recuperar conexión, así como cachear miembros para búsqueda offline.",
-      "criteria_to_accept": [
-        "Creación y uso de almacén local 'members_cache' en IndexedDB para búsquedas locales offline en recepción.",
-        "Almacenamiento de asistencias locales en 'offline_checkins_queue' cuando no hay conexión.",
-        "Listener de red en frontend que ejecuta flush automático en lote a '/api/v1/asistencias/batch' al transicionar a online y purga la cola local."
-      ],
-      "status": "pending"
-    },
-    {
       "id": "F-15",
       "name": "Protocolo de QA y Pruebas Unitarias/Integración",
       "description": "Suite de validación de calidad técnica según requerimientos funcionales y no funcionales del PRD.",
@@ -166,6 +183,18 @@
         "Prueba de latencia que certifique la búsqueda de miembros en menos de 1.5 segundos con ráfagas concurrentes.",
         "Prueba de estrés offline que valide la persistencia y correcta sincronización posterior de fechas de check-ins locales.",
         "Prueba de regresión de roles que compruebe la restricción a rutas protegidas frente a JWTs de rol worker."
+      ],
+      "status": "done"
+    },
+    {
+      "id": "F-16",
+      "name": "Corrección de Acceso y Panel del Administrador",
+      "description": "Solucionar la autenticación en la vista de administración (/dashboard/admin) inyectando el token JWT correspondiente en las peticiones de la API, y asegurar que respete los principios de normalización de moneda y visualización de datos auditables.",
+      "criteria_to_accept": [
+        "Las peticiones a '/api/v1/admin/kpis' y '/api/v1/admin/cashflow' deben incluir la cabecera de autenticación 'Authorization: Bearer <token>' obtenida del contexto del usuario.",
+        "Segregación estricta (RBAC): Bloquear con error 403 Forbidden a cualquier usuario con rol diferente a 'admin' que intente acceder al panel.",
+        "Normalización en USD: Los balances del mes e ingresos consolidados en el panel deben mostrarse normalizados en USD utilizando el tipo Numeric(10,2) para evitar discrepancias por redondeo.",
+        "Integridad de datos: Los reportes de flujo de caja deben renderizar transacciones históricas conservadas bajo lógica de borrado lógico (estado_logico = True) para la auditoría de caja."
       ],
       "status": "done"
     }

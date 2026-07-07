@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field, EmailStr, ConfigDict
 from typing import Optional, List
 from decimal import Decimal
 from datetime import datetime, date
@@ -41,6 +41,7 @@ class UserUpdate(BaseModel):
     nombre: Optional[str] = None
     correo: Optional[EmailStr] = None
     rol: Optional[RoleEnum] = None
+    password: Optional[str] = None
     estado_logico: Optional[bool] = None
 
 class UserResponse(UserBase):
@@ -75,11 +76,12 @@ class PlanCreate(PlanBase):
     pass
 
 class PlanResponse(PlanBase):
+    model_config = ConfigDict(
+        from_attributes=True,
+        json_encoders={Decimal: lambda v: float(v)}
+    )
     id: int
     estado_logico: bool
-
-    class Config:
-        from_attributes = True
 
 
 # --- ESQUEMAS DE MIEMBROS ---
@@ -140,6 +142,10 @@ class PagoCedulaCreate(BaseModel):
     referencia: Optional[str] = Field(None, max_length=50, description="Referencia de pago")
 
 class PagoResponse(BaseModel):
+    model_config = ConfigDict(
+        from_attributes=True,
+        json_encoders={Decimal: lambda v: float(v)}
+    )
     id: int
     membresia_miembro_id: int
     registrado_por: int
@@ -151,9 +157,6 @@ class PagoResponse(BaseModel):
     referencia: Optional[str] = None
     observaciones: Optional[str] = None
     fecha_pago: datetime
-
-    class Config:
-        from_attributes = True
 
 
 # --- ESQUEMAS DE ASISTENCIAS ---
@@ -171,10 +174,16 @@ class AsistenciaResponse(BaseModel):
 
 # --- ESQUEMAS DE KPIS Y REPORTES ---
 class KpiSummary(BaseModel):
+    model_config = ConfigDict(
+        json_encoders={Decimal: lambda v: float(v)}
+    )
     ingresos_netos_usd: Decimal
     atletas_activos: int
     alertas_vencidos: int
 
 class CashFlowReport(BaseModel):
+    model_config = ConfigDict(
+        json_encoders={Decimal: lambda v: float(v)}
+    )
     pagos: List[PagoResponse]
     ingresos_totales_usd: Decimal
