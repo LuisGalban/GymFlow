@@ -10,7 +10,7 @@ from sqlalchemy import func, text
 from app.database import engine, Base, get_db
 from app.models import Usuario, Miembro, Plan, MembresiaMiembro, Pago, Asistencia, UserRole, PaymentCurrency, PaymentMethod, MembershipStatus
 from app.schemas import (
-    UserCreate, UserResponse, LoginRequest, Token,
+    UserCreate, UserUpdate, UserResponse, LoginRequest, Token,
     MiembroCreate, MiembroResponse, PlanCreate, PlanResponse,
     MembresiaCreate, MembresiaResponse, PagoCreate, PagoCedulaCreate, PagoResponse, PaymentCurrencyEnum, PaymentMethodEnum, AsistenciaCreate, AsistenciaResponse, KpiSummary, CashFlowReport
 )

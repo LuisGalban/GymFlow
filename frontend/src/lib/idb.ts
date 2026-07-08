@@ -2,6 +2,14 @@
 
 import { openDB, DBSchema, IDBPDatabase } from "idb"
 
+export interface MemberCacheEntry {
+  id: number
+  cedula: string
+  nombre: string
+  telefono: string | null
+  estatus_actual: string | null
+}
+
 interface GymFlowDB extends DBSchema {
   pendingCheckins: {
     key: number
@@ -11,20 +19,45 @@ interface GymFlowDB extends DBSchema {
     }
     indexes: { "by-timestamp": string }
   }
+  membersCache: {
+    key: number
+    value: MemberCacheEntry
+  }
 }
 
 let dbPromise: Promise<IDBPDatabase<GymFlowDB>> | null = null
 
 function getDB() {
   if (!dbPromise) {
-    dbPromise = openDB<GymFlowDB>('gymflow-db', 1, {
-      upgrade(db) {
-        const store = db.createObjectStore('pendingCheckins', { keyPath: 'id', autoIncrement: true })
-        store.createIndex('by-timestamp', 'timestamp')
+    dbPromise = openDB<GymFlowDB>('gymflow-db', 2, {
+      upgrade(db, oldVersion) {
+        if (oldVersion < 1) {
+          const store = db.createObjectStore('pendingCheckins', { keyPath: 'id', autoIncrement: true })
+          store.createIndex('by-timestamp', 'timestamp')
+        }
+        if (oldVersion < 2) {
+          db.createObjectStore('membersCache', { keyPath: 'id' })
+        }
       },
     })
   }
   return dbPromise
+}
+
+export async function cacheMembers(members: MemberCacheEntry[]): Promise<void> {
+  const db = await getDB()
+  const tx = db.transaction('membersCache', 'readwrite')
+  await Promise.all([
+    tx.objectStore('membersCache').clear(),
+    ...members.map((m) => tx.objectStore('membersCache').put(m)),
+    tx.done,
+  ])
+}
+
+export async function searchMemberOffline(cedula: string): Promise<MemberCacheEntry | undefined> {
+  const db = await getDB()
+  const all = await db.getAll('membersCache')
+  return all.find((m) => m.cedula === cedula)
 }
 
 export async function addPendingCheckin(miembro_id: number) {

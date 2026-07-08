@@ -30,9 +30,10 @@
       "criteria_to_accept": [
         "Creación y uso de almacén local 'members_cache' en IndexedDB para búsquedas locales offline en recepción.",
         "Almacenamiento de asistencias locales en 'offline_checkins_queue' cuando no hay conexión.",
-        "Listener de red en frontend que ejecuta flush automático en lote a '/api/v1/asistencias/batch' al transicionar a online y purga la cola local."
+        "Listener de red en frontend que ejecuta flush automático en lote a '/api/v1/asistencias/batch' al transicionar a online y purga la cola local.",
+        "Navbar superior con widget integrado de estado de red (Online/Offline) usando window.navigator.onLine con indicador visual (Wifi/WifiOff) en el DashboardLayout."
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "F-01",

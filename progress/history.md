@@ -52,3 +52,25 @@
 - **Archivos modificados:** `frontend/src/app/staff/list/page.tsx`, `backend/test_admin_fix.py`.
 - **Archivos afectados (acción manual):** Limpiar `backend/app/__pycache__/` y reiniciar uvicorn.
 - **Lección:** (1) Todo `try/finally` asíncrono debe tener `catch`. (2) El bytecode cacheado de Python (`__pycache__`) puede desincronizarse del fuente; siempre reiniciar el servidor después de modificar rutas de FastAPI. El TestClient no es suficiente para detectar este tipo de desincronización.
+
+## Sesión: 2026-07-07 (Noche)
+- **Estado Inicial:** F-14 (`pending`) como única tarea pendiente tras hotfix de F-17.
+- **Acciones Realizadas:**
+  - **F-14 (Tolerancia a Fallas Offline de Red):**
+    - IndexedDB v2 con store `membersCache` + funciones `cacheMembers()` y `searchMemberOffline()`.
+    - Búsqueda offline en recepción con fallback a caché local e indicador visual "Modo Offline".
+    - Batch sync corregido: payload como array plano (no envuelto en objeto).
+    - Widget Navbar online/offline verificado e integrado en DashboardLayout.
+    - Test `test_f14_offline.py` con 2 tests (batch array plano + miembro inválido).
+- **Resultado:** MVP completo — 100% de las funcionalidades implementadas y probadas.
+
+## Sesión: 2026-07-07 (Auditoría - Post MVP)
+- **Estado Inicial:** F-14 marcada `done`, entorno verificado, servidores activos para auditoría manual.
+- **Problemas Detectados y Corregidos:**
+  1. **Backend — `/openapi.json` 500:** `UserUpdate` no estaba importado en `main.py` (usado en `PUT /api/v1/users/{id}`). Pydantic generaba `ForwardRef` no resoluble. Se agregó al import. Swagger UI funcional.
+  2. **Frontend — Raíz (`/`) con template Next.js:** `page.tsx` nunca se personalizó. Se reemplazó por `redirect("/login")`.
+  3. **Frontend — Bucle infinito de rendering en dev server:** Next.js 16.2.9 + Turbopack causa crecimiento ilimitado de RAM/CPU (1.28GB, 661s CPU) al navegar a páginas con AuthContext + useEffect + router.push. Bug confirmado en upstream [#94915](https://github.com/vercel/next.js/issues/94915) y [#92372](https://github.com/vercel/next.js/issues/92372).
+- **Solución (Mitigación):** Usar `pnpm build && pnpm start` en vez de `pnpm dev`. El build de producción compila correctamente sin los bugs de Turbopack.
+- **Decisión de Arquitectura:** Para auditorías y uso estable, usar producción. Para desarrollo activo, usar `pnpm dev --webpack`.
+- **Tests:** `test_f14_offline.py` (2/2), `test_admin_fix.py` (4/4), `test_offline.py` (3/3) — todos verdes. TypeScript sin errores.
+- **Estado Actual:** Backend en `localhost:8000`, Frontend (producción) en `localhost:3000`. Todo funcional.

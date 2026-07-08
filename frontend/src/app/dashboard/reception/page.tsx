@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import DashboardLayout from "@/app/components/DashboardLayout";
 import { useAuth } from "@/app/context/AuthContext";
 import { api } from "@/app/context/AuthContext";
-import { addPendingCheckin, getAllPendingCheckins, clearPendingCheckins } from "@/lib/idb";
+import { addPendingCheckin, getAllPendingCheckins, clearPendingCheckins, cacheMembers, searchMemberOffline, MemberCacheEntry } from "@/lib/idb";
 import {
   Search, CheckCircle2, AlertTriangle, XCircle, UserCheck,
   Loader2, Clock, Phone, CreditCard,
@@ -74,9 +74,34 @@ export default function ReceptionPage() {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMiembro(res.data);
+      // Cachear miembros activos para búsqueda offline futura
+      try {
+        const allRes = await api.get(`/api/v1/members`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        await cacheMembers(allRes.data as MemberCacheEntry[]);
+      } catch { /* silencioso */ }
     } catch (err: unknown) {
       const e = err as { response?: { status?: number } };
-      setError(e?.response?.status === 404 ? "No se encontró ningún miembro con esa cédula." : "Error al buscar. Intenta de nuevo.");
+      if (!e?.response) {
+        const cached = await searchMemberOffline(cedula.trim());
+        if (cached) {
+          setMiembro({
+            id: cached.id,
+            cedula: cached.cedula,
+            nombre: cached.nombre,
+            telefono: cached.telefono,
+            estado_logico: true,
+            estatus_actual: cached.estatus_actual as "activo" | "por_vencer" | "en_gracia" | "vencido" | null,
+            dias_restantes_gracia: null,
+          });
+          setError("Modo Offline — datos locales");
+        } else {
+          setError("Sin conexión y sin datos en caché para esta cédula.");
+        }
+      } else {
+        setError(e?.response?.status === 404 ? "No se encontró ningún miembro con esa cédula." : "Error al buscar. Intenta de nuevo.");
+      }
     } finally {
       setLoading(false);
     }
@@ -116,7 +141,7 @@ export default function ReceptionPage() {
       try {
         await api.post(
           "/api/v1/asistencias/batch",
-          { checkins: pending },
+          pending,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         await clearPendingCheckins();
