@@ -198,6 +198,85 @@
         "Integridad de datos: Los reportes de flujo de caja deben renderizar transacciones históricas conservadas bajo lógica de borrado lógico (estado_logico = True) para la auditoría de caja."
       ],
       "status": "done"
+    },
+    {
+      "id": "F-18",
+      "name": "Alembic Migrations — Control de Versiones de BD",
+      "description": "P0 — Configurar Alembic para migraciones estructuradas de la base de datos, reemplazando el actual `init_db.py` que usa `Base.metadata.create_all()`. Sin migraciones, cualquier cambio en esquema requiere drop+recreate o SQL manual, inviable en producción.",
+      "criteria_to_accept": [
+        "Directorio `alembic/` creado con `alembic init` y configurado para apuntar a la base de datos PostgreSQL de GymFlow.",
+        "Migración inicial autogenerada (`alembic revision --autogenerate`) que refleje exactamente los modelos actuales en `backend/app/models.py`.",
+        "Script de actualización (`alembic upgrade head`) ejecutable y verificado contra la base de datos sin pérdida de datos.",
+        "Documentación en el script o README del comando para crear una nueva migración tras modificar modelos."
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "F-19",
+      "name": "Backups Automatizados de PostgreSQL",
+      "description": "P0 — Script automatizado de respaldo mediante `pg_dump` programado diariamente. Sin backups, un error o corrupción implica pérdida total de datos del gimnasio.",
+      "criteria_to_accept": [
+        "Script `.bat` o `.ps1` en la raíz del proyecto que ejecute `pg_dump` contra `gymflow_db` y genere un archivo `.sql` comprimido con timestamp.",
+        "Programación en Windows Task Scheduler (o crontab en Linux) para ejecución diaria automática.",
+        "Verificación manual: ejecutar el script y confirmar que el archivo de respaldo contiene datos recuperables."
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "F-20",
+      "name": "Seguridad de Sesión — HttpOnly Cookies + Interceptor 401",
+      "description": "P0 — Migrar el almacenamiento del JWT de `localStorage` a cookies HttpOnly para mitigar vulnerabilidad XSS, y agregar un interceptor Axios que redirija automáticamente a `/login` ante errores 401.",
+      "criteria_to_accept": [
+        "El backend incluye una cookie HttpOnly con el JWT en la respuesta de login (adicional al body actual).",
+        "El frontend lee el token desde la cookie (no desde localStorage) para las peticiones autenticadas.",
+        "Interceptor global de Axios (o Fetch wrapper) que capture respuestas 401 y redirija al usuario a `/login`.",
+        "La sesión persiste correctamente al recargar la página sin depender de localStorage."
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "F-21",
+      "name": "Logging Configurado para Producción",
+      "description": "P1 — Configurar el módulo `logging` de Python con archivos rotativos para registrar errores críticos del servidor (500) y actividad relevante. Sin logs, no hay forma de depurar errores en producción sin acceso a la terminal.",
+      "criteria_to_accept": [
+        "Configuración de `logging.basicConfig` o `dictConfig` en `main.py` con nivel INFO y handler `RotatingFileHandler`.",
+        "Archivo de log en `backend/logs/` con rotación diaria y respaldo de últimos 7 días.",
+        "Endpoints críticos (login, pagos, cron) registran eventos con `logger.info()` y errores con `logger.error()`."
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "F-22",
+      "name": "CHECK Constraints en Modelos SQLAlchemy",
+      "description": "P1 — Agregar restricciones `CheckConstraint` a nivel de base de datos en los modelos SQLAlchemy para garantizar `precio_usd >= 0`, `monto_original > 0`, `tasa_cambio > 0`, y `fecha_vencimiento >= fecha_inicio`. Actualmente existen en el SQL de `docs/tech_spec.md` pero no están enforced en el ORM.",
+      "criteria_to_accept": [
+        "`__table_args__` con `CheckConstraint` en `Plan.precio_usd >= 0`, `Pago.monto_original > 0`, `Pago.tasa_cambio > 0`.",
+        "Migración Alembic generada que aplique las nuevas constraints a la base de datos sin requerir drop.",
+        "Prueba que intente insertar un registro con precio negativo y verifique que la BD lo rechaza."
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "F-23",
+      "name": "Health Check Endpoint",
+      "description": "P1 — Endpoint `GET /api/v1/health` para monitoreo simple desde servicios externos (cron-job.org, uptimerobot) que verifique conectividad a BD y estado del servidor.",
+      "criteria_to_accept": [
+        "Endpoint `GET /api/v1/health` que retorne `{\"status\": \"ok\", \"database\": \"connected\", \"timestamp\": \"...\"}`.",
+        "El endpoint verifique conexión activa a PostgreSQL mediante `db.execute(\"SELECT 1\")`.",
+        "No requiera autenticación (público para monitoreo externo)."
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "F-24",
+      "name": "Script de Restart Rápido (One-Click)",
+      "description": "P1 — Script `.bat`/`.ps1` en la raíz que ejecute `git pull`, limpie `__pycache__`, reinicie servicios backend y frontend con un solo clic, optimizado para solopreneur.",
+      "criteria_to_accept": [
+        "Script ubicado en la raíz del proyecto (`restart.bat` o `restart.ps1`).",
+        "Ejecute secuencialmente: `git pull`, limpieza de `__pycache__` en backend, reinicio del proceso uvicorn, rebuild y restart de Next.js.",
+        "Ejecutable con un solo clic desde Windows Explorer o PowerShell."
+      ],
+      "status": "pending"
     }
   ]
 }
