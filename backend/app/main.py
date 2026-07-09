@@ -617,15 +617,45 @@ def daily_cron_update_statuses(db: Session = Depends(get_db)):
     }
 
 # --- ENDPOINTS DE ADMINISTRADOR (Reportes Financieros y KPIs) ---
-@app.get("/api/v1/admin/kpis", response_model=KpiSummary, dependencies=[Depends(requerir_admin)])
-def get_kpis(db: Session = Depends(get_db)):
+
+def _calcular_rango_fechas(rango: Optional[str], desde: Optional[str], hasta: Optional[str]) -> tuple[datetime, datetime]:
     hoy = date.today()
-    
-    # 1. Ingresos Netos del Mes en USD (suma de monto_usd de todos los pagos del mes en curso)
-    primer_dia_mes = hoy.replace(day=1)
-    primer_dia_mes_dt = datetime(primer_dia_mes.year, primer_dia_mes.month, primer_dia_mes.day, 0, 0, 0)
-    
-    ingresos = db.query(func.sum(Pago.monto_usd)).filter(Pago.fecha_pago >= primer_dia_mes_dt).scalar() or Decimal(0)
+    ahora = datetime.now()
+
+    if rango not in ("dia", "semana", "ano", "personalizado"):
+        rango = "mes"
+
+    if rango == "dia":
+        return datetime(hoy.year, hoy.month, hoy.day, 0, 0, 0), ahora
+    elif rango == "semana":
+        dia_semana = hoy.weekday()
+        lunes = hoy - timedelta(days=dia_semana)
+        return datetime(lunes.year, lunes.month, lunes.day, 0, 0, 0), ahora
+    elif rango == "mes":
+        primer_dia = hoy.replace(day=1)
+        return datetime(primer_dia.year, primer_dia.month, primer_dia.day, 0, 0, 0), ahora
+    elif rango == "ano":
+        return datetime(hoy.year, 1, 1, 0, 0, 0), ahora
+    elif rango == "personalizado":
+        if desde and hasta:
+            return datetime.strptime(desde, "%Y-%m-%d"), datetime.strptime(hasta, "%Y-%m-%d").replace(hour=23, minute=59, second=59)
+        return datetime(hoy.year, hoy.month, 1, 0, 0, 0), ahora
+
+@app.get("/api/v1/admin/kpis", response_model=KpiSummary, dependencies=[Depends(requerir_admin)])
+def get_kpis(
+    db: Session = Depends(get_db),
+    rango: Optional[str] = Query(None),
+    desde: Optional[str] = Query(None),
+    hasta: Optional[str] = Query(None),
+):
+    desde_dt, hasta_dt = _calcular_rango_fechas(rango, desde, hasta)
+
+    ingresos = db.query(func.sum(Pago.monto_usd))\
+        .join(MembresiaMiembro, Pago.membresia_miembro_id == MembresiaMiembro.id)\
+        .join(Miembro, MembresiaMiembro.miembro_id == Miembro.id)\
+        .filter(Miembro.estado_logico == True)\
+        .filter(Pago.fecha_pago >= desde_dt, Pago.fecha_pago <= hasta_dt)\
+        .scalar() or Decimal(0)
     
     # 2. Atletas Activos (miembros activos o en gracia en su última membresía)
     # Buscamos miembros cuya última membresía no esté vencida ni en la base de datos ni calculada como tal
@@ -648,9 +678,20 @@ def get_kpis(db: Session = Depends(get_db)):
     )
 
 @app.get("/api/v1/admin/cashflow", response_model=CashFlowReport, dependencies=[Depends(requerir_admin)])
-def get_cashflow_report(db: Session = Depends(get_db)):
-    # Obtener todos los pagos registrados de forma cronológica descendente
-    pagos = db.query(Pago).order_by(Pago.fecha_pago.desc()).all()
+def get_cashflow_report(
+    db: Session = Depends(get_db),
+    rango: Optional[str] = Query(None),
+    desde: Optional[str] = Query(None),
+    hasta: Optional[str] = Query(None),
+):
+    desde_dt, hasta_dt = _calcular_rango_fechas(rango, desde, hasta)
+
+    pagos = db.query(Pago)\
+        .join(MembresiaMiembro, Pago.membresia_miembro_id == MembresiaMiembro.id)\
+        .join(Miembro, MembresiaMiembro.miembro_id == Miembro.id)\
+        .filter(Miembro.estado_logico == True)\
+        .filter(Pago.fecha_pago >= desde_dt, Pago.fecha_pago <= hasta_dt)\
+        .order_by(Pago.fecha_pago.desc()).all()
     ingresos_totales = sum(p.monto_usd for p in pagos)
     
     return CashFlowReport(

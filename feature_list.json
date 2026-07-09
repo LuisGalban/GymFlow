@@ -292,7 +292,7 @@
         "El filtro excluye membresías con `estado_logico = False` (borrado lógico).",
         "Prueba automática que verifique sumas correctas para diferentes rangos."
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "F2-02",

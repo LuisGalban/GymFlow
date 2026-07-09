@@ -26,6 +26,9 @@ export default function AdminDashboardPage() {
   const [pagos, setPagos] = useState<Pago[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
+  const [filtroRango, setFiltroRango] = useState("")
+  const [filtroDesde, setFiltroDesde] = useState("")
+  const [filtroHasta, setFiltroHasta] = useState("")
 
   // Protección de ruta RBAC: Solo Administradores
   useEffect(() => {
@@ -41,7 +44,14 @@ export default function AdminDashboardPage() {
 
     async function fetchData() {
       try {
+        const params: Record<string, string> = {}
+        if (filtroRango) params.rango = filtroRango
+        if (filtroRango === "personalizado") {
+          if (filtroDesde) params.desde = filtroDesde
+          if (filtroHasta) params.hasta = filtroHasta
+        }
         const config = {
+          params,
           headers: { Authorization: `Bearer ${token}` }
         }
         const [kpiRes, cashRes] = await Promise.all([
@@ -57,7 +67,7 @@ export default function AdminDashboardPage() {
       }
     }
     fetchData()
-  }, [authLoading, token, user])
+  }, [authLoading, token, user, filtroRango, filtroDesde, filtroHasta])
 
   if (authLoading || !token || !user || user.rol !== "admin") {
     return (
@@ -77,6 +87,53 @@ export default function AdminDashboardPage() {
             {error}
           </div>
         )}
+        {/* Filtros temporales */}
+        <div className="flex flex-wrap items-center gap-2">
+          {[
+            { key: "dia", label: "Hoy" },
+            { key: "semana", label: "Esta Semana" },
+            { key: "mes", label: "Este Mes" },
+            { key: "ano", label: "Este Año" },
+            { key: "personalizado", label: "Personalizado" },
+          ].map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => {
+                setFiltroRango(key)
+                if (key !== "personalizado") {
+                  setFiltroDesde("")
+                  setFiltroHasta("")
+                }
+                setLoading(true)
+              }}
+              className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-all duration-200 ${
+                filtroRango === key
+                  ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
+                  : "bg-white/5 text-white/50 border border-white/10 hover:bg-white/10"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+          {filtroRango === "personalizado" && (
+            <div className="flex items-center gap-2 ml-2">
+              <input
+                type="date"
+                value={filtroDesde}
+                onChange={(e) => { setFiltroDesde(e.target.value); setLoading(true) }}
+                className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white/70"
+              />
+              <span className="text-white/30 text-xs">a</span>
+              <input
+                type="date"
+                value={filtroHasta}
+                onChange={(e) => { setFiltroHasta(e.target.value); setLoading(true) }}
+                className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white/70"
+              />
+            </div>
+          )}
+        </div>
+
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />

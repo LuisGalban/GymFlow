@@ -172,3 +172,12 @@
   - F2-06: Sidebar responsive con menú hamburguesa.
 - **feature_list.json:** 6 nuevas tareas agregadas con IDs F2-01 a F2-06.
 - **docs/backlog.md:** Items de debounce, skeletons y sidebar removidos del backlog.
+
+## Sesión: 2026-07-09 (F2-01)
+- **Estado Inicial:** F2-01 (Filtros Financieros) como primera tarea de la Fase 2.
+- **Acciones Realizadas:**
+  - Backend: Helper `_calcular_rango_fechas()` con 5 modos (día/semana/mes/año/personalizado).
+  - Backend: `GET /api/v1/admin/kpis` y `GET /api/v1/admin/cashflow` extendidos con params `rango`, `desde`, `hasta`.
+  - Frontend: Selectores de filtro (Hoy/Semana/Mes/Año/Personalizado + datepickers) en `admin/page.tsx`.
+  - Tests: 7 nuevos en `test_admin_fix.py` cubriendo todos los rangos.
+- **Resultado:** 35/35 tests verdes. TypeScript 0 errores. Reviewer aprobó. F2-01 marcada `done`.

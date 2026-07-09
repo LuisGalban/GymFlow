@@ -125,6 +125,115 @@ class TestAdminPanelFix(unittest.TestCase):
                          f"Cashflow returned {resp_cash.status_code}: {resp_cash.text[:200]}")
 
 
+    # ---- FILTER TESTS ----
+
+    def test_5_kpis_filtro_dia_returns_200(self):
+        """F2-01: KPIs with rango=dia returns 200"""
+        client = TestClient(app)
+        resp = client.post("/api/v1/auth/login", json={
+            "correo": "admintestfix@gymflow.com",
+            "password": "test123"
+        })
+        token = resp.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        resp_kpis = client.get("/api/v1/admin/kpis?rango=dia", headers=headers)
+        self.assertEqual(resp_kpis.status_code, 200,
+                         f"KPIs dia returned {resp_kpis.status_code}: {resp_kpis.text[:200]}")
+        data = resp_kpis.json()
+        self.assertIn("ingresos_netos_usd", data)
+
+        resp_cash = client.get("/api/v1/admin/cashflow?rango=dia", headers=headers)
+        self.assertEqual(resp_cash.status_code, 200,
+                         f"Cashflow dia returned {resp_cash.status_code}: {resp_cash.text[:200]}")
+
+    def test_6_kpis_filtro_semana_returns_200(self):
+        """F2-01: KPIs with rango=semana returns 200"""
+        client = TestClient(app)
+        resp = client.post("/api/v1/auth/login", json={
+            "correo": "admintestfix@gymflow.com",
+            "password": "test123"
+        })
+        token = resp.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        resp_kpis = client.get("/api/v1/admin/kpis?rango=semana", headers=headers)
+        self.assertEqual(resp_kpis.status_code, 200)
+        self.assertIn("ingresos_netos_usd", resp_kpis.json())
+
+    def test_7_kpis_filtro_mes_returns_200(self):
+        """F2-01: KPIs with rango=mes returns 200 (default behavior)"""
+        client = TestClient(app)
+        resp = client.post("/api/v1/auth/login", json={
+            "correo": "admintestfix@gymflow.com",
+            "password": "test123"
+        })
+        token = resp.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        resp_kpis = client.get("/api/v1/admin/kpis?rango=mes", headers=headers)
+        self.assertEqual(resp_kpis.status_code, 200)
+        self.assertIn("ingresos_netos_usd", resp_kpis.json())
+
+    def test_8_kpis_filtro_ano_returns_200(self):
+        """F2-01: KPIs with rango=ano returns 200"""
+        client = TestClient(app)
+        resp = client.post("/api/v1/auth/login", json={
+            "correo": "admintestfix@gymflow.com",
+            "password": "test123"
+        })
+        token = resp.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        resp_kpis = client.get("/api/v1/admin/kpis?rango=ano", headers=headers)
+        self.assertEqual(resp_kpis.status_code, 200)
+        self.assertIn("ingresos_netos_usd", resp_kpis.json())
+
+    def test_9_kpis_filtro_personalizado_incluye_pago(self):
+        """F2-01: rango=personalizado with desde/hasta includes pago de hoy"""
+        client = TestClient(app)
+        resp = client.post("/api/v1/auth/login", json={
+            "correo": "admintestfix@gymflow.com",
+            "password": "test123"
+        })
+        token = resp.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        hoy_str = date.today().isoformat()
+        resp_kpis = client.get(
+            f"/api/v1/admin/kpis?rango=personalizado&desde={hoy_str}&hasta={hoy_str}",
+            headers=headers
+        )
+        self.assertEqual(resp_kpis.status_code, 200)
+        data = resp_kpis.json()
+        self.assertGreater(data["ingresos_netos_usd"], 0,
+                           "Pago de prueba debería aparecer en el rango personalizado de hoy")
+
+    def test_10_kpis_filtro_personalizado_excluye_fuera_rango(self):
+        """F2-01: rango=personalizado con fecha pasada excluye pago de hoy"""
+        client = TestClient(app)
+        resp = client.post("/api/v1/auth/login", json={
+            "correo": "admintestfix@gymflow.com",
+            "password": "test123"
+        })
+        token = resp.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        resp_kpis = client.get(
+            "/api/v1/admin/kpis?rango=personalizado&desde=2020-01-01&hasta=2020-01-31",
+            headers=headers
+        )
+        self.assertEqual(resp_kpis.status_code, 200)
+        data = resp_kpis.json()
+        self.assertEqual(data["ingresos_netos_usd"], 0,
+                         "Pago de hoy NO debe aparecer en rango 2020")
+
+    def test_11_endpoint_funciona_sin_parametros(self):
+        """F2-01: Sin filtros, conserva comportamiento por defecto"""
+        kpis = get_kpis(db=self.db)
+        raw = kpis.model_dump(mode="json")
+        self.assertIsInstance(raw["ingresos_netos_usd"], (int, float))
+
     def test_4_staff_flow_register_then_appears_in_list(self):
         """GREEN: full flow — login → register worker → list includes that worker"""
         suffix = uuid.uuid4().hex[:8]
