@@ -7,6 +7,7 @@ import {
   Users, CheckCircle2, AlertTriangle, XCircle, Clock,
   Trash2, Loader2, Search,
 } from "lucide-react";
+import TableSkeleton from "@/app/components/TableSkeleton";
 
 interface Miembro {
   id: number;
@@ -101,9 +102,7 @@ export default function MembersListPage() {
         {/* Tabla */}
         <div className="kinetic-glass rounded-2xl overflow-hidden">
           {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-6 h-6 text-indigo-400 animate-spin" />
-            </div>
+            <TableSkeleton rows={6} columns={6} />
           ) : filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 gap-3 text-white/30">
               <Users className="w-10 h-10" />

@@ -329,7 +329,7 @@
         "Mantiene el fallback offline (IndexedDB) como fuente secundaria.",
         "Se muestra un indicador de carga durante la petición."
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "F2-05",
@@ -340,7 +340,7 @@
         "El skeleton debe imitar la estructura de la tabla (columnas, anchos relativos).",
         "No hay regresión visual en estados de carga/error/vacío."
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "F2-06",

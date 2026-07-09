@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import DashboardLayout from "@/app/components/DashboardLayout"
 import Link from "next/link"
 import { Loader2, AlertCircle, BarChart3, TrendingUp, CreditCard, Users, X } from "lucide-react"
+import TableSkeleton from "@/app/components/TableSkeleton"
 
 interface KpiData {
   ingresos_netos_usd: number
@@ -166,8 +167,16 @@ export default function AdminDashboardPage() {
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="kinetic-glass rounded-2xl p-6 animate-pulse">
+                  <div className="h-3 w-24 bg-white/10 rounded mb-3" />
+                  <div className="h-6 w-16 bg-white/10 rounded" />
+                </div>
+              ))}
+            </div>
+            <TableSkeleton rows={5} columns={4} />
           </div>
         ) : (
           <> {
@@ -275,8 +284,8 @@ export default function AdminDashboardPage() {
             </div>
 
             {loadingDetail ? (
-              <div className="flex justify-center py-8">
-                <Loader2 className="w-6 h-6 text-indigo-400 animate-spin" />
+              <div className="animate-pulse space-y-3">
+                {[1,2,3,4,5].map(i => <div key={i} className="h-4 bg-white/10 rounded" style={{width: `${60 + i * 8}%`}} />)}
               </div>
             ) : selectedPayment && (
               <div className="space-y-3 text-sm">

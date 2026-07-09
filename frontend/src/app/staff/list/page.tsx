@@ -7,6 +7,7 @@ import { useAuth, api } from "@/app/context/AuthContext";
 import {
   Users, Loader2, Trash2, Search, UserPlus, Shield, Wrench, AlertTriangle,
 } from "lucide-react";
+import TableSkeleton from "@/app/components/TableSkeleton";
 
 interface StaffUser {
   id: number;
@@ -111,9 +112,7 @@ export default function StaffListPage() {
         {/* Tabla */}
         <div className="kinetic-glass rounded-2xl overflow-hidden">
           {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-6 h-6 text-indigo-400 animate-spin" />
-            </div>
+            <TableSkeleton rows={6} columns={6} />
           ) : error ? (
             <div className="flex flex-col items-center justify-center py-20 gap-3 text-rose-300">
               <AlertTriangle className="w-10 h-10" />

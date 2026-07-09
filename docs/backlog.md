@@ -15,6 +15,15 @@
 | **Semáforo duplicado inline** | P4 — La lógica del semáforo (colores, iconos, etiquetas) está copiada en `reception/page.tsx` y `members/list/page.tsx`. Extraer a componente compartido `SemaforoBadge`. |
 | **Sin endpoint dedicado de cambio de contraseña** | P4 — `PUT /api/v1/users/{id}` permite actualizar datos, pero no hay un endpoint `/change-password` con validación de contraseña anterior. |
 
+## Recomendaciones Futuras / Icebox (Post-Auditoría Técnica)
+
+| ID | Item | Prioridad | Motivo |
+|----|------|-----------|--------|
+| OPT-01 | **Optimizar N+1 en `get_payment_detail`** (F2-02) | P2 | El endpoint carga 4 relaciones lazy (miembro, plan, registrador) en consultas separadas. Agregar `joinedload()` en el query ORM. Correcto funcionalmente, mejora rendimiento en paneles con muchos clics. |
+| OPT-02 | **Optimizar N+1 en `get_miembros_vencidos`** (F2-03) | P2 | El bucle Python accede a `m.membresias` por cada miembro vencido. Usar `selectinload(Miembro.membresias)`. Escala mal con 50+ vencidos. |
+| OPT-03 | **Índice en `pagos.fecha_pago`** | P3 | F2-01 filtra por rango de fechas en `Pago.fecha_pago` sin índice. Añadir `Index("idx_pagos_fecha_pago", Pago.fecha_pago)` + migración Alembic. Aceptable mientras la tabla sea pequeña (<10k registros). |
+| OPT-04 | **Migrar fechas a timezone-aware** | P4 | `_calcular_rango_fechas` retorna naive datetimes. Internamente consistente porque todo usa `utcnow()`, pero frágil si el servidor cambia de huso. Migrar a `timezone.utc`. Muy baja probabilidad de impacto. |
+
 ## Descartados (No Implementar)
 
 | Item | Motivo |

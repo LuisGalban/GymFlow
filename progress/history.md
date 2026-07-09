@@ -215,3 +215,20 @@
   - Refactor `buscar()` a `buscar(cedulaInput?: string)` para invocación sin evento de form.
   - `useEffect` al montar que lee `cedula` del query param y dispara búsqueda automática.
 - **Resultado:** TypeScript 0 errores. Reviewer aprobó. Hotfix 2 cerrado.
+
+## Sesión: 2026-07-09 (F2-04)
+- **Estado Inicial:** F2-04 (Debounce en Búsqueda de Recepción) como primera tarea P2 del Bloque A.
+- **Acciones Realizadas:**
+  - `reception/page.tsx`: Agregados `debounceRef` y `abortRef` con `useRef`.
+  - `onChange`: resetea resultados y programa búsqueda con `setTimeout(300ms)`.
+  - `buscar()`: cancela petición previa con `AbortController`, ignora `CanceledError`.
+  - `useEffect` cleanup: cancela debounce al desmontar.
+  - Se preservaron auto-search por `?cedula=` y botón "Buscar" manual.
+- **Resultado:** TypeScript 0 errores. 40/40 tests. Reviewer aprobó. F2-04 marcada `done`.
+
+## Sesión: 2026-07-09 (F2-05)
+- **Estado Inicial:** F2-05 (Skeleton Components para Tablas) como segunda tarea P2 del Bloque A.
+- **Acciones Realizadas:**
+  - Componente `TableSkeleton.tsx` creado con `kinetic-glass` + `animate-pulse`.
+  - Members, Staff y Admin reemplazaron spinners por skeletons contextuales (KPI cards en admin).
+- **Resultado:** TypeScript 0 errores. Reviewer aprobó. F2-05 marcada `done`. Próxima: F2-06.

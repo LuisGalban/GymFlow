@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import DashboardLayout from "@/app/components/DashboardLayout";
 import { useAuth } from "@/app/context/AuthContext";
@@ -63,6 +63,8 @@ export default function ReceptionPage() {
   const [checkinDone, setCheckinDone] = useState(false);
   const [error, setError] = useState("");
   const searchParams = useSearchParams();
+  const debounceRef = useRef<any>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     const cedulaParam = searchParams.get("cedula");
@@ -70,12 +72,22 @@ export default function ReceptionPage() {
       setCedula(cedulaParam);
       buscar(cedulaParam);
     }
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function buscar(cedulaInput?: string) {
     const busqueda = cedulaInput || cedula.trim();
     if (!busqueda) return;
+
+    if (abortRef.current) {
+      abortRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     setLoading(true);
     setMiembro(null);
     setError("");
@@ -83,6 +95,7 @@ export default function ReceptionPage() {
     try {
       const res = await api.get(`/api/v1/members/search/${busqueda}`, {
         headers: { Authorization: `Bearer ${token}` },
+        signal: controller.signal,
       });
       setMiembro(res.data);
       try {
@@ -92,6 +105,7 @@ export default function ReceptionPage() {
         await cacheMembers(allRes.data as MemberCacheEntry[]);
       } catch { /* silencioso */ }
     } catch (err: unknown) {
+      if ((err as any)?.name === "CanceledError" || (err as any)?.code === "ERR_CANCELED") return;
       const e = err as { response?: { status?: number } };
       if (!e?.response) {
         const cached = await searchMemberOffline(busqueda);
@@ -178,7 +192,18 @@ export default function ReceptionPage() {
               id="reception-search"
               type="text"
               value={cedula}
-              onChange={(e) => setCedula(e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value;
+                setCedula(val);
+                setMiembro(null);
+                setError("");
+                setCheckinDone(false);
+                if (debounceRef.current) clearTimeout(debounceRef.current);
+                if (!val.trim()) return;
+                debounceRef.current = setTimeout(() => {
+                  buscar(val.trim());
+                }, 300);
+              }}
               placeholder="Buscar por Cédula (ej. V-25111222)"
               className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-lg text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-400/50 focus:bg-indigo-500/5 transition-all duration-200"
             />

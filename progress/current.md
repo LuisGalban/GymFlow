@@ -9,13 +9,19 @@
 - **Backend:** FastAPI en `localhost:8000` ✅
 - **MVP Completado:** F-01 a F-24 — 28 tests, todos verdes ✅
 
+## 🧪 Auditoría Técnica — Panel Admin Bloque B (Completado)
+- **Analista:** Revisión exhaustiva de F2-01, F2-02, F2-03.
+- **Hallazgos críticos (P0-P1):** 0 — Sin violaciones de reglas de negocio, sin fallas de seguridad.
+- **Hallazgos secundarios (P2-P3):** 4 — Movidos a `docs/backlog.md` (sección Icebox).
+- **Veredicto:** Panel Admin sólido para cierre de fase. `docs/backlog.md` actualizado.
+
 ## 🎯 Objetivos de la Fase
 
 ### Bloque A: Pulido Profesional (UX)
 | ID | Tarea | Prioridad |
 |----|-------|-----------|
-| F2-04 | Debounce en Búsqueda de Recepción (300ms) | P2 |
-| F2-05 | Skeleton Components para Tablas | P2 |
+| F2-04 | Debounce en Búsqueda de Recepción (300ms) | ✅ |
+| F2-05 | Skeleton Components para Tablas | ✅ |
 | F2-06 | Sidebar Responsive con Menú Hamburguesa | P2 |
 
 ### Bloque B: Analytics del Panel Admin
@@ -62,6 +68,21 @@ Navegaba a `/dashboard/reception?cedula=X` y no ejecutaba la búsqueda automáti
 3. **`reception/page.tsx:76`**: `buscar()` refactorizada a `buscar(cedulaInput?: string)` para funcionar sin evento de form.
 4. Se preservó guard `if (!token) return;` del hotfix anterior.
 - **TypeScript:** 0 errores. **Reviewer:** Aprobó.
+
+## ✅ Completada — F2-05 (Skeleton Components para Tablas)
+
+### Resumen de cambios
+- **Componente creado** (`frontend/src/app/components/TableSkeleton.tsx`): Reusable con `kinetic-glass`, `animate-pulse` y columnas de ancho variable cíclico (30/25/20/15/10%).
+- **Members list** (`members/list/page.tsx`): Spinner `Loader2` → `<TableSkeleton rows={6} columns={6} />`.
+- **Staff list** (`staff/list/page.tsx`): Spinner `Loader2` → `<TableSkeleton rows={6} columns={6} />`.
+- **Admin dashboard** (`dashboard/admin/page.tsx`): Loading principal → 3 KPI skeleton cards + `<TableSkeleton rows={5} columns={4} />`. Modal → barras skeleton de anchos progresivos.
+- **Tests:** TypeScript sin errores. Sin regresión en estados de error/vacío.
+
+## ✅ Completada — F2-04 (Debounce en Búsqueda de Recepción)
+
+### Resumen de cambios
+- **Frontend** (`frontend/src/app/dashboard/reception/page.tsx`): Agregados `debounceRef` y `abortRef` con `useRef`. `onChange` resetea resultados y programa búsqueda con `setTimeout(300ms)`. `buscar()` cancela petición previa con `AbortController` e ignora `CanceledError`. Cleanup de efecto cancela debounce al desmontar. Se preservaron auto-search por `?cedula=` y botón "Buscar" manual.
+- **Tests:** 0 regresiones — TypeScript sin errores.
 
 ## ✅ Hotfix 1 — F2-03 (Redirect Loop al hacer clic en alerta vencida)
 
