@@ -2,7 +2,7 @@ import enum
 from datetime import datetime
 # pyrefly: ignore [missing-import]
 from sqlalchemy import (
-    Column, Integer, String, Boolean, Numeric, Date, DateTime, ForeignKey, Index, BigInteger, text
+    Column, Integer, String, Boolean, Numeric, Date, DateTime, ForeignKey, Index, BigInteger, text, CheckConstraint
 )
 # pyrefly: ignore [missing-import]
 from sqlalchemy.orm import relationship
@@ -62,6 +62,9 @@ class Miembro(Base):
 
 class Plan(Base):
     __tablename__ = "planes"
+    __table_args__ = (
+        CheckConstraint('precio_usd >= 0', name='ck_plan_precio_usd_no_negativo'),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     nombre = Column(String(50), nullable=False)
@@ -91,6 +94,10 @@ class MembresiaMiembro(Base):
 
 class Pago(Base):
     __tablename__ = "pagos"
+    __table_args__ = (
+        CheckConstraint('monto_original > 0', name='ck_pago_monto_original_positivo'),
+        CheckConstraint('tasa_cambio > 0', name='ck_pago_tasa_cambio_positivo'),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     membresia_miembro_id = Column(Integer, ForeignKey("membresias_miembros.id", ondelete="RESTRICT"), nullable=False)

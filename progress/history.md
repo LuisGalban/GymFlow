@@ -87,3 +87,75 @@
     - Tests existentes (9/9) todos verdes post-migración.
   - **Revisor aprobó** tras corrección de migración vacía y adición de `.gitignore`.
 - **Resultado:** F-18 completada y marcada `done`. Próxima tarea: F-19 (Backups Automatizados).
+
+## Sesión: 2026-07-08 (Segunda Ronda)
+- **Estado Inicial:** F-19 (Backups Automatizados) como tarea P0 pendiente.
+- **Acciones Realizadas:**
+  - **F-19 (Backups Automatizados de PostgreSQL):**
+    - `backup.ps1` creado: ejecuta `pg_dump`, genera archivo con timestamp (`gymflow_db_YYYYMMDD_HHMMSS.sql.zip`), comprime con `Compress-Archive`.
+    - `schedule_backup.ps1` creado: registra tarea diaria a las 3:00 AM en Windows Task Scheduler.
+    - `backup.ps1` y `schedule_backup.ps1` agregados a `.gitignore` por seguridad.
+    - Backup verificado: `backups/gymflow_db_20260708_225427.sql.zip` (2327 bytes, datos recuperables).
+    - 9/9 tests existentes pasan.
+- **Resultado:** F-19 completada y marcada `done`. Próxima tarea: F-20 (HttpOnly Cookies + Interceptor 401).
+
+## Sesión: 2026-07-09
+- **Estado Inicial:** F-20 (HttpOnly Cookies + Interceptor 401 + Seguridad de Backups) como tarea P0 pendiente.
+- **Acciones Realizadas:**
+  - **F-20 (Seguridad de Sesión — HttpOnly Cookies + Interceptor 401 + Seguridad de Backups):**
+    - Backend: Cookie HttpOnly `gymflow_token` en respuesta de `/api/v1/auth/login` con `httponly=True, samesite="lax"`.
+    - Backend: Nuevo endpoint `GET /api/v1/auth/session` para restaurar sesión desde cookie.
+    - Backend: Helper `obtener_usuario_por_token(token, db)` extraído.
+    - Backend: CORS ajustado a `allow_origins=["http://localhost:3000"]` con `allow_credentials=True`.
+    - Frontend: `AuthContext.tsx` migrado de `localStorage` a cookies HttpOnly; reemplazo de `useRouter` por `window.location.href` para evitar bugs de Turbopack.
+    - Frontend: Interceptor global Axios 401 → redirect `/login`.
+    - Frontend: `withCredentials: true` global en Axios.
+    - Frontend: Función `restoreSession()` que consulta `GET /api/v1/auth/session`.
+    - Seguridad: Scripts `backup.ps1` y `schedule_backup.ps1` + carpeta `backups/` agregados a `.gitignore`.
+- **Resultado:** F-20 completada y marcada `done` en `feature_list.json`. Próxima tarea: F-21 (Logging Configurado para Producción).
+
+## Sesión: 2026-07-09 (Hotfix F-20)
+- **Estado Inicial:** F-20 marcada `done` pero reportado bucle infinito de refresco post-implementación.
+- **Bug:** El interceptor 401 de Axios redirigía con `window.location.href = "/login"`, lo que forzaba reload completo del layout → AuthProvider se remontaba → `restoreSession()` → 401 → redirect → loop infinito.
+- **Acciones Realizadas (Hotfix):**
+  - AuthContext.tsx: Flag `isRestoring` para excluir `restoreSession()` del interceptor 401.
+  - AuthContext.tsx: `restoreSession()` usa `validateStatus: s => s < 500` para que Axios no rechace en 401.
+  - AuthContext.tsx: `login()` usa `router.push` (evita reload completo); `window.location.href` solo en `logout()`.
+  - AuthContext.tsx: `useRouter` re-importado para redirects internos.
+  - Test: `backend/test_f20_session.py` creado con 5 tests (cookie, session restore, 401 sin cookie, flujo sin loop).
+- **Resultado:** 14/14 tests verdes (9 existentes + 5 nuevos), TypeScript 0 errores. Reviewer aprobó (no viola business_rules.md). F-20 estabilizada.
+
+## Sesión: 2026-07-09 (F-21)
+- **Estado Inicial:** F-21 (Logging Configurado para Producción) como tarea P1 pendiente.
+- **Acciones Realizadas:**
+  - Backend: logging configurado con `TimedRotatingFileHandler` en `main.py` — archivo `backend/logs/gymflow.log`, rotación `midnight`, `backupCount=7`, nivel INFO.
+  - Backend: Exception handler global con `logger.error()` para errores 500 no controlados.
+  - Backend: `logger.info()` en login exitoso, `logger.warning()` en login fallido (con IP).
+  - Backend: `logger.info()` en registro de pagos (id, monto_usd, membresía, usuario).
+  - Backend: `logger.info()` en cron diario (cantidad de membresías bloqueadas).
+  - Test: `backend/test_logging.py` creado con 6 tests (handler, archivo, escritura info/error, formato, nivel).
+- **Resultado:** 20/20 tests verdes (14 existentes + 6 nuevos). No se violaron reglas de negocio. Reviewer aprobó. F-21 marcada `done`.
+
+## Sesión: 2026-07-09 (F-22)
+- **Estado Inicial:** F-22 (CHECK Constraints en Modelos SQLAlchemy) como tarea P1 pendiente.
+- **Acciones Realizadas:**
+  - `models.py`: `CheckConstraint` importado; `Plan.precio_usd >= 0`, `Pago.monto_original > 0`, `Pago.tasa_cambio > 0` agregados via `__table_args__`.
+  - Migración Alembic manual creada (autogenerate no detecta CHECK) con `op.create_check_constraint`.
+  - Test: `test_check_constraints.py` con 3 tests (precio negativo, monto cero, tasa negativa — todos capturan `IntegrityError`).
+- **Resultado:** 23/23 tests verdes (20 existentes + 3 nuevos). Reviewer aprobó. F-22 marcada `done`.
+
+## Sesión: 2026-07-09 (F-23)
+- **Estado Inicial:** F-23 (Health Check Endpoint) como tarea P1 pendiente.
+- **Acciones Realizadas:**
+  - `main.py`: Endpoint `GET /api/v1/health` público que verifica BD con `SELECT 1` y retorna `status`, `database`, `timestamp`.
+  - Test: `test_health.py` con 5 tests (200, status ok, database connected, timestamp, sin auth).
+- **Resultado:** 28/28 tests verdes (23 existentes + 5 nuevos). Reviewer aprobó. F-23 marcada `done`.
+
+## Sesión: 2026-07-09 (F-24 — Final)
+- **Estado Inicial:** F-24 (Script de Restart Rápido) como última tarea P1 pendiente.
+- **Acciones Realizadas:**
+  - `restart.ps1` creado en la raíz: 4 pasos (git pull, limpiar `__pycache__`, reiniciar uvicorn, rebuild + start Next.js).
+  - Soporta `-DryRun` para validación sin efectos.
+  - Mata procesos por puerto (netstat) en vez de `$_.CommandLine` (compatible PS 5.1).
+  - Inicia servidores con `Start-Process -WindowStyle Hidden` para que sobrevivan al cierre de terminal.
+- **Resultado:** Sprint de preparación para producción completado. Las 5 tareas (F-20 a F-24) implementadas y validadas. feature_list.json al 100% `done`.

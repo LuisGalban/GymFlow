@@ -1,11 +1,33 @@
 import os
 from datetime import datetime, date, timedelta
 from decimal import Decimal
+import logging
+from logging.handlers import TimedRotatingFileHandler
 from typing import List, Optional
-from fastapi import FastAPI, Depends, HTTPException, status, Query
+from fastapi import FastAPI, Depends, HTTPException, status, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import func, text
+
+LOG_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "logs")
+os.makedirs(LOG_DIR, exist_ok=True)
+LOG_FILE = os.path.join(LOG_DIR, "gymflow.log")
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[
+        TimedRotatingFileHandler(
+            filename=LOG_FILE,
+            when="midnight",
+            backupCount=7,
+            encoding="utf-8"
+        ),
+        logging.StreamHandler()
+    ],
+    force=True
+)
+logger = logging.getLogger(__name__)
 
 from app.database import engine, Base, get_db
 from app.models import Usuario, Miembro, Plan, MembresiaMiembro, Pago, Asistencia, UserRole, PaymentCurrency, PaymentMethod, MembershipStatus
@@ -16,7 +38,8 @@ from app.schemas import (
 )
 from app.auth.auth import (
     obtener_password_hash, verificar_password, crear_token_acceso,
-    obtener_usuario_actual, requerir_admin, requerir_trabajador
+    obtener_usuario_actual, requerir_admin, requerir_trabajador,
+    ACCESS_TOKEN_EXPIRE_MINUTES, obtener_usuario_por_token
 )
 
 app = FastAPI(
@@ -28,11 +51,21 @@ app = FastAPI(
 # Configuración de CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # En producción, especificar el dominio del frontend
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# --- Manejador global de errores no controlados (500) ---
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error("Error no controlado en %s %s: %s", request.method, request.url.path, str(exc), exc_info=True)
+    return Response(
+        status_code=500,
+        content='{"detail":"Error interno del servidor"}',
+        media_type="application/json"
+    )
 
 # --- Helper para calcular estados dinámicos del Semáforo ---
 def calcular_estado_miembro(membresia: Optional[MembresiaMiembro]) -> tuple[str, Optional[int]]:
@@ -63,22 +96,55 @@ def calcular_estado_miembro(membresia: Optional[MembresiaMiembro]) -> tuple[str,
 def read_root():
     return {"status": "ok", "app": "GymFlow Analytics API", "version": "1.0.0"}
 
+# --- HEALTH CHECK (público, sin autenticación) ---
+@app.get("/api/v1/health")
+def health_check(db: Session = Depends(get_db)):
+    try:
+        db.execute(text("SELECT 1"))
+        db_status = "connected"
+    except Exception:
+        db_status = "disconnected"
+    return {
+        "status": "ok",
+        "database": db_status,
+        "timestamp": datetime.utcnow().isoformat()
+    }
+
 # --- ENDPOINTS DE AUTENTICACIÓN ---
 @app.post("/api/v1/auth/login", response_model=Token)
-def login(payload: LoginRequest, db: Session = Depends(get_db)):
+def login(payload: LoginRequest, response: Response, request: Request, db: Session = Depends(get_db)):
     usuario = db.query(Usuario).filter(Usuario.correo == payload.correo, Usuario.estado_logico == True).first()
     if not usuario or not verificar_password(payload.password, usuario.password_hash):
+        logger.warning("Intento de login fallido para correo=%s desde IP=%s", payload.correo, request.client.host if request.client else "unknown")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Correo o contraseña incorrectos",
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token = crear_token_acceso(data={"sub": usuario.correo, "rol": usuario.rol})
+    response.set_cookie(
+        key="gymflow_token",
+        value=access_token,
+        httponly=True,
+        secure=False,
+        samesite="lax",
+        path="/",
+        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+    )
+    logger.info("Login exitoso usuario=%s rol=%s", usuario.correo, usuario.rol)
     return {"access_token": access_token, "token_type": "bearer"}
 
 @app.get("/api/v1/auth/me", response_model=UserResponse)
 def get_me(usuario_actual: Usuario = Depends(obtener_usuario_actual)):
     return usuario_actual
+
+@app.get("/api/v1/auth/session")
+def get_session(request: Request, db: Session = Depends(get_db)):
+    token = request.cookies.get("gymflow_token")
+    if not token:
+        raise HTTPException(status_code=401, detail="No autenticado")
+    usuario = obtener_usuario_por_token(token, db)
+    return {"user": UserResponse.model_validate(usuario).model_dump(), "access_token": token}
 
 # --- ENDPOINTS DE USUARIOS (Solo Admin) ---
 @app.post("/api/v1/users/register", response_model=UserResponse, dependencies=[Depends(requerir_admin)])
@@ -368,6 +434,7 @@ def register_payment(payload: PagoCreate, db: Session = Depends(get_db), usuario
     db.add(nuevo_pago)
     db.commit()
     db.refresh(nuevo_pago)
+    logger.info("Pago registrado id=%s monto_usd=%s membresia=%s por_usuario=%s", nuevo_pago.id, nuevo_pago.monto_usd, nuevo_pago.membresia_miembro_id, usuario_actual.id)
     return nuevo_pago
 
 @app.post("/api/v1/payments/by-cedula", response_model=PagoResponse, dependencies=[Depends(requerir_trabajador)])
@@ -443,6 +510,7 @@ def register_payment_by_cedula(payload: PagoCedulaCreate, db: Session = Depends(
     db.add(nuevo_pago)
     db.commit()
     db.refresh(nuevo_pago)
+    logger.info("Pago por cédula registrado id=%s monto_usd=%s cedula=%s por_usuario=%s", nuevo_pago.id, nuevo_pago.monto_usd, payload.cedula, usuario_actual.id)
     return nuevo_pago
 
 # --- ENDPOINTS DE MEMBRESÍAS ---
@@ -542,6 +610,7 @@ def daily_cron_update_statuses(db: Session = Depends(get_db)):
     result = db.execute(query, {"limite_gracia": limite_gracia})
     db.commit()
     
+    logger.info("Cron ejecutado: %d membresías bloqueadas al día 6", result.rowcount)
     return {
         "message": "Cron Job ejecutado con éxito a las 00:00:00 simuladas",
         "membresias_bloqueadas_al_dia_6": result.rowcount

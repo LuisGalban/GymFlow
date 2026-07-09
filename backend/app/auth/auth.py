@@ -87,3 +87,20 @@ def requerir_trabajador(usuario_actual: Usuario = Depends(obtener_usuario_actual
             detail="Acceso denegado: Rol no autorizado"
         )
     return usuario_actual
+
+def obtener_usuario_por_token(token: str, db: Session) -> Usuario:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="No se pudieron validar las credenciales de acceso",
+    )
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        correo: str = payload.get("sub")
+        if correo is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    usuario = db.query(Usuario).filter(Usuario.correo == correo, Usuario.estado_logico == True).first()
+    if usuario is None:
+        raise credentials_exception
+    return usuario

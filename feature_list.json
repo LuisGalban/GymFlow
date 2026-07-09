@@ -220,19 +220,22 @@
         "Programación en Windows Task Scheduler (o crontab en Linux) para ejecución diaria automática.",
         "Verificación manual: ejecutar el script y confirmar que el archivo de respaldo contiene datos recuperables."
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "F-20",
-      "name": "Seguridad de Sesión — HttpOnly Cookies + Interceptor 401",
-      "description": "P0 — Migrar el almacenamiento del JWT de `localStorage` a cookies HttpOnly para mitigar vulnerabilidad XSS, y agregar un interceptor Axios que redirija automáticamente a `/login` ante errores 401.",
+      "name": "Seguridad de Sesión — HttpOnly Cookies + Interceptor 401 + Seguridad de Backups",
+      "description": "P0 — Migrar el almacenamiento del JWT de `localStorage` a cookies HttpOnly para mitigar vulnerabilidad XSS, agregar un interceptor Axios que redirija automáticamente a `/login` ante errores 401, y corregir vulnerabilidades de seguridad detectadas en F-19 (Backups).",
       "criteria_to_accept": [
         "El backend incluye una cookie HttpOnly con el JWT en la respuesta de login (adicional al body actual).",
         "El frontend lee el token desde la cookie (no desde localStorage) para las peticiones autenticadas.",
         "Interceptor global de Axios (o Fetch wrapper) que capture respuestas 401 y redirija al usuario a `/login`.",
-        "La sesión persiste correctamente al recargar la página sin depender de localStorage."
+        "La sesión persiste correctamente al recargar la página sin depender de localStorage.",
+        "[F-19 Fix] Migrar credenciales de BD de texto plano en `backup.ps1` a `pgpass.conf` o variable de entorno del sistema (`$env:GYMFLOW_DB_PASSWORD`), eliminando `$DB_PASS` hardcodeado.",
+        "[F-19 Fix] Agregar validación de integridad post-backup en `backup.ps1`: verificar que el `.sql` contenga `CREATE TABLE` o `COPY` antes de comprimir, y confirmar que el `.zip` final tenga tamaño > 100 bytes, reportando error en caso contrario.",
+        "[F-19 Fix] Verificar que la tarea programada en `schedule_backup.ps1` tenga visibilidad del PATH de `pg_dump` al ejecutarse como SYSTEM (o especificar la ruta absoluta en el script)."
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "F-21",
@@ -243,7 +246,7 @@
         "Archivo de log en `backend/logs/` con rotación diaria y respaldo de últimos 7 días.",
         "Endpoints críticos (login, pagos, cron) registran eventos con `logger.info()` y errores con `logger.error()`."
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "F-22",
@@ -254,7 +257,7 @@
         "Migración Alembic generada que aplique las nuevas constraints a la base de datos sin requerir drop.",
         "Prueba que intente insertar un registro con precio negativo y verifique que la BD lo rechaza."
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "F-23",
@@ -265,7 +268,7 @@
         "El endpoint verifique conexión activa a PostgreSQL mediante `db.execute(\"SELECT 1\")`.",
         "No requiera autenticación (público para monitoreo externo)."
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "F-24",
@@ -276,7 +279,7 @@
         "Ejecute secuencialmente: `git pull`, limpieza de `__pycache__` en backend, reinicio del proceso uvicorn, rebuild y restart de Next.js.",
         "Ejecutable con un solo clic desde Windows Explorer o PowerShell."
       ],
-      "status": "pending"
+      "status": "done"
     }
   ]
 }
