@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import DashboardLayout from "@/app/components/DashboardLayout";
 import { useAuth } from "@/app/context/AuthContext";
 import { api } from "@/app/context/AuthContext";
@@ -61,20 +62,29 @@ export default function ReceptionPage() {
   const [checkinLoading, setCheckinLoading] = useState(false);
   const [checkinDone, setCheckinDone] = useState(false);
   const [error, setError] = useState("");
+  const searchParams = useSearchParams();
 
-  async function buscar(e: React.FormEvent) {
-    e.preventDefault();
-    if (!cedula.trim()) return;
+  useEffect(() => {
+    const cedulaParam = searchParams.get("cedula");
+    if (cedulaParam) {
+      setCedula(cedulaParam);
+      buscar(cedulaParam);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function buscar(cedulaInput?: string) {
+    const busqueda = cedulaInput || cedula.trim();
+    if (!busqueda) return;
     setLoading(true);
     setMiembro(null);
     setError("");
     setCheckinDone(false);
     try {
-      const res = await api.get(`/api/v1/members/search/${cedula.trim()}`, {
+      const res = await api.get(`/api/v1/members/search/${busqueda}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMiembro(res.data);
-      // Cachear miembros activos para búsqueda offline futura
       try {
         const allRes = await api.get(`/api/v1/members`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -84,7 +94,7 @@ export default function ReceptionPage() {
     } catch (err: unknown) {
       const e = err as { response?: { status?: number } };
       if (!e?.response) {
-        const cached = await searchMemberOffline(cedula.trim());
+        const cached = await searchMemberOffline(busqueda);
         if (cached) {
           setMiembro({
             id: cached.id,
@@ -135,6 +145,7 @@ export default function ReceptionPage() {
   // Sincronizar check‑ins pendientes al volver a estar online
   useEffect(() => {
     async function syncPending() {
+      if (!token) return;
       if (!navigator.onLine) return;
       const pending = await getAllPendingCheckins();
       if (pending.length === 0) return;
@@ -160,7 +171,7 @@ export default function ReceptionPage() {
       <div className="max-w-2xl mx-auto flex flex-col gap-6">
 
         {/* Barra de búsqueda grande */}
-        <form onSubmit={buscar} className="flex gap-3">
+        <form onSubmit={(e) => { e.preventDefault(); buscar(); }} className="flex gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
             <input

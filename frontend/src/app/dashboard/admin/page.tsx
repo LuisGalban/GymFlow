@@ -4,12 +4,21 @@ import { useEffect, useState } from "react"
 import { api, useAuth } from "@/app/context/AuthContext"
 import { useRouter } from "next/navigation"
 import DashboardLayout from "@/app/components/DashboardLayout"
-import { Loader2, AlertCircle, BarChart3, TrendingUp, CreditCard, Users } from "lucide-react"
+import Link from "next/link"
+import { Loader2, AlertCircle, BarChart3, TrendingUp, CreditCard, Users, X } from "lucide-react"
 
 interface KpiData {
   ingresos_netos_usd: number
   atletas_activos: number
   alertas_vencidos: number
+}
+
+interface Vencido {
+  id: number
+  cedula: string
+  nombre: string
+  dias_vencido: number
+  telefono?: string
 }
 
 interface Pago {
@@ -19,16 +28,36 @@ interface Pago {
   referencia?: string
 }
 
+interface PagoDetalle {
+  id: number
+  membresia_miembro_id: number
+  registrado_por: number
+  monto_original: number
+  moneda: string
+  tasa_cambio: number
+  monto_usd: number
+  metodo_pago: string
+  referencia?: string
+  fecha_pago: string
+  miembro_nombre: string
+  miembro_cedula: string
+  plan_nombre: string
+  registrador_nombre: string
+}
+
 export default function AdminDashboardPage() {
   const { token, user, isLoading: authLoading } = useAuth()
   const router = useRouter()
   const [kpis, setKpis] = useState<KpiData | null>(null)
   const [pagos, setPagos] = useState<Pago[]>([])
+  const [vencidos, setVencidos] = useState<Vencido[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [filtroRango, setFiltroRango] = useState("")
   const [filtroDesde, setFiltroDesde] = useState("")
   const [filtroHasta, setFiltroHasta] = useState("")
+  const [selectedPayment, setSelectedPayment] = useState<PagoDetalle | null>(null)
+  const [loadingDetail, setLoadingDetail] = useState(false)
 
   // Protección de ruta RBAC: Solo Administradores
   useEffect(() => {
@@ -54,12 +83,14 @@ export default function AdminDashboardPage() {
           params,
           headers: { Authorization: `Bearer ${token}` }
         }
-        const [kpiRes, cashRes] = await Promise.all([
+        const [kpiRes, cashRes, vencidosRes] = await Promise.all([
           api.get("/api/v1/admin/kpis", config),
           api.get("/api/v1/admin/cashflow", config),
+          api.get("/api/v1/admin/vencidos", config),
         ])
         setKpis(kpiRes.data)
         setPagos(cashRes.data.pagos)
+        setVencidos(vencidosRes.data)
       } catch (err: any) {
         setError(err?.response?.data?.detail || "Error al cargar datos admin")
       } finally {
@@ -152,10 +183,30 @@ export default function AdminDashboardPage() {
                   <p className="text-sm text-white/60">Atletas Activos</p>
                   <p className="text-xl font-bold text-white">{kpis.atletas_activos}</p>
                 </div>
-                <div className="kinetic-glass p-5 rounded-xl flex flex-col items-center text-center">
-                  <AlertCircle className="w-6 h-6 text-rose-400 mb-2" />
-                  <p className="text-sm text-white/60">Alertas Vencidas</p>
-                  <p className="text-xl font-bold text-white">{kpis.alertas_vencidos}</p>
+                <div className="kinetic-glass p-5 rounded-xl flex flex-col">
+                  <div className="flex items-center gap-2 mb-3">
+                    <AlertCircle className="w-5 h-5 text-rose-400" />
+                    <p className="text-sm text-white/60">Alertas Vencidas ({vencidos.length})</p>
+                  </div>
+                  {vencidos.length === 0 ? (
+                    <p className="text-sm text-green-400">No hay miembros vencidos</p>
+                  ) : (
+                    <div className="max-h-48 overflow-y-auto space-y-1.5">
+                      {vencidos.map((v) => (
+                        <Link
+                          key={v.id}
+                          href={`/dashboard/reception?cedula=${v.cedula}`}
+                          className="flex items-center justify-between px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-sm group"
+                        >
+                          <div className="min-w-0">
+                            <p className="text-white font-medium truncate">{v.nombre}</p>
+                            <p className="text-white/40 text-xs">{v.cedula}</p>
+                          </div>
+                          <span className="text-rose-400 font-semibold whitespace-nowrap ml-2">{v.dias_vencido} días vencido</span>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )
@@ -176,7 +227,21 @@ export default function AdminDashboardPage() {
               </thead>
               <tbody>
                 {pagos.map((p) => (
-                  <tr key={p.id} className="border-b border-white/4 hover:bg-white/2 transition-all duration-200">
+                  <tr key={p.id}
+                    onClick={async () => {
+                      setLoadingDetail(true)
+                      try {
+                        const config = { headers: { Authorization: `Bearer ${token}` } }
+                        const res = await api.get(`/api/v1/admin/payments/${p.id}`, config)
+                        setSelectedPayment(res.data)
+                      } catch {
+                        setError("Error al cargar detalle del pago")
+                      } finally {
+                        setLoadingDetail(false)
+                      }
+                    }}
+                    className="border-b border-white/4 hover:bg-white/2 transition-all duration-200 cursor-pointer"
+                  >
                     <td className="px-4 py-2 text-white/70">{p.id}</td>
                     <td className="px-4 py-2 text-white">${Number(p.monto_usd).toFixed(2)}</td>
                     <td className="px-4 py-2 text-white/50">{new Date(p.fecha_pago).toLocaleString()}</td>
@@ -188,6 +253,79 @@ export default function AdminDashboardPage() {
           </div>
         )}
       </div>
+
+      {/* Payment Detail Modal */}
+      {(selectedPayment || loadingDetail) && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          onClick={() => setSelectedPayment(null)}
+        >
+          <div
+            className="kinetic-glass rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl border border-white/10"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-white">Detalle del Pago #{selectedPayment?.id}</h3>
+              <button
+                onClick={() => setSelectedPayment(null)}
+                className="text-white/40 hover:text-white/80 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {loadingDetail ? (
+              <div className="flex justify-center py-8">
+                <Loader2 className="w-6 h-6 text-indigo-400 animate-spin" />
+              </div>
+            ) : selectedPayment && (
+              <div className="space-y-3 text-sm">
+                <div className="border-b border-white/5 pb-2">
+                  <p className="text-white/40 text-xs uppercase tracking-wider mb-1">Atleta</p>
+                  <p className="text-white font-medium">{selectedPayment.miembro_nombre}</p>
+                  <p className="text-white/60">{selectedPayment.miembro_cedula}</p>
+                </div>
+                <div>
+                  <p className="text-white/40 text-xs uppercase tracking-wider mb-1">Plan</p>
+                  <p className="text-white">{selectedPayment.plan_nombre}</p>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <p className="text-white/40 text-xs uppercase tracking-wider mb-1">Monto Original</p>
+                    <p className="text-white">{Number(selectedPayment.monto_original).toFixed(2)} {selectedPayment.moneda}</p>
+                  </div>
+                  <div>
+                    <p className="text-white/40 text-xs uppercase tracking-wider mb-1">Tasa Cambio</p>
+                    <p className="text-white">{Number(selectedPayment.tasa_cambio).toFixed(4)}</p>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-white/40 text-xs uppercase tracking-wider mb-1">Monto USD</p>
+                  <p className="text-green-400 font-semibold">${Number(selectedPayment.monto_usd).toFixed(2)}</p>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <p className="text-white/40 text-xs uppercase tracking-wider mb-1">Método de Pago</p>
+                    <p className="text-white capitalize">{selectedPayment.metodo_pago.replace(/_/g, " ")}</p>
+                  </div>
+                  <div>
+                    <p className="text-white/40 text-xs uppercase tracking-wider mb-1">Referencia</p>
+                    <p className="text-white/70">{selectedPayment.referencia ?? "-"}</p>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-white/40 text-xs uppercase tracking-wider mb-1">Fecha</p>
+                  <p className="text-white/70">{new Date(selectedPayment.fecha_pago).toLocaleString()}</p>
+                </div>
+                <div className="border-t border-white/5 pt-2">
+                  <p className="text-white/40 text-xs uppercase tracking-wider mb-1">Registrado por</p>
+                  <p className="text-white">{selectedPayment.registrador_nombre}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   )
 }

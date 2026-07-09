@@ -305,7 +305,7 @@
         "Backend expone `GET /api/v1/admin/payments/{id}` con joins a miembros y usuarios (sin filtrar por estado_logico para permitir auditoría).",
         "Prueba automática que verifique apertura del modal con datos correctos."
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "F2-03",
@@ -317,7 +317,7 @@
         "Cada entrada de la lista debe ser cliqueable para llevar a la ficha del miembro en recepción.",
         "Prueba automática que verifique que la lista contiene los miembros correctos."
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "F2-04",

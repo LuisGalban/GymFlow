@@ -159,6 +159,13 @@ class PagoResponse(BaseModel):
     fecha_pago: datetime
 
 
+class PagoDetalleResponse(PagoResponse):
+    miembro_nombre: str
+    miembro_cedula: str
+    plan_nombre: str
+    registrador_nombre: str
+
+
 # --- ESQUEMAS DE ASISTENCIAS ---
 class AsistenciaCreate(BaseModel):
     miembro_id: int

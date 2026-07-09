@@ -181,3 +181,37 @@
   - Frontend: Selectores de filtro (Hoy/Semana/Mes/Año/Personalizado + datepickers) en `admin/page.tsx`.
   - Tests: 7 nuevos en `test_admin_fix.py` cubriendo todos los rangos.
 - **Resultado:** 35/35 tests verdes. TypeScript 0 errores. Reviewer aprobó. F2-01 marcada `done`.
+
+## Sesión: 2026-07-09 (F2-02)
+- **Estado Inicial:** F2-02 (Detalle Transaccional — Modal Interactivo) como tarea P1 pendiente.
+- **Acciones Realizadas:**
+  - Backend: Schema `PagoDetalleResponse` con `miembro_nombre`, `miembro_cedula`, `plan_nombre`, `registrador_nombre`.
+  - Backend: Endpoint `GET /api/v1/admin/payments/{id}` con joins a Miembro/Plan/Usuario, manejo de `estado_logico=False` → "[Registro desactivado]".
+  - Frontend: Tabla de ingresos cliqueable con modal de detalle (X o backdrop para cerrar).
+  - Tests: 3 tests (detalle correcto, miembro desactivado, 404).
+- **Resultado:** 38/38 tests verdes. TypeScript 0 errores. Reviewer aprobó. F2-02 marcada `done`.
+
+## Sesión: 2026-07-09 (F2-03)
+- **Estado Inicial:** F2-03 (Transparencia de Alertas — Lista de Vencidos) como última tarea P1 del Bloque B.
+- **Acciones Realizadas:**
+  - Backend: Endpoint `GET /api/v1/admin/vencidos` con filtros `estado_logico=True` y `estatus_pago='vencido'`.
+  - Frontend: Recuadro de alertas convertido de contador a lista cliqueable con scroll.
+  - Tests: 2 tests (formato correcto, exclusión de desactivados).
+- **Resultado:** 40/40 tests verdes. TypeScript 0 errores. Reviewer aprobó. **Bloque B completado.** Próximas: F2-04 a F2-06 (UX Polish).
+
+## Sesión: 2026-07-09 (F2-03 Hotfix)
+- **Estado Inicial:** Bug report — clic en alerta vencida del Admin Panel redirige a `/login`.
+- **Root Cause:** `<a href>` causaba navegación completa → React re-monta → `AuthContext` se reinicia (`token = null`) → `syncPending` useEffect corría sin token → 401 → interceptor redirige a `/login`.
+- **Acciones Realizadas:**
+  - `reception/page.tsx:138`: Guard `if (!token) return;` en `syncPending`.
+  - `admin/page.tsx`: Reemplazo de `<a>` por `<Link>` de `next/link` (navegación cliente-side preserva estado React).
+- **Resultado:** TypeScript 0 errores. Reviewer aprobó. Hotfix 1 cerrado.
+
+## Sesión: 2026-07-09 (F2-03 Hotfix 2)
+- **Estado Inicial:** Bug report — clic en alerta vencida navega a Reception pero no auto-busca la cédula.
+- **Root Cause:** ReceptionPage no leía `useSearchParams()`. Ignoraba el query param `?cedula=...`.
+- **Acciones Realizadas:**
+  - Import `useSearchParams` de `next/navigation`.
+  - Refactor `buscar()` a `buscar(cedulaInput?: string)` para invocación sin evento de form.
+  - `useEffect` al montar que lee `cedula` del query param y dispara búsqueda automática.
+- **Resultado:** TypeScript 0 errores. Reviewer aprobó. Hotfix 2 cerrado.

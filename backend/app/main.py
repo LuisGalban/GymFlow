@@ -34,7 +34,7 @@ from app.models import Usuario, Miembro, Plan, MembresiaMiembro, Pago, Asistenci
 from app.schemas import (
     UserCreate, UserUpdate, UserResponse, LoginRequest, Token,
     MiembroCreate, MiembroResponse, PlanCreate, PlanResponse,
-    MembresiaCreate, MembresiaResponse, PagoCreate, PagoCedulaCreate, PagoResponse, PaymentCurrencyEnum, PaymentMethodEnum, AsistenciaCreate, AsistenciaResponse, KpiSummary, CashFlowReport
+    MembresiaCreate, MembresiaResponse, PagoCreate, PagoCedulaCreate, PagoResponse, PagoDetalleResponse, PaymentCurrencyEnum, PaymentMethodEnum, AsistenciaCreate, AsistenciaResponse, KpiSummary, CashFlowReport
 )
 from app.auth.auth import (
     obtener_password_hash, verificar_password, crear_token_acceso,
@@ -698,3 +698,71 @@ def get_cashflow_report(
         pagos=pagos,
         ingresos_totales_usd=Decimal(ingresos_totales)
     )
+
+
+@app.get("/api/v1/admin/payments/{id}", response_model=PagoDetalleResponse, dependencies=[Depends(requerir_admin)])
+def get_payment_detail(id: int, db: Session = Depends(get_db)):
+    pago = db.query(Pago).filter(Pago.id == id).first()
+    if not pago:
+        raise HTTPException(404, "Pago no encontrado")
+
+    membresia = pago.membresia_miembro
+    miembro = membresia.miembro if membresia else None
+    plan = membresia.plan if membresia else None
+    registrador = pago.registrador
+
+    miembro_nombre = "[Registro desactivado]" if miembro and not miembro.estado_logico else (miembro.nombre if miembro else "[Registro desactivado]")
+    miembro_cedula = "[Registro desactivado]" if miembro and not miembro.estado_logico else (miembro.cedula if miembro else "[Registro desactivado]")
+    plan_nombre = plan.nombre if plan else "Sin plan"
+    registrador_nombre = "[Registro desactivado]" if registrador and not registrador.estado_logico else (registrador.nombre if registrador else "[Registro desactivado]")
+
+    return PagoDetalleResponse(
+        id=pago.id,
+        membresia_miembro_id=pago.membresia_miembro_id,
+        registrado_por=pago.registrado_por,
+        monto_original=pago.monto_original,
+        moneda=pago.moneda,
+        tasa_cambio=pago.tasa_cambio,
+        monto_usd=pago.monto_usd,
+        metodo_pago=pago.metodo_pago,
+        referencia=pago.referencia,
+        observaciones=getattr(pago, 'observaciones', None),
+        fecha_pago=pago.fecha_pago,
+        miembro_nombre=miembro_nombre,
+        miembro_cedula=miembro_cedula,
+        plan_nombre=plan_nombre,
+        registrador_nombre=registrador_nombre,
+    )
+
+@app.get("/api/v1/admin/vencidos", response_model=List[dict], dependencies=[Depends(requerir_admin)])
+def get_miembros_vencidos(db: Session = Depends(get_db)):
+    hoy = date.today()
+    miembros_vencidos = (
+        db.query(Miembro)
+        .join(MembresiaMiembro)
+        .filter(
+            Miembro.estado_logico == True,
+            MembresiaMiembro.estatus_pago == "vencido",
+            MembresiaMiembro.fecha_vencimiento < hoy,
+        )
+        .distinct()
+        .all()
+    )
+    resultado = []
+    for m in miembros_vencidos:
+        mem_vencida = max(
+            [mem for mem in m.membresias if mem.estatus_pago == "vencido"],
+            key=lambda x: x.fecha_vencimiento,
+            default=None
+        )
+        if not mem_vencida:
+            continue
+        dias_vencido = (hoy - mem_vencida.fecha_vencimiento).days
+        resultado.append({
+            "id": m.id,
+            "cedula": m.cedula,
+            "nombre": m.nombre,
+            "dias_vencido": dias_vencido,
+            "telefono": m.telefono,
+        })
+    return resultado

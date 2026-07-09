@@ -76,14 +76,15 @@ class TestAdminPanelFix(unittest.TestCase):
 
     @classmethod
     def clean_up_test_data(cls, session):
-        session.query(Pago).filter(Pago.registrado_por == cls.admin.id if hasattr(cls, 'admin') else -1).delete(synchronize_session=False) if hasattr(cls, 'admin') else None
-        session.query(Pago).filter(Pago.membresia_miembro_id.in_(
-            session.query(MembresiaMiembro.id).join(Miembro).filter(Miembro.cedula == "V-88888888")
-        )).delete(synchronize_session=False)
-        session.query(MembresiaMiembro).filter(MembresiaMiembro.miembro_id.in_(
-            session.query(Miembro.id).filter(Miembro.cedula == "V-88888888")
-        )).delete(synchronize_session=False)
-        session.query(Miembro).filter(Miembro.cedula == "V-88888888").delete(synchronize_session=False)
+        # Clean any orphaned data from test_13 (disabled member)
+        for cedula in ["V-88888888", "V-DISABLED99", "V-VENCIDO01", "V-VENCIDO02"]:
+            session.query(Pago).filter(Pago.membresia_miembro_id.in_(
+                session.query(MembresiaMiembro.id).join(Miembro).filter(Miembro.cedula == cedula)
+            )).delete(synchronize_session=False)
+            session.query(MembresiaMiembro).filter(MembresiaMiembro.miembro_id.in_(
+                session.query(Miembro.id).filter(Miembro.cedula == cedula)
+            )).delete(synchronize_session=False)
+            session.query(Miembro).filter(Miembro.cedula == cedula).delete(synchronize_session=False)
         session.query(Plan).filter(Plan.nombre == "Plan Test").delete(synchronize_session=False)
         session.query(Usuario).filter(Usuario.cedula == "V-99999999").delete(synchronize_session=False)
         session.commit()
@@ -275,6 +276,210 @@ class TestAdminPanelFix(unittest.TestCase):
         resp_delete = client.delete(f"/api/v1/users/{resp_register.json()['id']}", headers=headers)
         self.assertEqual(resp_delete.status_code, 200,
                          f"Delete returned {resp_delete.status_code}: {resp_delete.text[:200]}")
+
+
+    # ---- F2-03: TRANSPARENCIA DE ALERTAS — LISTA DE VENCIDOS ----
+
+    def test_15_vencidos_endpoint_returns_200(self):
+        """F2-03: GET /api/v1/admin/vencidos returns 200"""
+        # Create a vencido member for this test
+        db = TestingSessionLocal()
+        try:
+            vencido_member = Miembro(
+                cedula="V-VENCIDO01", nombre="Vencido Member", telefono="04120000001", estado_logico=True
+            )
+            db.add(vencido_member)
+            db.commit()
+            member_id = vencido_member.id
+
+            memb = MembresiaMiembro(
+                miembro_id=member_id, plan_id=self.plan.id,
+                fecha_inicio=date.today() - timedelta(days=40),
+                fecha_vencimiento=date.today() - timedelta(days=10),
+                estatus_pago="vencido"
+            )
+            db.add(memb)
+            db.commit()
+            memb_id = memb.id
+        finally:
+            db.close()
+
+        client = TestClient(app)
+        resp = client.post("/api/v1/auth/login", json={
+            "correo": "admintestfix@gymflow.com",
+            "password": "test123"
+        })
+        self.assertEqual(resp.status_code, 200)
+        token = resp.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        resp_vencidos = client.get("/api/v1/admin/vencidos", headers=headers)
+        self.assertEqual(resp_vencidos.status_code, 200,
+                         f"Vencidos returned {resp_vencidos.status_code}: {resp_vencidos.text[:200]}")
+        data = resp_vencidos.json()
+        vencido_entry = next((v for v in data if v["cedula"] == "V-VENCIDO01"), None)
+        self.assertIsNotNone(vencido_entry, "Vencido member not found in list")
+        self.assertEqual(vencido_entry["nombre"], "Vencido Member")
+        self.assertEqual(vencido_entry["dias_vencido"], 10)
+        self.assertIn("id", vencido_entry)
+        self.assertIn("cedula", vencido_entry)
+        self.assertIn("telefono", vencido_entry)
+
+        # Clean up
+        db2 = TestingSessionLocal()
+        try:
+            db2.query(MembresiaMiembro).filter(MembresiaMiembro.id == memb_id).delete(synchronize_session=False)
+            db2.query(Miembro).filter(Miembro.id == member_id).delete(synchronize_session=False)
+            db2.commit()
+        finally:
+            db2.close()
+
+    def test_16_vencidos_excludes_logically_deleted_members(self):
+        """F2-03: Members with estado_logico=False are excluded"""
+        db = TestingSessionLocal()
+        try:
+            disabled_member = Miembro(
+                cedula="V-VENCIDO02", nombre="Disabled Vencido", telefono="04120000002", estado_logico=False
+            )
+            db.add(disabled_member)
+            db.commit()
+            member_id = disabled_member.id
+
+            memb = MembresiaMiembro(
+                miembro_id=member_id, plan_id=self.plan.id,
+                fecha_inicio=date.today() - timedelta(days=40),
+                fecha_vencimiento=date.today() - timedelta(days=10),
+                estatus_pago="vencido"
+            )
+            db.add(memb)
+            db.commit()
+            memb_id = memb.id
+        finally:
+            db.close()
+
+        client = TestClient(app)
+        resp = client.post("/api/v1/auth/login", json={
+            "correo": "admintestfix@gymflow.com",
+            "password": "test123"
+        })
+        token = resp.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        resp_vencidos = client.get("/api/v1/admin/vencidos", headers=headers)
+        data = resp_vencidos.json()
+        found = any(v["cedula"] == "V-VENCIDO02" for v in data)
+        self.assertFalse(found, "Disabled member should not appear in vencidos list")
+
+        # Clean up
+        db2 = TestingSessionLocal()
+        try:
+            db2.query(MembresiaMiembro).filter(MembresiaMiembro.id == memb_id).delete(synchronize_session=False)
+            db2.query(Miembro).filter(Miembro.id == member_id).delete(synchronize_session=False)
+            db2.commit()
+        finally:
+            db2.close()
+
+    # ---- F2-02: DETALLE TRANSACCIONAL ----
+
+    def test_12_payment_detail_returns_200_with_correct_data(self):
+        """F2-02: GET /api/v1/admin/payments/{id} returns 200 with full detail"""
+        client = TestClient(app)
+        resp = client.post("/api/v1/auth/login", json={
+            "correo": "admintestfix@gymflow.com",
+            "password": "test123"
+        })
+        token = resp.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        resp_detail = client.get(f"/api/v1/admin/payments/{self.pago.id}", headers=headers)
+        self.assertEqual(resp_detail.status_code, 200,
+                         f"Payment detail returned {resp_detail.status_code}: {resp_detail.text[:200]}")
+        data = resp_detail.json()
+        self.assertEqual(data["id"], self.pago.id)
+        self.assertEqual(data["miembro_nombre"], "Test Member")
+        self.assertEqual(data["miembro_cedula"], "V-88888888")
+        self.assertEqual(data["plan_nombre"], "Plan Test")
+        self.assertEqual(data["registrador_nombre"], "Admin Test")
+        self.assertIn("monto_original", data)
+        self.assertIn("monto_usd", data)
+        self.assertIn("metodo_pago", data)
+        self.assertIn("fecha_pago", data)
+
+    def test_13_payment_detail_with_disabled_member_shows_desactivado(self):
+        """F2-02: Payment where member was soft-deleted shows '[Registro desactivado]'"""
+        # Create a disabled member + payment for this test
+        db = TestingSessionLocal()
+        try:
+            disabled_member = Miembro(
+                cedula="V-DISABLED99", nombre="Disabled Member", telefono="04120000000", estado_logico=False
+            )
+            db.add(disabled_member)
+            db.commit()
+            member_id = disabled_member.id
+
+            memb = MembresiaMiembro(
+                miembro_id=member_id, plan_id=self.plan.id,
+                fecha_inicio=date.today() - timedelta(days=5),
+                fecha_vencimiento=date.today() + timedelta(days=25),
+                estatus_pago="activo"
+            )
+            db.add(memb)
+            db.commit()
+            memb_id = memb.id
+
+            pago_disabled = Pago(
+                membresia_miembro_id=memb_id,
+                registrado_por=self.admin.id,
+                monto_original=Decimal("35.00"),
+                moneda="USD", tasa_cambio=Decimal("1.0000"),
+                monto_usd=Decimal("35.00"),
+                metodo_pago="pago_movil",
+                fecha_pago=datetime.utcnow()
+            )
+            db.add(pago_disabled)
+            db.commit()
+            pago_id = pago_disabled.id
+        finally:
+            db.close()
+
+        client = TestClient(app)
+        resp = client.post("/api/v1/auth/login", json={
+            "correo": "admintestfix@gymflow.com",
+            "password": "test123"
+        })
+        token = resp.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        resp_detail = client.get(f"/api/v1/admin/payments/{pago_id}", headers=headers)
+        self.assertEqual(resp_detail.status_code, 200)
+        data = resp_detail.json()
+        self.assertEqual(data["miembro_nombre"], "[Registro desactivado]")
+        self.assertEqual(data["miembro_cedula"], "[Registro desactivado]")
+        self.assertEqual(data["registrador_nombre"], "Admin Test")
+
+        # Clean up
+        db2 = TestingSessionLocal()
+        try:
+            db2.query(Pago).filter(Pago.id == pago_id).delete(synchronize_session=False)
+            db2.query(MembresiaMiembro).filter(MembresiaMiembro.id == memb_id).delete(synchronize_session=False)
+            db2.query(Miembro).filter(Miembro.id == member_id).delete(synchronize_session=False)
+            db2.commit()
+        finally:
+            db2.close()
+
+    def test_14_payment_detail_404_for_non_existent(self):
+        """F2-02: GET /api/v1/admin/payments/{non_existent_id} returns 404"""
+        client = TestClient(app)
+        resp = client.post("/api/v1/auth/login", json={
+            "correo": "admintestfix@gymflow.com",
+            "password": "test123"
+        })
+        token = resp.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        resp_detail = client.get("/api/v1/admin/payments/999999", headers=headers)
+        self.assertEqual(resp_detail.status_code, 404,
+                         f"Expected 404, got {resp_detail.status_code}: {resp_detail.text[:200]}")
 
 
 if __name__ == "__main__":
