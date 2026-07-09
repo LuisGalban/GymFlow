@@ -169,3 +169,4 @@
 2026-07-09 01:28:52,132 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
 2026-07-09 01:28:52,144 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
 2026-07-09 01:28:52,223 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
+2026-07-09 15:28:59,159 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
