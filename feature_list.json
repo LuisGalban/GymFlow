@@ -209,7 +209,7 @@
         "Script de actualización (`alembic upgrade head`) ejecutable y verificado contra la base de datos sin pérdida de datos.",
         "Documentación en el script o README del comando para crear una nueva migración tras modificar modelos."
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "F-19",

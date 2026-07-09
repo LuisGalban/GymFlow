@@ -24,13 +24,17 @@
 ### Nota Técnica
 Next.js 16.2.9 + Turbopack tiene bugs confirmados de bucle de rendering con AuthContext + useEffect + router.push. Para auditoría usar `pnpm build && pnpm start`. Para desarrollo usar `pnpm dev --webpack`.
 
-## Sprint Siguiente: Preparación para Producción
+## Sprint de Preparación para Producción — F-18 Completado
 
-Luego del análisis técnico completo, se refinó la hoja de ruta priorizando **seguridad y estabilidad** antes del despliegue en producción. Se agregaron 7 nuevas tareas a `feature_list.json`:
+### Correcciones Realizadas (F-18)
+1. **Alembic Migrations configurado** — `alembic/` inicializado, `env.py` conectado a modelos, migración autogenerada aplicada.
+2. **`.gitignore` creado** — protege `alembic.ini` y `.env` de ser trackeados.
+3. **Tests**: todos verdes (9/9).
+
+### Pendientes
 
 | ID | Prioridad | Tarea |
 |----|-----------|-------|
-| F-18 | P0 | Alembic Migrations — Control de versiones de BD |
 | F-19 | P0 | Backups Automatizados (pg_dump) |
 | F-20 | P0 | HttpOnly Cookies + Interceptor 401 |
 | F-21 | P1 | Logging Configurado para Producción |
@@ -41,4 +45,4 @@ Luego del análisis técnico completo, se refinó la hoja de ruta priorizando **
 Tareas aplazadas y descartadas movidas a `docs/backlog.md`.
 
 ## Próximo Paso
-- Iniciar **F-18 (Alembic Migrations)** como primera tarea del sprint de preparación para producción.
+- Iniciar **F-19 (Backups Automatizados)** como siguiente tarea del sprint de preparación para producción.

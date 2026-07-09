@@ -74,3 +74,16 @@
 - **Decisión de Arquitectura:** Para auditorías y uso estable, usar producción. Para desarrollo activo, usar `pnpm dev --webpack`.
 - **Tests:** `test_f14_offline.py` (2/2), `test_admin_fix.py` (4/4), `test_offline.py` (3/3) — todos verdes. TypeScript sin errores.
 - **Estado Actual:** Backend en `localhost:8000`, Frontend (producción) en `localhost:3000`. Todo funcional.
+
+## Sesión: 2026-07-08
+- **Estado Inicial:** F-18 (Alembic Migrations) como tarea P0 pendiente.
+- **Acciones Realizadas:**
+  - **F-18 (Alembic Migrations — Control de Versiones de BD):**
+    - `alembic init` configurado con `sqlalchemy.url` apuntando a PostgreSQL.
+    - `env.py` configurado con `target_metadata = Base.metadata` desde `app.models`.
+    - Migración autogenerada (`initial_models`) con todas las tablas (usuarios, miembros, planes, membresias_miembros, pagos, asistencias).
+    - `alembic upgrade head` ejecutado sin errores, tablas verificadas en PostgreSQL.
+    - `.gitignore` creado en la raíz para proteger `alembic.ini` y `.env`.
+    - Tests existentes (9/9) todos verdes post-migración.
+  - **Revisor aprobó** tras corrección de migración vacía y adición de `.gitignore`.
+- **Resultado:** F-18 completada y marcada `done`. Próxima tarea: F-19 (Backups Automatizados).

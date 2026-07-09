@@ -1,0 +1,7 @@
+backend/alembic.ini
+backend/.env
+__pycache__/
+backend/__pycache__/
+backend/app/__pycache__/
+node_modules/
+.next/
