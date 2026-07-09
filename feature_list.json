@@ -280,6 +280,79 @@
         "Ejecutable con un solo clic desde Windows Explorer o PowerShell."
       ],
       "status": "done"
+    },
+    {
+      "id": "F2-01",
+      "name": "Filtros Financieros en Dashboard Admin",
+      "description": "P1 — Implementar selectores en el Dashboard Admin para visualizar Ingresos Netos USD por día, semana, mes, año y selección de rango manual. La lógica debe consultar la tabla pagos y agrupar por `monto_usd`, respetando la normalización USD y el borrado lógico (solo pagos de membresías activas).",
+      "criteria_to_accept": [
+        "Selectores de filtro temporal (día/semana/mes/año/rango manual) en `/dashboard/admin`.",
+        "El backend expone un endpoint `GET /api/v1/admin/kpis?rango=...&desde=...&hasta=...` que agrupa y suma `monto_usd` según el rango seleccionado.",
+        "Los cálculos respetan la normalización USD: solo se suma `monto_usd`, nunca `monto_original`.",
+        "El filtro excluye membresías con `estado_logico = False` (borrado lógico).",
+        "Prueba automática que verifique sumas correctas para diferentes rangos."
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "F2-02",
+      "name": "Detalle Transaccional — Modal Interactivo",
+      "description": "P1 — Convertir la tabla de ingresos del Dashboard Admin en interactiva. Al hacer clic en un registro, debe abrir un modal con la información completa: Atleta (quién pagó), Receptor (quién registró) y Método de Pago. Debe respetar borrado lógico: si el miembro fue desactivado, el modal muestra \"[Usuario desactivado]\" pero conserva el histórico.",
+      "criteria_to_accept": [
+        "Clic en fila de la tabla de ingresos abre un modal con datos completos del pago.",
+        "El modal muestra: nombre del atleta, cédula, plan adquirido, método de pago, referencia, monto_original, tasa_cambio, monto_usd, fecha, y nombre del recepcionista que registró.",
+        "Si el miembro o usuario registrador fue eliminado lógicamente, se muestra '[Registro desactivado]' pero los datos persisten.",
+        "Backend expone `GET /api/v1/admin/payments/{id}` con joins a miembros y usuarios (sin filtrar por estado_logico para permitir auditoría).",
+        "Prueba automática que verifique apertura del modal con datos correctos."
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "F2-03",
+      "name": "Transparencia de Alertas — Lista de Vencidos",
+      "description": "P1 — El recuadro de 'Alertas Vencidas' en el Dashboard Admin ya no debe ser un simple número; debe listar los nombres de los miembros representados por dicha alerta para acción inmediata. Debe respetar borrado lógico (no mostrar miembros ya desactivados).",
+      "criteria_to_accept": [
+        "El recuadro 'Alertas Vencidas' en `/dashboard/admin` lista nombre, cédula y días de vencido de cada miembro.",
+        "Backend expone endpoint `GET /api/v1/admin/vencidos` que retorna lista de miembros con membresía vencida (estatus_pago = 'vencido' y estado_logico = True).",
+        "Cada entrada de la lista debe ser cliqueable para llevar a la ficha del miembro en recepción.",
+        "Prueba automática que verifique que la lista contiene los miembros correctos."
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "F2-04",
+      "name": "Debounce en Búsqueda de Recepción",
+      "description": "P2 — Migrar el buscador de recepción de `onSubmit` a búsqueda en tiempo real con debounce de 300ms, mejorando la experiencia de usuario sin saturar el servidor.",
+      "criteria_to_accept": [
+        "El campo de búsqueda en `/dashboard/reception` dispara la búsqueda automáticamente al escribir, con un debounce de 300ms.",
+        "No se permiten llamadas API duplicadas ni en serie durante la escritura.",
+        "Mantiene el fallback offline (IndexedDB) como fuente secundaria.",
+        "Se muestra un indicador de carga durante la petición."
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "F2-05",
+      "name": "Skeleton Components para Tablas",
+      "description": "P2 — Reemplazar los spinners `Loader2` genéricos por skeleton loaders que imiten la forma de las filas de tabla, mejorando la percepción de velocidad en todas las vistas de listado.",
+      "criteria_to_accept": [
+        "Las tablas en `/members/list`, `/staff/list`, `/payments/list` y `/dashboard/admin` usan skeleton loaders mientras cargan.",
+        "El skeleton debe imitar la estructura de la tabla (columnas, anchos relativos).",
+        "No hay regresión visual en estados de carga/error/vacío."
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "F2-06",
+      "name": "Sidebar Responsive con Menú Hamburguesa",
+      "description": "P2 — Convertir el sidebar fijo (`w-64`) en un componente responsive con colapso a iconos en desktop y menú hamburguesa en móvil, mejorando la usabilidad en tablets y celulares.",
+      "criteria_to_accept": [
+        "El sidebar se colapsa a iconos en viewports < 1024px.",
+        "Un botón hamburguesa en el Navbar permite expandir/colapsar el sidebar en móvil.",
+        "La navegación y los indicadores de rol (admin/worker) se mantienen visibles en ambas vistas.",
+        "No hay fugas de ancho ni superposición de contenido."
+      ],
+      "status": "pending"
     }
   ]
 }

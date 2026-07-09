@@ -159,3 +159,16 @@
   - Mata procesos por puerto (netstat) en vez de `$_.CommandLine` (compatible PS 5.1).
   - Inicia servidores con `Start-Process -WindowStyle Hidden` para que sobrevivan al cierre de terminal.
 - **Resultado:** Sprint de preparación para producción completado. Las 5 tareas (F-20 a F-24) implementadas y validadas. feature_list.json al 100% `done`.
+
+## 🚀 Fase 2: Optimización y Análisis Avanzado — Kickoff
+- **Hito:** MVP completamente estable (28/28 tests). Se migran 3 items del backlog a la lista activa (debounce, skeletons, sidebar responsive).
+- **Nuevas Tareas (Panel Admin):**
+  - F2-01: Filtros Financieros por rango temporal en Dashboard Admin.
+  - F2-02: Modal de detalle transaccional con datos de atleta, receptor y método de pago.
+  - F2-03: Lista de miembros vencidos reemplazando el contador genérico.
+- **UX Polish (desde backlog):**
+  - F2-04: Debounce en búsqueda de recepción.
+  - F2-05: Skeleton loaders en tablas.
+  - F2-06: Sidebar responsive con menú hamburguesa.
+- **feature_list.json:** 6 nuevas tareas agregadas con IDs F2-01 a F2-06.
+- **docs/backlog.md:** Items de debounce, skeletons y sidebar removidos del backlog.
