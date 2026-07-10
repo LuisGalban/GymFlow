@@ -232,3 +232,43 @@
   - Componente `TableSkeleton.tsx` creado con `kinetic-glass` + `animate-pulse`.
   - Members, Staff y Admin reemplazaron spinners por skeletons contextuales (KPI cards en admin).
 - **Resultado:** TypeScript 0 errores. Reviewer aprobó. F2-05 marcada `done`. Próxima: F2-06.
+
+## Sesión: 2026-07-09 (F2-06)
+- **Estado Inicial:** F2-06 (Sidebar Responsive) como última tarea P2 de la Fase 2.
+- **Acciones Realizadas:**
+  - Sidebar.tsx: `fixed` con colapso a iconos en tablet (w-16), overlay en móvil con backdrop + slide-in.
+  - Navbar.tsx: Botón hamburguesa en móvil.
+  - DashboardLayout.tsx: State de sidebar + margen compensatorio (`md:ml-16 lg:ml-64`).
+- **Resultado:** TypeScript 0 errores. Reviewer aprobó. **Fase 2 completada.**
+
+## Sesión: 2026-07-09 (F2-06 Hotfix)
+- **Estado Inicial:** Bug report — sidebar responsive rompió layout desktop (sidebar `fixed` en todos los breakpoints, sacándolo del flujo flex).
+- **Root Cause:** El implementador de F2-06 aplicó `fixed` sin restringir a mobile/tablet, forzando margen compensatorio `lg:ml-64` que alteró la maquetación.
+- **Acciones Realizadas:**
+  - Sidebar.tsx: `fixed` solo en móvil/tablet; en desktop (`lg+`) vuelve a `relative` dentro del flex.
+  - DashboardLayout.tsx: `lg:ml-64` → `lg:ml-0`.
+- **Resultado:** TypeScript 0 errores. Reviewer aprobó. Desktop restaurado a layout original (parcial — faltaban `min-h-screen`, `shrink-0`, `py-6`).
+
+## Sesión: 2026-07-09 (F2-06 Hotfix 2)
+- **Estado Inicial:** Bug report — desktop seguía afectado tras hotfix 1.
+- **Root Cause:** `min-h-screen`, `shrink-0`, `py-6` se perdieron en la refactorización del `<aside>`. Sin `shrink-0` el sidebar se comprime en el flex layout.
+- **Acciones Realizadas:**
+  - Sidebar.tsx: Restauradas `w-64 min-h-screen shrink-0 px-4 py-6` como clases base del `<aside>`.
+- **Resultado:** TypeScript 0 errores. Reviewer aprobó. Desktop idéntico al original pre-F2-06.
+
+## Sesión: 2026-07-09 (F2-06 Hotfix 3 — Reescritura arquitectónica)
+- **Estado Inicial:** Bug report persistente — desktop seguía afectado tras 2 hotfixes.
+- **Root Cause:** El sidebar usaba `fixed` como clase base con `lg:relative` para sobreescribir, causando conflictos de posicionamiento. Además, DashboardLayout y Navbar habían sido modificados con props y estados que alteraban el layout.
+- **Acciones Realizadas:**
+  - DashboardLayout.tsx: Revertido a original exacto (sin `useState`, sin props, sin márgenes).
+  - Navbar.tsx: Revertido a original exacto (sin hamburguesa, sin `onMenuClick`).
+  - Sidebar.tsx: Reescribir como autónomo. `mobileOpen` state local. Wrapper DIV para posicionamiento responsive. `<aside>` interior con clases originales inalteradas.
+- **Resultado:** TypeScript 0 errores. Reviewer aprobó. Desktop funcionalmente idéntico al pre-F2-06.
+
+## Sesión: 2026-07-09 (F2-06 Hotfix 4 — Dual rendering, Tailwind v4)
+- **Estado Inicial:** Bug report persistente — desktop seguía roto tras hotfix 3.
+- **Root Cause:** El proyecto usa **Tailwind v4** (`@import "tailwindcss"`) con nuevo motor de detección Rust, que no capturaba `md:static` dentro de template literals con comentarios. El wrapper DIV sin `shrink-0` se comprimía.
+- **Acciones Realizadas:**
+  - Sidebar.tsx: Dual rendering — desktop `<aside>` con `max-md:hidden` y clases originales exactas, mobile overlay separado con `md:hidden`. Contenido compartido via `SidebarContent` subcomponente.
+  - DashboardLayout.tsx y Navbar.tsx: Sin cambios (ya en estado original).
+- **Resultado:** TypeScript 0 errores. Reviewer aprobó. Desktop 100% idéntico al pre-F2-06.

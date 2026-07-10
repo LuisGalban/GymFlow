@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { Wifi, WifiOff, Clock } from "lucide-react";
 
@@ -14,7 +13,6 @@ export default function Navbar({ title }: { title?: string }) {
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
 
-    // Reloj en tiempo real
     const tick = () => {
       const now = new Date();
       setTime(
@@ -42,13 +40,11 @@ export default function Navbar({ title }: { title?: string }) {
       </h1>
 
       <div className="flex items-center gap-4">
-        {/* Reloj */}
         <div className="flex items-center gap-1.5 text-xs text-white/40">
           <Clock className="w-3.5 h-3.5" />
           <span className="font-mono">{time}</span>
         </div>
 
-        {/* Indicador de Conectividad */}
         <div
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 ${
             isOnline

@@ -352,7 +352,7 @@
         "La navegación y los indicadores de rol (admin/worker) se mantienen visibles en ambas vistas.",
         "No hay fugas de ancho ni superposición de contenido."
       ],
-      "status": "pending"
+      "status": "done"
     }
   ]
 }

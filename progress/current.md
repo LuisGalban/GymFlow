@@ -18,18 +18,20 @@
 ## 🎯 Objetivos de la Fase
 
 ### Bloque A: Pulido Profesional (UX)
-| ID | Tarea | Prioridad |
-|----|-------|-----------|
+| ID | Tarea | Estado |
+|----|-------|--------|
 | F2-04 | Debounce en Búsqueda de Recepción (300ms) | ✅ |
 | F2-05 | Skeleton Components para Tablas | ✅ |
-| F2-06 | Sidebar Responsive con Menú Hamburguesa | P2 |
+| F2-06 | Sidebar Responsive con Menú Hamburguesa | ✅ |
 
 ### Bloque B: Analytics del Panel Admin
-| ID | Tarea | Prioridad |
-|----|-------|-----------|
-| F2-01 | Filtros Financieros (día/semana/mes/año/rango) | P1 |
-| F2-02 | Detalle Transaccional — Modal Interactivo | P1 |
-| F2-03 | Transparencia de Alertas — Lista de Vencidos | P1 |
+| ID | Tarea | Estado |
+|----|-------|--------|
+| F2-01 | Filtros Financieros (día/semana/mes/año/rango) | ✅ |
+| F2-02 | Detalle Transaccional — Modal Interactivo | ✅ |
+| F2-03 | Transparencia de Alertas — Lista de Vencidos | ✅ |
+
+## ✅ **Fase 2 Completada** — Las 6 tareas (F2-01 a F2-06) están implementadas, revisadas y cerradas.
 
 ## ✅ Completada — F2-01 (Filtros Financieros)
 
@@ -67,6 +69,16 @@ Navegaba a `/dashboard/reception?cedula=X` y no ejecutaba la búsqueda automáti
 2. **`reception/page.tsx:67-74`**: `useEffect` que al montar lee `cedula` de query params y dispara `buscar(cedulaParam)`.
 3. **`reception/page.tsx:76`**: `buscar()` refactorizada a `buscar(cedulaInput?: string)` para funcionar sin evento de form.
 4. Se preservó guard `if (!token) return;` del hotfix anterior.
+- **TypeScript:** 0 errores. **Reviewer:** Aprobó.
+
+## ✅ Hotfix 4 Aplicado — F2-06 (Sidebar: dual rendering desktop/mobile)
+
+### Problema raíz
+Tailwind v4 no detectaba `md:static` en template literals con comentarios. El wrapper DIV sin `shrink-0` se comprimía en el flex layout.
+
+### Corrección
+- **Sidebar.tsx**: Dual rendering. Desktop: `<aside>` con clases ORIGINALES exactas + `max-md:hidden`. Mobile: `<aside>` separado con `md:hidden`, overlay slide-in. Contenido extraído a `SidebarContent` (sin duplicación).
+- **DashboardLayout.tsx** y **Navbar.tsx**: Sin cambios (ya revertidos a original).
 - **TypeScript:** 0 errores. **Reviewer:** Aprobó.
 
 ## ✅ Completada — F2-05 (Skeleton Components para Tablas)

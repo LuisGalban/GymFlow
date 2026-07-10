@@ -585,3 +585,14 @@
 2026-07-09 18:34:49,766 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
 2026-07-09 18:40:56,341 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
 2026-07-09 18:46:50,733 - app.main - INFO - Pago por cédula registrado id=51 monto_usd=45.00 cedula=V-30412267 por_usuario=46
+2026-07-09 19:49:15,249 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-09 19:54:16,452 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-09 19:54:40,627 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-09 19:59:07,369 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-09 19:59:31,603 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-09 20:06:05,939 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-09 20:06:46,831 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-09 20:08:16,158 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-09 20:12:21,352 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-09 20:15:52,427 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-09 20:19:57,742 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
