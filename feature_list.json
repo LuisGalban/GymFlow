@@ -407,7 +407,8 @@
         "No se permite enviar la petición API si el input no cumple el patrón regex.",
         "Prueba que verifique que inputs maliciosos (inyección SQL, strings largos, caracteres especiales) no llegan al endpoint."
       ],
-      "status": "pending"
+      "status": "done",
+      "note": "Duplicada de F2-07 (completada en Fase 2). Misma implementación: reception/page.tsx con triple capa de validación + 26 tests."
     },
     {
       "id": "F3-02",
@@ -420,7 +421,8 @@
         "Ignorar `CanceledError` / `ERR_CANCELED` en el catch para evitar errores espurios.",
         "Prueba que simule cambios rápidos de filtro y verifique que solo la última respuesta se aplica al estado."
       ],
-      "status": "pending"
+      "status": "done",
+      "note": "Duplicada de F2-08 (completada en Fase 2). Misma implementación: AbortController en admin/page.tsx + 30 tests."
     },
     {
       "id": "F3-03",
@@ -432,7 +434,7 @@
         "El patrón de navegación mobile funciona correctamente (abrir/cerrar sidebar).",
         "No hay regresión en la vista desktop del sidebar."
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "F3-04",
@@ -444,7 +446,7 @@
         "El usuario no puede tabular hacia enlaces ocultos del sidebar colapsado.",
         "El sidebar mobile se abre y cierra correctamente con el botón hamburguesa."
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "F3-05",
@@ -456,7 +458,7 @@
         "No hay regresión visual en desktop (las tablas siguen ocupando el ancho completo).",
         "El contenido de las tablas no se desborda fuera del viewport en celulares."
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "F3-06",
@@ -467,6 +469,86 @@
         "La pantalla de selección de planes tiene contraste accesible que cumple pautas WCAG mínimas.",
         "Los estilos de dropdowns son visualmente coherentes con el design system de la app (kinetic-glass, indigo tones).",
         "Los estados hover y focus de los dropdowns son visibles y accesibles."
+      ],
+      "status": "done"
+    },
+    {
+      "id": "F4-01",
+      "name": "Modelo de Sedes (Gyms)",
+      "description": "P0 — Crear la tabla `gyms` en PostgreSQL para almacenar los datos maestros de cada sede/gimnasio: nombre comercial, dirección, teléfono, configuración local (periodo de gracia, moneda base), fecha de alta, y estado de suscripción. Esta tabla será la raíz del modelo multi-tenant; todas las entidades de negocio apuntarán a ella vía FK.",
+      "criteria_to_accept": [
+        "Tabla `gyms` creada con columnas: `id` (PK serial), `nombre` (varchar, unique), `direccion` (text), `telefono` (varchar nullable), `dias_gracia_default` (int, default 5), `moneda_base` (enum USD/VES, default USD), `fecha_alta` (timestamp, default utcnow), `estado_suscripcion` (enum activo/pausado/suspendido, default activo), `estado_logico` (boolean, default True).",
+        "Restricción UNIQUE en `nombre` para evitar sedes duplicadas.",
+        "Todos los campos monetarios futuros heredarán la `moneda_base` de la sede para la normalización USD.",
+        "La columna `estado_logico` respeta la regla de borrado lógico: baja de una sede NO elimina física ni en cascada los datos de miembros/pagos/asistencias asociados.",
+        "Migración Alembic generada y ejecutada sin pérdida de datos existentes.",
+        "Prueba unitaria que valide creación de sede, unicidad de nombre, y que el borrado lógico (`estado_logico=False`) preserva la integridad referencial."
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "F4-02",
+      "name": "Migración de Esquema — gym_id como FK en Entidades Críticas",
+      "description": "P0 — Añadir la columna `gym_id` (FK → gyms.id) como columna NOT NULL en las tablas: `usuarios`, `miembros`, `planes`, `pagos` y `asistencias`. Durante la migración, la data existente del gimnasio único se asignará a un registro `gyms` por defecto (seed). Esto establece el aislamiento lógico multi-tenant a nivel de esquema.",
+      "criteria_to_accept": [
+        "Columna `gym_id` (integer, FK → gyms.id, NOT NULL) agregada a tablas: `usuarios`, `miembros`, `planes`, `pagos`, `asistencias`.",
+        "Seed de migración: crear registro gym por defecto (`id=1`, `nombre='GymFlow Sede Central'`) y actualizar todas las filas existentes con `gym_id=1`.",
+        "Constraint `ON DELETE RESTRICT` en cada FK para impedir eliminación física de una sede con datos asociados.",
+        "Todos los endpoints de listado existentes continúan funcionando sin regressión (la data existente pertenece a gym_id=1).",
+        "Los modelos SQLAlchemy (`models.py`) se actualizan con la relación `gym_id` y el mixin de filtro por sede.",
+        "Prueba que verifique que una consulta sin filtro de `gym_id` retorna datos de TODAS las sedes (preparación para F4-04).",
+        "Prueba que verifique que la migración existente (data de fase 1-3) no se pierde y queda asociada al gym por defecto.",
+        "La migración NO altera la normalización USD existente: todos los `monto_usd` y `tasa_cambio` de pagos históricos permanecen intactos."
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "F4-03",
+      "name": "Refactor de Auth — gym_id en el Token JWT",
+      "description": "P0 — Actualizar el payload del token JWT para incluir el `gym_id` del usuario autenticado. Al hacer login, el backend resuelve a qué sede pertenece el usuario y lo inyecta en el claim `sub` del token. Esto permitirá al backend conocer el contexto del gimnasio en cada petición autenticada.",
+      "criteria_to_accept": [
+        "El payload del JWT incluye el claim `gym_id` (int) además de `sub`, `rol` y `exp` existentes.",
+        "El endpoint `/api/v1/auth/login` resuelve el `gym_id` del usuario desde la tabla `usuarios` y lo inserta en el token.",
+        "La función `obtener_usuario_actual()` en `auth.py` extrae y expone el `gym_id` del token decodificado.",
+        "El schema de respuesta de login (`Token`) incluye `gym_id` para que el frontend lo almacene si lo necesita.",
+        "Tokens JWT generados ANTES de la migración (fase 1-3) son rechazados con 401 si no contienen `gym_id` (invalidación de sesión legacy).",
+        "Prueba que verifique login exitoso con token que contiene `gym_id`.",
+        "Prueba que verifique que un endpoint autenticado tiene acceso al `gym_id` del usuario actual."
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "F4-04",
+      "name": "Middleware de Filtrado Automático por gym_id",
+      "description": "P0 — Implementar una capa de seguridad en el Backend que inyecte automáticamente el filtro `WHERE gym_id = user.gym_id` en todas las consultas de base de datos de entidades críticas. Esto es la piedra angular del aislamiento multi-tenant: un recepcionista del Gimnasio A jamás verá datos del Gimnasio B.",
+      "criteria_to_accept": [
+        "Implementar un dependency injection de FastAPI o un `@property` del modelo que filtre automáticamente por `gym_id` del usuario actual.",
+        "TODOS los endpoints de lectura (GET) de: miembros, usuarios, planes, pagos, asistencias, KPIs, cashflow y vencidos aplican el filtro por `gym_id`.",
+        "El endpoint de búsqueda por cédula (`/api/v1/members/search/{cedula}`) busca solo dentro del `gym_id` del usuario autenticado.",
+        "El endpoint de registro de pagos (`/api/v1/payments/by-cedula`) asocia automáticamente el `gym_id` del usuario que registra el pago.",
+        "Un usuario autenticado con `gym_id=1` NO puede acceder a datos de `gym_id=2` ni siquiera manipulando parámetros de URL o query string.",
+        "Los endpoints de admin (KPIs, cashflow, vencidos) retornan SOLO datos de la sede del admin autenticado.",
+        "Prueba de integración que simule dos sedes con datos aislados y verifique que el endpoint de miembros de sede A no retorna miembros de sede B.",
+        "Prueba de seguridad que intente forzar un `gym_id` diferente en el payload de registro de pago y verifique que el backend lo sobreescribe con el del token.",
+        "La capa de filtrado NO interfiere con la normalización USD: el cálculo de `monto_usd` a partir de `monto_original` y `tasa_cambio` se mantiene idéntico al comportamiento pre-multi-tenant."
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "F4-05",
+      "name": "Panel SuperAdmin — Gestión de Sedes y Suscripciones",
+      "description": "P1 — Crear una vista restringida accesible SOLO para el rol `super_admin` (nuevo rol por encima de `admin`) para dar de alta nuevos gimnasios, pausar/reanudar suscripciones, y visualizar métricas agregadas de TODAS las sedes. El rol `admin` de cada sede NO debe ver esta vista.",
+      "criteria_to_accept": [
+        "Nuevo enum `SuperAdminRole` o extensión de `UserRole` con valor `super_admin` (por encima de `admin`).",
+        "Endpoint `POST /api/v1/super-admin/gyms` para crear una nueva sede (solo `super_admin`).",
+        "Endpoint `GET /api/v1/super-admin/gyms` que lista todas las sedes con métricas resumidas (miembros activos, ingresos del mes, estado de suscripción).",
+        "Endpoint `PUT /api/v1/super-admin/gyms/{id}/suscripcion` para pausar, reanudar o suspender una sede.",
+        "El endpoint de login detecta el rol `super_admin` y retorna un token con claims diferenciados.",
+        "Un usuario con rol `admin` normal recibe 403 Forbidden al intentar acceder a cualquier `/api/v1/super-admin/*`.",
+        "El frontend incluye una ruta `/super-admin/gyms` accesible solo para `super_admin` con tabla de sedes y botón para crear nueva.",
+        "Todos los endpoints del panel SuperAdmin respetan el borrado lógico: baja de una sede no elimina datos históricos.",
+        "Prueba que verifique que un `admin` normal no puede acceder a endpoints SuperAdmin.",
+        "Prueba que verifique que un `super_admin` puede crear, listar y pausar sedes."
       ],
       "status": "pending"
     }

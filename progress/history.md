@@ -318,3 +318,60 @@
   - `members/register/page.tsx`: Nuevo state `prefijo` (default "V"). Selector `<select>` V/J/E/G/P + input numérico con filtro `\D` y `maxLength={10}`. Concatenación `{prefijo}-{cedula}` en `handleSubmit` con validación regex F2-07. Label y placeholder actualizados.
   - `frontend/tests/cedula-prefix-register.test.mjs`: 16 tests — concatenación, rechazo de no-numéricos, cambio de prefijo, edge cases.
 - **Resultado:** TypeScript 0 errores. 16/16 tests pasan. Reviewer APPROVED (8/8 checklist items).
+
+---
+
+## Detección de Duplicados Fase 3 — F3-01 y F3-02
+- **Fecha:** 2026-07-10
+- **Agente:** Líder Orquestador (análisis comparativo)
+- **Hallazgo:** F3-01 es idéntica a F2-07 (Sanitización de Cédula en Recepción) y F3-02 es idéntica a F2-08 (Race Conditions en Admin Dashboard). Ambas fueron completadas en la Fase 2 con status `done`, tests aprobados (26 y 30 tests respectivamente) y reviewer APPROVED.
+- **Acción:** Marcadas como `done` en `feature_list.json` con nota de duplicación. Sin código nuevo requerido.
+- **Resultado:** Fase 3 reduces de 6 tareas pendientes a 4 tareas pendientes reales (F3-03 a F3-06).
+
+---
+
+## F3-03 — Corrección de Layout y Capas en Sidebar Mobile
+- **Fecha:** 2026-07-10
+- **Prioridad:** P2
+- **Agente Implementador:** Implementador (sub-agent)
+- **Agente Revisor:** Reviewer (sub-agent)
+- **Problema:** El botón hamburguesa en `Sidebar.tsx` (fixed top-4 left-4 z-50) colisionaba con el contenido del `Navbar.tsx` en mobile, tapando el título.
+- **Criterios de Aceptación:** 4/4 cumplidos.
+- **Acción:** Option B — padding compensatorio `pl-14 pr-6 md:px-6` en `Navbar.tsx:37`. Sin state lifting ni reestructuración. En mobile, left padding de 56px desplaza contenido a la derecha del hamburger. En desktop, `md:px-6` restaura padding original.
+- **Resultado:** TypeScript 0 errores. Reviewer APPROVED.
+
+---
+
+## F3-04 — Renderizado Condicional del Sidebar Mobile
+- **Fecha:** 2026-07-10
+- **Prioridad:** P2
+- **Agente Implementador:** Implementador (sub-agent)
+- **Agente Revisor:** Reviewer (sub-agent)
+- **Problema:** `Sidebar.tsx:114-126` renderizaba el `<aside>` mobile siempre en el DOM, oculto solo con CSS `-translate-x-full`. Esto creaba nodos invisibles accesibles por Tab (focus trap).
+- **Criterios de Aceptación:** 4/4 cumplidos.
+- **Acción:** Reemplazada ocultación CSS por `{mobileOpen && (...)}`. El `<aside>` mobile, overlay y botón X se desmontan del DOM al cerrar. Sin nodos residuales, sin focus traps.
+- **Resultado:** TypeScript 0 errores. Reviewer APPROVED (12/12 checklist items).
+
+---
+
+## F3-05 — Adaptabilidad de Tablas Deslizables en Mobile
+- **Fecha:** 2026-07-10
+- **Prioridad:** P2
+- **Agente Implementador:** Implementador (sub-agent)
+- **Agente Revisor:** Reviewer (sub-agent)
+- **Problema:** Las tablas en `/staff/list` y `/members/list` desbordaban el viewport en móviles sin scroll horizontal disponible.
+- **Criterios de Aceptación:** 4/4 cumplidos.
+- **Acción:** Reemplazada `overflow-hidden` por `overflow-x-auto` en el div contenedor de cada tabla. Cambio mínimo — solo la clase de overflow.
+- **Resultado:** TypeScript 0 errores. Reviewer APPROVED (7/7 checklist items).
+
+---
+
+## F3-06 — Corrección de Contraste de Color en Dropdowns y Planes
+- **Fecha:** 2026-07-10
+- **Prioridad:** P3
+- **Agente Implementador:** Implementador (sub-agent)
+- **Agente Revisor:** Reviewer (sub-agent)
+- **Problema:** Los 4 `<select>` de la app (cédula prefix, plan selector ×2, método de pago) mostraban texto blanco sobre fondo blanco nativo del SO al abrir el dropdown. Los `<option>` no tenían estilos definidos en ningún archivo CSS.
+- **Criterios de Aceptación:** 4/4 cumplidos.
+- **Acción:** Agregadas reglas CSS `select option` en `globals.css` con `background-color: #1a1a2e` y `color: #f4f4f5`. Fix CSS-only — sin cambios en classNames de los `<select>`.
+- **Resultado:** TypeScript 0 errores. Reviewer APPROVED (12/12 checklist items).

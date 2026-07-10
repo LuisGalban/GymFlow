@@ -100,7 +100,7 @@ export default function MembersListPage() {
         </div>
 
         {/* Tabla */}
-        <div className="kinetic-glass rounded-2xl overflow-hidden">
+        <div className="kinetic-glass rounded-2xl overflow-x-auto">
           {loading ? (
             <TableSkeleton rows={6} columns={6} />
           ) : filtered.length === 0 ? (

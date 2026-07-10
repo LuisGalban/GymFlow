@@ -106,24 +106,18 @@ export default function Sidebar() {
         <Menu className="w-5 h-5" />
       </button>
 
-      {/* Mobile overlay */}
+      {/* Mobile sidebar — only in DOM when open */}
       {mobileOpen && (
-        <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={() => setMobileOpen(false)} />
+        <>
+          <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={() => setMobileOpen(false)} />
+          <aside className="kinetic-glass flex flex-col px-4 py-6 gap-2 fixed inset-y-0 left-0 z-50 w-64 md:hidden">
+            <button onClick={() => setMobileOpen(false)} className="absolute top-4 right-4 text-white/50 hover:text-white">
+              <X className="w-5 h-5" />
+            </button>
+            <SidebarContent onNavClick={() => setMobileOpen(false)} />
+          </aside>
+        </>
       )}
-
-      <aside className={`
-        kinetic-glass flex flex-col px-4 py-6 gap-2
-        fixed inset-y-0 left-0 z-50 w-64
-        -translate-x-full
-        transition-transform duration-300 ease-in-out
-        ${mobileOpen ? 'translate-x-0' : ''}
-        md:hidden
-      `}>
-        <button onClick={() => setMobileOpen(false)} className="absolute top-4 right-4 text-white/50 hover:text-white">
-          <X className="w-5 h-5" />
-        </button>
-        <SidebarContent onNavClick={() => setMobileOpen(false)} />
-      </aside>
     </>
   );
 }

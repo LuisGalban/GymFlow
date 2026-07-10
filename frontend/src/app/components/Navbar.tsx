@@ -34,7 +34,7 @@ export default function Navbar({ title }: { title?: string }) {
   }, []);
 
   return (
-    <header className="kinetic-glass px-6 py-3 flex items-center justify-between border-b border-white/5">
+    <header className="kinetic-glass pl-14 pr-6 md:px-6 py-3 flex items-center justify-between border-b border-white/5">
       <h1 className="text-base font-semibold text-white/80">
         {title ?? "GymFlow Analytics"}
       </h1>

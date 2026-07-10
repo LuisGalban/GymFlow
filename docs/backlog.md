@@ -30,6 +30,9 @@
 | OPT-09 | **Flexibilidad de Ancho en Skeletons de Tablas** | P3 | `TableSkeleton.tsx:11` usa un array cíclico fijo que desalinea las columnas si son mayores a 5. Solución: calcular el ancho proporcional dinámicamente (`width: ${100 / columns}%`) o recibir `widths` como prop array. |
 | OPT-10 | **Accesibilidad (A11y) en Skeletons** | P3 | `TableSkeleton` carece de soporte para lectores de pantalla. Solución: añadir `role="status"`, `aria-label="Cargando contenido"` y heredar `className` en el contenedor raíz. |
 | OPT-11 | **Accesibilidad por Teclado en Overlay Sidebar** | P3 | El overlay mobile de la sidebar no se puede cerrar usando métodos estándar en tablets. Solución: añadir un listener `useEffect` para escuchar la tecla "Escape" y gatillar el cierre. |
+| OPT-12 | **Soporte de color-scheme en Selectores de Dropdowns** | P3 | `globals.css` no cubre `<select>` nativos dentro de dropdowns con clase `kinetic-glass`, lo que podría causar discontinuidad visual de fondo en ciertos motores de renderizado. Solución: añadir `color-scheme: dark;` al selector del `select` en `globals.css` para forzar la paleta oscura nativa. |
+| OPT-13 | **Preservación de Estado de Scroll en Sidebar Mobile** | P2 | El renderizado condicional `{mobileOpen && (...)}` en `Sidebar.tsx:110` desmonta el componente y pierde la posición de scroll al cerrarse. No es crítico actualmente por el bajo número de ítems (~7). Solución Post-MVP: si el menú crece, extraer el estado de scroll a un `useRef` o usar CSS `overscroll-behavior`. |
+| OPT-14 | **Atributos de Accesibilidad ARIA en Sidebar Mobile** | P2 | El botón hamburguesa y el botón de cierre en `Sidebar.tsx` carecen de propiedades ARIA completas para lectores de pantalla (WCAG 2.1). Solución: agregar `aria-controls="mobile-sidebar"` y `aria-expanded={mobileOpen}` al hamburguesa; `id` y `role` al `<aside>`; y `aria-label="Cerrar menú"` al botón X. |
 
 ## Descartados (No Implementar)
 

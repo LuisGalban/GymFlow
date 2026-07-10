@@ -88,3 +88,8 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(99, 102, 241, 0.4);
 }
+
+select option {
+  background-color: #1a1a2e;
+  color: #f4f4f5;
+}
