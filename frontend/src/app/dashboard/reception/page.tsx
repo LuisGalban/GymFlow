@@ -69,8 +69,11 @@ export default function ReceptionPage() {
   useEffect(() => {
     const cedulaParam = searchParams.get("cedula");
     if (cedulaParam) {
-      setCedula(cedulaParam);
-      buscar(cedulaParam);
+      const sanitized = cedulaParam.toUpperCase().replace(/[^VJEGP\d-]/g, "");
+      setCedula(sanitized);
+      if (/^[VJEGP]-?\d{1,10}$/.test(sanitized)) {
+        buscar(sanitized);
+      }
     }
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -81,6 +84,10 @@ export default function ReceptionPage() {
   async function buscar(cedulaInput?: string) {
     const busqueda = cedulaInput || cedula.trim();
     if (!busqueda) return;
+    if (!/^[VJEGP]-?\d{1,10}$/.test(busqueda)) {
+      setError("Formato de cédula inválido. Use formato: V-12345678");
+      return;
+    }
 
     if (abortRef.current) {
       abortRef.current.abort();
@@ -192,16 +199,21 @@ export default function ReceptionPage() {
               id="reception-search"
               type="text"
               value={cedula}
+              maxLength={20}
               onChange={(e) => {
-                const val = e.target.value;
-                setCedula(val);
+                const raw = e.target.value;
+                const sanitized = raw.toUpperCase().replace(/[^VJEGP\d-]/g, "");
+                if (sanitized === cedula) return;
+                if (sanitized !== "" && !/^[VJEGP]-?\d{0,10}$/.test(sanitized)) return;
+
+                setCedula(sanitized);
                 setMiembro(null);
                 setError("");
                 setCheckinDone(false);
                 if (debounceRef.current) clearTimeout(debounceRef.current);
-                if (!val.trim()) return;
+                if (!/^[VJEGP]-?\d{1,10}$/.test(sanitized)) return;
                 debounceRef.current = setTimeout(() => {
-                  buscar(val.trim());
+                  buscar(sanitized);
                 }, 300);
               }}
               placeholder="Buscar por Cédula (ej. V-25111222)"

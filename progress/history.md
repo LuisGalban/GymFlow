@@ -272,3 +272,49 @@
   - Sidebar.tsx: Dual rendering — desktop `<aside>` con `max-md:hidden` y clases originales exactas, mobile overlay separado con `md:hidden`. Contenido compartido via `SidebarContent` subcomponente.
   - DashboardLayout.tsx y Navbar.tsx: Sin cambios (ya en estado original).
 - **Resultado:** TypeScript 0 errores. Reviewer aprobó. Desktop 100% idéntico al pre-F2-06.
+
+---
+
+## F2-07 — Sanitización y Validación de Cédula en Recepción
+- **Fecha:** 2026-07-10
+- **Prioridad:** P1 (Auditoría Hallazgo 1)
+- **Agente Implementador:** Implementador (sub-agent)
+- **Agente Revisor:** Reviewer (sub-agent)
+- **Problema:** El campo de búsqueda en recepción no imponía `maxLength` ni filtraba caracteres no válidos. Un input arbitrariamente largo se enviaba sin sanitizar al endpoint `/api/v1/members/search/{cedula}`, representando riesgo de inyección y degradación de rendimiento.
+- **Criterios de Aceptación:** 5/5 cumplidos.
+- **Acciones Realizadas:**
+  - `reception/page.tsx`: Triple capa de validación — `maxLength={20}`, sanitizer en `onChange` con regex `/[^VJEGP\d-]/g`, guard de regex estricto `/^[VJEGP]-?\d{1,10}$/` antes del debounce, y validación en `buscar()` antes del API call. Auto-search por `?cedula=` también sanitizado.
+  - `frontend/tests/cedula-validation.test.mjs`: 26 tests (SQL injection, XSS, path traversal, null bytes, límites de dígitos, formatos válidos/inválidos).
+- **Resultado:** TypeScript 0 errores. 26/26 tests pasan. Reviewer APPROVED (16/16 checklist items). Funcionalidad existente preservada (debounce, offline, URL params, botón manual).
+
+---
+
+## F2-08 — Prevención de Race Conditions en Admin Dashboard
+- **Fecha:** 2026-07-10
+- **Prioridad:** P1 (Auditoría Hallazgo 8 — Transversal)
+- **Agente Implementador:** Implementador (sub-agent)
+- **Agente Revisor:** Reviewer (sub-agent)
+- **Problema:** `admin/page.tsx` disparaba `fetchData` sin AbortController al cambiar filtros de fecha. Respuestas HTTP anteriores podían sobrescribir datos más recientes (race condition), comprometiendo la precisión cronológica de datos financieros.
+- **Criterios de Aceptación:** 5/5 cumplidos.
+- **Ciclo de Revisión:**
+  - **Review #1:** REJECTED — Criterio #5 faltante (sin test de verificación de race condition).
+  - **Implementador:** Creó `frontend/tests/admin-race-condition.test.mjs` con 30 tests.
+  - **Review #2:** APPROVED (16/16 checklist items).
+- **Acciones Realizadas:**
+  - `admin/page.tsx`: Integrado `AbortController` via `abortRef` — `.abort()` antes de crear controller nuevo, `.signal` en config de API, cleanup en useEffect, `CanceledError`/`ERR_CANCELED` ignorados en catch.
+  - `frontend/tests/admin-race-condition.test.mjs`: 30 tests — abort chain, fetch abort, 10 cambios rápidos de filtro, useEffect cleanup, smoke test de source code, dependency array wiring.
+- **Resultado:** TypeScript 0 errores. 30/30 tests pasan. Reviewer APPROVED. Todas las tareas P1 del roadmap completadas.
+
+---
+
+## F2-09 — Prefijo de Cédula Implícito en Registro de Atletas
+- **Fecha:** 2026-07-10
+- **Prioridad:** P1 (PRD §1.2 — Baja Carga Cognitiva)
+- **Agente Implementador:** Implementador (sub-agent)
+- **Agente Revisor:** Reviewer (sub-agent)
+- **Problema:** El formulario de registro forzaba al personal a teclear manualmente el prefijo de cédula (V-, J-, etc.), generando fricción innecesaria y errores de formato. Coherencia con la regex de F2-07 requería producción consistente de cédulas.
+- **Criterios de Aceptación:** 8/8 cumplidos.
+- **Acciones Realizadas:**
+  - `members/register/page.tsx`: Nuevo state `prefijo` (default "V"). Selector `<select>` V/J/E/G/P + input numérico con filtro `\D` y `maxLength={10}`. Concatenación `{prefijo}-{cedula}` en `handleSubmit` con validación regex F2-07. Label y placeholder actualizados.
+  - `frontend/tests/cedula-prefix-register.test.mjs`: 16 tests — concatenación, rechazo de no-numéricos, cambio de prefijo, edge cases.
+- **Resultado:** TypeScript 0 errores. 16/16 tests pasan. Reviewer APPROVED (8/8 checklist items).

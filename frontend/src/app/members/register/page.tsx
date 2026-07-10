@@ -8,6 +8,7 @@ import { Loader2, AlertCircle, UserPlus, CreditCard, CheckCircle2 } from "lucide
 export default function RegisterMemberPage() {
   const { token } = useAuth();
   const [cedula, setCedula] = useState("");
+  const [prefijo, setPrefijo] = useState("V");
   const [nombre, setNombre] = useState("");
   const [telefono, setTelefono] = useState("");
   const [plans, setPlans] = useState<any[]>([]);
@@ -31,13 +32,19 @@ export default function RegisterMemberPage() {
       setError("Debe seleccionar un plan inicial para el atleta.");
       return;
     }
+    const cedulaCompleta = `${prefijo}-${cedula}`;
+    if (!/^[VJEGP]-?\d{1,10}$/.test(cedulaCompleta)) {
+      setError("Cédula inválida. Debe tener entre 1 y 10 dígitos después del prefijo.");
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError("");
     setSuccess("");
     try {
       await api.post(
         "/api/v1/members",
-        { cedula, nombre, telefono, plan_id: Number(planId) },
+        { cedula: cedulaCompleta, nombre, telefono, plan_id: Number(planId) },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setSuccess("Atleta registrado exitosamente.");
@@ -74,15 +81,29 @@ export default function RegisterMemberPage() {
           )}
           {/* Cedula */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-medium text-white/50 uppercase">Cédula (V‑...)</label>
-            <input
-              type="text"
-              value={cedula}
-              onChange={(e) => setCedula(e.target.value)}
-              required
-              placeholder="V‑25111222"
-              className="w-full bg-white/5 border border-white/8 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-400/50"
-            />
+            <label className="text-xs font-medium text-white/50 uppercase">Cédula</label>
+            <div className="flex gap-2">
+              <select
+                value={prefijo}
+                onChange={(e) => setPrefijo(e.target.value)}
+                className="w-[80px] bg-white/5 border border-white/8 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-400/50"
+              >
+                <option value="V">V</option>
+                <option value="J">J</option>
+                <option value="E">E</option>
+                <option value="G">G</option>
+                <option value="P">P</option>
+              </select>
+              <input
+                type="text"
+                value={cedula}
+                onChange={(e) => setCedula(e.target.value.replace(/\D/g, ""))}
+                required
+                maxLength={10}
+                placeholder="25111222"
+                className="flex-1 bg-white/5 border border-white/8 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-400/50"
+              />
+            </div>
           </div>
           {/* Nombre */}
           <div className="flex flex-col gap-1.5">

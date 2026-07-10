@@ -1,4 +1,4 @@
-# 🚀 Fase 2: Optimización y Análisis Avanzado
+# 🚀 Fase 3: Estabilización de UX Core y Blindaje
 
 ## Estado del Entorno
 - **Python 3.14.5** ✅ (vía `backend/venv`)
@@ -31,7 +31,40 @@
 | F2-02 | Detalle Transaccional — Modal Interactivo | ✅ |
 | F2-03 | Transparencia de Alertas — Lista de Vencidos | ✅ |
 
-## ✅ **Fase 2 Completada** — Las 6 tareas (F2-01 a F2-06) están implementadas, revisadas y cerradas.
+## ✅ **Fase 2 Completada** — Todas las tareas F2-01 a F2-09 implementadas, revisadas y cerradas.
+
+---
+
+## 🎯 Fase 3: Estabilización de UX Core y Blindaje — Abierta
+
+| ID | Tarea | Prioridad | Estado |
+|----|-------|-----------|--------|
+| F3-01 | Sanitización y Validación de Cédula en Recepción | P1 | ⏳ Not Started |
+| F3-02 | Prevención de Race Conditions en Admin Dashboard | P1 | ⏳ Not Started |
+| F3-03 | Corrección de Layout y Capas en Sidebar Mobile | P2 | ⏳ Not Started |
+| F3-04 | Renderizado Condicional del Sidebar Mobile | P2 | ⏳ Not Started |
+| F3-05 | Adaptabilidad de Tablas Deslizables en Mobile | P2 | ⏳ Not Started |
+| F3-06 | Corrección de Contraste de Color en Dropdowns y Planes | P3 | ⏳ Not Started |
+
+### Bloque C: Seguridad y Calidad (Post-Auditoría)
+| ID | Tarea | Estado |
+|----|-------|--------|
+| F2-07 | Sanitización y Validación de Cédula en Recepción | ✅ |
+| F2-08 | Prevención de Race Conditions en Admin Dashboard | ✅ |
+
+### Bloque D: UX y Baja Carga Cognitiva
+| ID | Tarea | Estado |
+|----|-------|--------|
+| F2-09 | Prefijo de Cédula Implícito (V- automático) | ✅ |
+
+## 🔍 Auditoría Técnica — Bloques B + A (Completada)
+- **Analista:** Auditoría exhaustiva de F2-04, F2-05, F2-06.
+- **Hallazgos P0:** 0 — Sin violaciones de borrado lógico ni normalización USD.
+- **Hallazgos P1 (nuevas tareas):** 2 — F2-07 (Sanitización de Cédula en Recepción), F2-08 (Race Conditions en Admin Dashboard). Insertadas en `feature_list.json` con estado `pending`.
+- **Hallazgos P2 (Icebox):** 4 — OPT-05 a OPT-08 movidos a `docs/backlog.md`.
+- **Hallazgos P3 (Post-MVP):** 4 — OPT-09 a OPT-11 + aplazables visuales movidos a `docs/backlog.md`.
+- **Nota PO:** Tarea "Período de gracia hardcodeado" enriquecida con directiva de UI configurable por el Admin.
+- **Roadmap refinado:** `feature_list.json` y `docs/backlog.md` actualizados. Fase 2 cerrada, siguiente sprint = F2-07.
 
 ## ✅ Completada — F2-01 (Filtros Financieros)
 
@@ -102,3 +135,26 @@ Tailwind v4 no detectaba `md:static` en template literals con comentarios. El wr
 Link `<a href>` en admin causaba navegación completa → React re-monta → `syncPending` corría sin token → 401 → `/login`.
 2. **`admin/page.tsx`**: `<a>` → `<Link>` de `next/link` para navegación cliente-side.
 - **TypeScript:** 0 errores. **Reviewer:** Aprobó.
+
+## ✅ Completada — F2-07 (Sanitización y Validación de Cédula en Recepción)
+
+### Resumen de cambios
+- **Frontend** (`reception/page.tsx`): Triple capa de validación: (1) `maxLength={20}` en `<input>`, (2) sanitizer en `onChange` que filtra caracteres no válidos con `replace(/[^VJEGP\d-]/g, "")` y solo permite debounce si pasa regex estricto `/^[VJEGP]-?\d{1,10}$/`, (3) guard en `buscar()` que rechaza inputs inválidos antes del API call. Auto-search por `?cedula=` también sanitizado con `toUpperCase()` + regex guard.
+- **Tests** (`frontend/tests/cedula-validation.test.mjs`): 26 tests — cubren SQL injection, XSS, path traversal, null bytes, dígitos límite, formatos válidos/inválidos. Todos pasan.
+- **Reviewer:** APPROVED (16/16 checklist items). TypeScript: 0 errores.
+
+## ✅ Completada — F2-08 (Prevención de Race Conditions en Admin Dashboard)
+
+### Resumen de cambios
+- **Frontend** (`admin/page.tsx`): Integrado `AbortController` via `abortRef` (mismo patrón que F2-04 en recepción). Cada cambio de filtro (`filtroRango`, `filtroDesde`, `filtroHasta`) aborta la petición HTTP previa antes de iniciar la nueva. Cleanup del `useEffect` cancela requests en curso al desmontar. `CanceledError`/`ERR_CANCELED` ignorados silenciosamente en catch.
+- **Tests** (`frontend/tests/admin-race-condition.test.mjs`): 30 tests — simulación de race condition, abort chain, 10 cambios rápidos de filtro, useEffect cleanup, smoke test del source code (verifica `abortRef`, `AbortController`, `CanceledError`, `ERR_CANCELED`, `controller.signal`, cleanup `return`). Todos pasan.
+- **Reviewer:** APPROVED (16/16 checklist items). TypeScript: 0 errores.
+
+## 🔒 **Auditoría Post-Implementación Cerrada** — F2-07 y F2-08 completadas. Todas las tareas P1 del roadmap resueltas.
+
+## ✅ Completada — F2-09 (Prefijo de Cédula Implícito en Registro de Atletas)
+
+### Resumen de cambios
+- **Frontend** (`members/register/page.tsx`): Nuevo state `prefijo` (default "V"). Selector de prefijo `<select>` (V/J/E/G/P) junto a input numérico con `onChange` que filtra no-dígitos (`replace(/\D/g, "")`) y `maxLength={10}`. `handleSubmit` concatena `{prefijo}-{cedula}` y valida con regex F2-07 antes del envío. Label cambiado a "Cédula". Placeholder solo dígitos.
+- **Tests** (`frontend/tests/cedula-prefix-register.test.mjs`): 16 tests — concatenación correcta, caracteres no numéricos rechazados, cambio de prefijo, edge cases (vacío, maxLength, todos los prefijos). Todos pasan.
+- **Reviewer:** APPROVED (8/8 criterios de aceptación). TypeScript: 0 errores.

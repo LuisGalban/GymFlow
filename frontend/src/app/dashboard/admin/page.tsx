@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { api, useAuth } from "@/app/context/AuthContext"
 import { useRouter } from "next/navigation"
 import DashboardLayout from "@/app/components/DashboardLayout"
@@ -59,6 +59,7 @@ export default function AdminDashboardPage() {
   const [filtroHasta, setFiltroHasta] = useState("")
   const [selectedPayment, setSelectedPayment] = useState<PagoDetalle | null>(null)
   const [loadingDetail, setLoadingDetail] = useState(false)
+  const abortRef = useRef<AbortController | null>(null)
 
   // Protección de ruta RBAC: Solo Administradores
   useEffect(() => {
@@ -72,6 +73,12 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     if (authLoading || !token || !user || user.rol !== "admin") return
 
+    if (abortRef.current) {
+      abortRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     async function fetchData() {
       try {
         const params: Record<string, string> = {}
@@ -82,7 +89,8 @@ export default function AdminDashboardPage() {
         }
         const config = {
           params,
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
+          signal: controller.signal,
         }
         const [kpiRes, cashRes, vencidosRes] = await Promise.all([
           api.get("/api/v1/admin/kpis", config),
@@ -93,12 +101,17 @@ export default function AdminDashboardPage() {
         setPagos(cashRes.data.pagos)
         setVencidos(vencidosRes.data)
       } catch (err: any) {
+        if (err?.name === "CanceledError" || err?.code === "ERR_CANCELED") return;
         setError(err?.response?.data?.detail || "Error al cargar datos admin")
       } finally {
         setLoading(false)
       }
     }
     fetchData()
+
+    return () => {
+      controller.abort();
+    };
   }, [authLoading, token, user, filtroRango, filtroDesde, filtroHasta])
 
   if (authLoading || !token || !user || user.rol !== "admin") {

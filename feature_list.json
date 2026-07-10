@@ -353,6 +353,122 @@
         "No hay fugas de ancho ni superposición de contenido."
       ],
       "status": "done"
+    },
+    {
+      "id": "F2-07",
+      "name": "Sanitización y Validación de Cédula en Recepción",
+      "description": "P1 — Auditoría F2-04 Hallazgo 1. El campo de búsqueda en recepción no impone `maxLength` ni filtra caracteres no válidos. Un input arbitrariamente largo se envía sin sanitizar al endpoint `/api/v1/members/search/{cedula}`. Riesgo de inyección y degradación de rendimiento en el backend.",
+      "criteria_to_accept": [
+        "Agregar `maxLength={20}` al `<input>` de búsqueda en `reception/page.tsx:191-209`.",
+        "Implementar filtro de caracteres válidos en el frontend usando regex estricto para cédulas venezolanas: `/^[VJEGP]-?\\d{0,10}$/` o esquema de validación equivalente.",
+        "El campo rechaza visualmente (o ignora) caracteres que no coincidan con el patrón de cédula válido.",
+        "No se permite enviar la petición API si el input no cumple el patrón regex.",
+        "Prueba que verifique que inputs maliciosos (inyección SQL, strings largos, caracteres especiales) no llegan al endpoint."
+      ],
+      "status": "done"
+    },
+    {
+      "id": "F2-08",
+      "name": "Prevención de Race Conditions en Admin Dashboard",
+      "description": "P1 — Auditoría F2-04 Hallazgo 8 (Transversal). `admin/page.tsx:72-102` dispara `fetchData` cada vez que cambian los filtros de fecha sin AbortController. Si el usuario cambia rápidamente entre filtros, las respuestas HTTP anteriores pueden sobrescribir datos más recientes (race condition), comprometiendo la precisión cronológica de datos financieros.",
+      "criteria_to_accept": [
+        "Integrar un `AbortController` al método `fetchData` en `admin/page.tsx:75-101` (mismo patrón usado en F2-04 para recepción).",
+        "Cada cambio de filtro cancela la petición HTTP previa antes de iniciar la nueva.",
+        "El cleanup del `useEffect` cancela la petición en curso si el componente se desmonta.",
+        "Ignorar `CanceledError` / `ERR_CANCELED` en el catch para evitar errores espurios.",
+        "Prueba que simule cambios rápidos de filtro y verifique que solo la última respuesta se aplica al estado."
+      ],
+      "status": "done"
+    },
+    {
+      "id": "F2-09",
+      "name": "Prefijo de Cédula Implícito en Registro de Atletas",
+      "description": "P1 — PRD §1.2 (Baja Carga Cognitiva). El formulario de registro de atletas (`members/register/page.tsx:78-85`) requiere que el personal teclee manualmente el prefijo de la cédula (V-, J-, etc.), lo cual añade fricción innecesaria y genera errores de formato. El 90%+ de los atletas en Venezuela usan cédula V-, por lo que el prefijo debe ser implícito. El usuario solo ingresa los números; el sistema concatena 'V-' automáticamente. Coherente con la regex de F2-07 (`/^[VJEGP]-?\\d{1,10}$/`).",
+      "criteria_to_accept": [
+        "El campo de cédula en `/members/register` muestra un selector de prefijo (V, J, E, G, P) con 'V' seleccionado por defecto, junto a un input numérico donde el usuario solo ingresa dígitos.",
+        "El input numérico solo acepta caracteres numéricos (0-9). Se filtran y descartan letras, símbolos y caracteres especiales en tiempo real vía `onChange`.",
+        "El campo tiene `maxLength={10}` para limitar la cantidad de dígitos.",
+        "Antes de enviar al backend (`handleSubmit`), el sistema concatena `{prefijo}-{duplicado}` para formar la cédula completa (ej: prefijo='V', input='12345678' → envía 'V-12345678').",
+        "El resultado concatenado debe pasar la regex de F2-07: `/^[VJEGP]-?\\d{1,10}$/`. Si no pasa, se bloquea el envío con mensaje de error.",
+        "El label del campo cambia de 'Cédula (V‑...)' a 'Cédula' (el prefijo ya es visible en el selector).",
+        "El placeholder del input numérico muestra solo dígitos de ejemplo (ej: '25111222') sin prefijo.",
+        "Prueba de integración que verifique: (1) input '12345678' con prefijo V se guarda como 'V-12345678' en el payload, (2) input con caracteres no numéricos es rechazado, (3) cambio de prefijo a 'J' produce 'J-12345678'."
+      ],
+      "status": "done"
+    },
+    {
+      "id": "F3-01",
+      "name": "Sanitización y Validación de Cédula en Recepción",
+      "description": "P1 — Agregar `maxLength={20}` al <input> de cédula en `reception/page.tsx:195-206` y filtrar caracteres en el frontend mediante una regex estricta para el formato de identificación del país.",
+      "criteria_to_accept": [
+        "Agregar `maxLength={20}` al `<input>` de búsqueda en `reception/page.tsx:191-209`.",
+        "Implementar filtro de caracteres válidos en el frontend usando regex estricta para cédulas venezolanas: `/^[VJEGP]-?\\d{1,10}$/` o esquema de validación equivalente.",
+        "El campo rechaza visualmente (o ignora) caracteres que no coincidan con el patrón de cédula válido.",
+        "No se permite enviar la petición API si el input no cumple el patrón regex.",
+        "Prueba que verifique que inputs maliciosos (inyección SQL, strings largos, caracteres especiales) no llegan al endpoint."
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "F3-02",
+      "name": "Prevención de Race Conditions en Admin Dashboard",
+      "description": "P1 — Integrar `AbortController` al método `fetchData` de `admin/page.tsx:72-102` para invalidar peticiones HTTP antiguas de filtros de fecha cuando el usuario realiza clics rápidos consecutivos.",
+      "criteria_to_accept": [
+        "Integrar un `AbortController` al método `fetchData` en `admin/page.tsx:75-101` (mismo patrón usado en F2-04 para recepción).",
+        "Cada cambio de filtro cancela la petición HTTP previa antes de iniciar la nueva.",
+        "El cleanup del `useEffect` cancela la petición en curso si el componente se desmonta.",
+        "Ignorar `CanceledError` / `ERR_CANCELED` en el catch para evitar errores espurios.",
+        "Prueba que simule cambios rápidos de filtro y verifique que solo la última respuesta se aplica al estado."
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "F3-03",
+      "name": "Corrección de Layout y Capas en Sidebar Mobile",
+      "description": "P2 — Corregir la superposición del botón hamburguesa reubicándolo dentro de `Navbar.tsx` o aplicando un padding compensatorio de ancho `pl-14` en breakpoints móviles.",
+      "criteria_to_accept": [
+        "El botón hamburguesa no colisiona con el contenido del Navbar en vista mobile.",
+        "El título del Navbar es visible y no queda oculto tras el ícono hamburguesa.",
+        "El patrón de navegación mobile funciona correctamente (abrir/cerrar sidebar).",
+        "No hay regresión en la vista desktop del sidebar."
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "F3-04",
+      "name": "Renderizado Condicional del Sidebar Mobile",
+      "description": "P2 — Eliminar el duplicado inútil de nodos en el DOM de `Sidebar.tsx`. Reemplazar la ocultación visual de CSS (`translate-x-full`) por lógica condicional de React `{mobileOpen && (...)}` para evitar focus traps por teclado.",
+      "criteria_to_accept": [
+        "El `<aside>` mobile solo se renderiza en el DOM cuando `mobileOpen` es `true`.",
+        "No hay nodos DOM duplicados e invisibles cuando el sidebar está cerrado.",
+        "El usuario no puede tabular hacia enlaces ocultos del sidebar colapsado.",
+        "El sidebar mobile se abre y cierra correctamente con el botón hamburguesa."
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "F3-05",
+      "name": "Adaptabilidad de Tablas Deslizables en Mobile",
+      "description": "P2 — Envolver las tablas de \"Gestión de Personal\" y \"Lista de Atletas\" en un contenedor responsivo con la propiedad `overflow-x-auto` de Tailwind para permitir el desplazamiento horizontal en celulares.",
+      "criteria_to_accept": [
+        "Las tablas en `/staff/list` y `/members/list` son deslizables horizontalmente en pantallas móviles.",
+        "El contenedor usa la clase Tailwind `overflow-x-auto`.",
+        "No hay regresión visual en desktop (las tablas siguen ocupando el ancho completo).",
+        "El contenido de las tablas no se desborda fuera del viewport en celulares."
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "F3-06",
+      "name": "Corrección de Contraste de Color en Dropdowns y Planes",
+      "description": "P3 — Resolver el bug visual de letras blancas sobre fondo blanco en la interfaz de selección de planes y unificar los estilos de todos los menús desplegables (dropdowns) de la app para asegurar coherencia visual y cumplir con pautas mínimas de legibilidad.",
+      "criteria_to_accept": [
+        "Los menús desplegables (dropdowns) de la app muestran texto legible sobre fondo visible (sin letras blancas sobre fondo blanco).",
+        "La pantalla de selección de planes tiene contraste accesible que cumple pautas WCAG mínimas.",
+        "Los estilos de dropdowns son visualmente coherentes con el design system de la app (kinetic-glass, indigo tones).",
+        "Los estados hover y focus de los dropdowns son visibles y accesibles."
+      ],
+      "status": "pending"
     }
   ]
 }
