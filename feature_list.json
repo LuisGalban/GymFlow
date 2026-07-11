@@ -484,7 +484,7 @@
         "Migración Alembic generada y ejecutada sin pérdida de datos existentes.",
         "Prueba unitaria que valide creación de sede, unicidad de nombre, y que el borrado lógico (`estado_logico=False`) preserva la integridad referencial."
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "F4-02",
@@ -498,9 +498,11 @@
         "Los modelos SQLAlchemy (`models.py`) se actualizan con la relación `gym_id` y el mixin de filtro por sede.",
         "Prueba que verifique que una consulta sin filtro de `gym_id` retorna datos de TODAS las sedes (preparación para F4-04).",
         "Prueba que verifique que la migración existente (data de fase 1-3) no se pierde y queda asociada al gym por defecto.",
-        "La migración NO altera la normalización USD existente: todos los `monto_usd` y `tasa_cambio` de pagos históricos permanecen intactos."
+        "La migración NO altera la normalización USD existente: todos los `monto_usd` y `tasa_cambio` de pagos históricos permanecen intactos.",
+        "El CRUD completo de la tabla `planes` pasa a ser independiente por `gym_id`: cada sede administra sus propios planes (nombre, precio_usd, duración) sin interferir con los de otras sedes.",
+        "La eliminación de un plan por parte del administrador de un gimnasio usa obligatoriamente borrado lógico (`estado_logico=False`) en lugar de `DELETE` físico, protegiendo la integridad referencial del historial de la tabla `pagos` que depende de `planes.id`."
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "F4-03",
@@ -515,7 +517,7 @@
         "Prueba que verifique login exitoso con token que contiene `gym_id`.",
         "Prueba que verifique que un endpoint autenticado tiene acceso al `gym_id` del usuario actual."
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "F4-04",
@@ -530,25 +532,30 @@
         "Los endpoints de admin (KPIs, cashflow, vencidos) retornan SOLO datos de la sede del admin autenticado.",
         "Prueba de integración que simule dos sedes con datos aislados y verifique que el endpoint de miembros de sede A no retorna miembros de sede B.",
         "Prueba de seguridad que intente forzar un `gym_id` diferente en el payload de registro de pago y verifique que el backend lo sobreescribe con el del token.",
-        "La capa de filtrado NO interfiere con la normalización USD: el cálculo de `monto_usd` a partir de `monto_original` y `tasa_cambio` se mantiene idéntico al comportamiento pre-multi-tenant."
+        "La capa de filtrado NO interfiere con la normalización USD: el cálculo de `monto_usd` a partir de `monto_original` y `tasa_cambio` se mantiene idéntico al comportamiento pre-multi-tenant.",
+        "Las validaciones de unicidad de nombres de planes se aíslan por `gym_id`: el Gimnasio A y el Gimnasio B pueden tener un plan llamado 'Mensualidad' con precios diferentes sin que se genere conflicto de constraint UNIQUE. La restricción de unicidad se aplica sobre la tupla `(nombre, gym_id)` en lugar de `nombre` aislado."
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "F4-05",
-      "name": "Panel SuperAdmin — Gestión de Sedes y Suscripciones",
-      "description": "P1 — Crear una vista restringida accesible SOLO para el rol `super_admin` (nuevo rol por encima de `admin`) para dar de alta nuevos gimnasios, pausar/reanudar suscripciones, y visualizar métricas agregadas de TODAS las sedes. El rol `admin` de cada sede NO debe ver esta vista.",
+      "name": "Panel SuperAdmin — Gestión de Sedes y Onboarding Descentralizado",
+      "description": "P1 — Crear una vista restringida (solo `super_admin`) para dar de alta nuevos gimnasios y gestionar suscripciones. Flujo de onboarding descentralizado: el `super_admin` crea/autoriza la sede en la BD, lo que habilita un endpoint público de registro donde el dueño de ese gimnasio específico puede ingresar manualmente su usuario, correo y contraseña, quedando vinculado automáticamente a su sede autorizada con el rol de `admin`.",
       "criteria_to_accept": [
         "Nuevo enum `SuperAdminRole` o extensión de `UserRole` con valor `super_admin` (por encima de `admin`).",
-        "Endpoint `POST /api/v1/super-admin/gyms` para crear una nueva sede (solo `super_admin`).",
+        "Endpoint `POST /api/v1/super-admin/gyms` para crear una nueva sede (solo `super_admin`). La respuesta incluye un `token_sede` (UUID único) que identifica la autorización de esa sede para auto-registro.",
         "Endpoint `GET /api/v1/super-admin/gyms` que lista todas las sedes con métricas resumidas (miembros activos, ingresos del mes, estado de suscripción).",
         "Endpoint `PUT /api/v1/super-admin/gyms/{id}/suscripcion` para pausar, reanudar o suspender una sede.",
+        "Endpoint público `POST /api/v1/auth/register-gym-admin` que recibe `{token_sede, nombre, correo, password}`. Valida que el `token_sede` corresponda a una sede activa (`estado_suscripcion=activo`), crea el usuario con rol `admin` vinculado a esa sede, y retorna un JWT con `gym_id` y `rol=admin`. Una vez registrado el primer admin, el endpoint rechaza registros adicionales para esa sede (un solo admin por sede vía este flujo).",
+        "El frontend incluye una ruta `/register-gym/{token_sede}` accesible SIN autenticación donde el dueño ingresa sus datos. Si el token es inválido o la sede está pausada/suspendida, muestra error claro.",
         "El endpoint de login detecta el rol `super_admin` y retorna un token con claims diferenciados.",
         "Un usuario con rol `admin` normal recibe 403 Forbidden al intentar acceder a cualquier `/api/v1/super-admin/*`.",
-        "El frontend incluye una ruta `/super-admin/gyms` accesible solo para `super_admin` con tabla de sedes y botón para crear nueva.",
-        "Todos los endpoints del panel SuperAdmin respetan el borrado lógico: baja de una sede no elimina datos históricos.",
+        "El frontend incluye una ruta `/super-admin/gyms` accesible solo para `super_admin` con tabla de sedes, botón para crear nueva y visualización del `token_sede` generado.",
+        "Todos los endpoints del panel SuperAdmin y del registro público respetan el borrado lógico: baja de una sede no elimina datos históricos y el token de registro se invalida.",
         "Prueba que verifique que un `admin` normal no puede acceder a endpoints SuperAdmin.",
-        "Prueba que verifique que un `super_admin` puede crear, listar y pausar sedes."
+        "Prueba que verifique que un `super_admin` puede crear, listar y pausar sedes.",
+        "Prueba que verifique el flujo completo de onboarding: super_admin crea sede → genera token → usuario se registra con token → queda vinculado con rol admin y gym_id correcto.",
+        "Prueba que verifique que un token de sede ya utilizado es rechazado (un solo admin por sede vía auto-registro)."
       ],
       "status": "pending"
     }

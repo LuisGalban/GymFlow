@@ -218,12 +218,56 @@ Las siguientes reglas de negocio **NO se alteran** y se extienden al contexto mu
 
 | ID | Tarea | Prioridad | Estado |
 |----|-------|-----------|--------|
-| F4-01 | Modelo de Sedes (Gyms) | P0 | ⏳ Pending |
-| F4-02 | Migración de Esquema — gym_id como FK | P0 | ⏳ Pending |
-| F4-03 | Refactor de Auth — gym_id en JWT | P0 | ⏳ Pending |
-| F4-04 | Middleware de Filtrado Automático por gym_id | P0 | ⏳ Pending |
+| F4-01 | Modelo de Sedes (Gyms) | P0 | ✅ Done |
+| F4-02 | Migración de Esquema — gym_id como FK | P0 | ✅ Done |
+| F4-03 | Refactor de Auth — gym_id en JWT | P0 | ✅ Done |
+| F4-04 | Middleware de Filtrado Automático por gym_id | P0 | ✅ Done |
 | F4-05 | Panel SuperAdmin — Gestión de Sedes | P1 | ⏳ Pending |
 
 ### Orden de Ejecución Recomendado
 `F4-01` → `F4-02` → `F4-03` → `F4-04` → `F4-05`
 (Dependencias lineales: cada tarea requiere la anterior completada)
+
+## ✅ Completada — F4-02 (Migración de Esquema — gym_id como FK)
+
+### Resumen de cambios
+- **Modelo** (`backend/app/models.py`): Agregada columna `gym_id` (Integer, FK → `gyms.id`, `ondelete="RESTRICT"`, `nullable=False`) a: `Usuario`, `Miembro`, `Plan`, `Pago`, `Asistencia`. Agregadas relaciones inversas en `Gym` (`usuarios`, `miembros`, `planes`, `pagos`, `asistencias`) y `back_populates` en cada entidad.
+- **Migración Alembic** (`backend/alembic/versions/b7d3f1a9c8e2_add_gym_id_fk_to_all_entities.py`): Migración manual con: (1) `add_column` nullable para 5 tablas, (2) seed de gym default (`id=1, nombre='GymFlow Sede Central'`), (3) `UPDATE SET gym_id=1 WHERE gym_id IS NULL` para cada tabla, (4) `ALTER COLUMN NOT NULL`, (5) `create_foreign_key` con `ON DELETE RESTRICT`.
+- **Tests** (`backend/test_f4_02_gym_id_migration.py`): 10 tests — columnas gym_id NOT NULL, FK RESTRICT, data seed gym_id=1, query sin filtro retorna todas las sedes, normalización USD intacta, FK RESTRICT impide delete de gym con data, planes independientes por gym, borrado lógico de planes, relaciones backref funcionales.
+- **Tests existentes adaptados** (`backend/test_check_constraints.py`): Agregado `Gym` + `gym_id` a setup y test objects. Agregado `create_all`/`drop_all` para evitar interdrop con otros test files.
+- **30 tests, todos OK** — Sin regresiones.
+- **Reviewer:** APPROVED — Sin violaciones de borrado lógico ni normalización USD. 8/8 checklist items.
+
+## ✅ Completada — F4-03 (Refactor de Auth — gym_id en JWT)
+
+### Resumen de cambios
+- **Auth** (`backend/app/auth/auth.py`): `obtener_usuario_actual()` y `obtener_usuario_por_token()` ahora extraen `gym_id` del payload JWT. Rechazan con 401 si el token no contiene `gym_id` (tokens legacy).
+- **Login** (`backend/app/main.py:124`): `crear_token_acceso()` ahora incluye `"gym_id": usuario.gym_id` en el payload. Respuesta incluye `gym_id` para el frontend.
+- **Schemas** (`backend/app/schemas.py`): `Token` y `TokenData` actualizados con campo `gym_id: int`.
+- **Tests** (`backend/test_f4_03_jwt_gym_id.py`): 5 tests — login retorna gym_id, JWT contiene gym_id, `/me` funciona, tokens legacy rechazados en `/me` y `obtener_usuario_por_token`.
+- **Reviewer:** APPROVED — 8/8 checklist items. Sin regresiones.
+
+## ✅ Completada — F4-04 (Middleware de Filtrado Automático por gym_id)
+
+### Resumen de cambios
+- **Backend** (`backend/app/main.py`): Corregidos 8 endpoints críticos sin filtro `gym_id`:
+  - `PUT /api/v1/users/{id}` — Added `Usuario.gym_id == usuario_actual.gym_id` filter
+  - `POST /api/v1/memberships` — Validación de miembro y plan por `gym_id`
+  - `POST /api/v1/asistencias/checkin` — Filtrado de miembro por `gym_id`
+  - `POST /api/v1/asistencias/batch` — Filtrado de miembros por `gym_id`
+  - `GET /api/v1/admin/kpis` — Filtrado de miembros y pagos por `gym_id`
+  - `GET /api/v1/admin/cashflow` — Filtrado de miembros y pagos por `gym_id`
+  - `GET /api/v1/admin/payments/{id}` — Filtrado de pago por `Pago.gym_id`
+  - `GET /api/v1/admin/vencidos` — Filtrado de miembros por `gym_id`
+- **Modelo** (`backend/app/models.py`): Agregada `UniqueConstraint('nombre', 'gym_id', name='uq_plan_nombre_gym')` al modelo `Plan` para aislamiento de unicidad de planes por sede.
+- **Migración Alembic** (`backend/alembic/versions/5e13ef50a67b_add_unique_constraint_planes_nombre_gym_.py`): Migración autogenerada para aplicar la restricción de unicidad compuesta.
+- **Tests** (`backend/test_f4_04_gym_filter.py`): 15 tests de aislamiento multi-tenant:
+  - Gym1 no ve miembros de Gym2 y viceversa
+  - Búsqueda por cédula aislada por gym
+  - Planes, KPIs, cashflow, users, vencidos filtrados por gym
+  - Detalle de pago cruzado bloqueado (404)
+  - Update de usuario cruzado bloqueado (404)
+  - Check-in de miembro de otra sede bloqueado (404)
+  - Plan con mismo nombre en diferente gym permitido
+- **BD restaurada**: Tablas recreadas tras falla eléctrica + seed de datos actualizado con `gym_id`
+- **Reviewer:** APPROVED — 15/15 tests pasan. Sin regresiones.

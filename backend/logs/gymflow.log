@@ -1,598 +1,673 @@
-2026-07-09 01:10:23,196 - app.main - INFO - TEST_LOG_MESSAGE_F21
-2026-07-09 01:10:23,198 - app.main - ERROR - TEST_ERROR_MESSAGE_F21
-2026-07-09 01:10:23,200 - app.main - INFO - TEST_FORMAT_CHECK_F21
-2026-07-09 01:10:30,039 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 01:10:30,043 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:10:30,063 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis "HTTP/1.1 200 OK"
-2026-07-09 01:10:30,074 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/cashflow "HTTP/1.1 200 OK"
-2026-07-09 01:10:30,364 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 01:10:30,366 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:10:30,661 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/users/register "HTTP/1.1 200 OK"
-2026-07-09 01:10:30,671 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/users "HTTP/1.1 200 OK"
-2026-07-09 01:10:30,685 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/users/56 "HTTP/1.1 200 OK"
-2026-07-09 01:10:31,370 - app.main - INFO - Login exitoso usuario=workerf14@gymflow.com rol=worker
-2026-07-09 01:10:31,374 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:10:31,391 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/asistencias/batch "HTTP/1.1 200 OK"
-2026-07-09 01:10:31,677 - app.main - INFO - Login exitoso usuario=workerf14@gymflow.com rol=worker
-2026-07-09 01:10:31,680 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:10:31,689 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/asistencias/batch "HTTP/1.1 200 OK"
-2026-07-09 01:10:32,326 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 01:10:32,329 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:10:32,616 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 01:10:32,620 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:10:32,628 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 200 OK"
-2026-07-09 01:10:32,637 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 01:10:32,645 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 01:10:32,651 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 01:10:32,931 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 01:10:32,935 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:10:32,943 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 200 OK"
-2026-07-09 01:10:32,950 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/me "HTTP/1.1 200 OK"
-2026-07-09 01:10:32,959 - app.main - INFO - TEST_LOG_MESSAGE_F21
-2026-07-09 01:10:32,961 - app.main - ERROR - TEST_ERROR_MESSAGE_F21
-2026-07-09 01:10:32,963 - app.main - INFO - TEST_FORMAT_CHECK_F21
-2026-07-09 01:11:44,782 - app.main - INFO - TEST_LOG_MESSAGE_F21
-2026-07-09 01:11:44,785 - app.main - ERROR - TEST_ERROR_MESSAGE_F21
-2026-07-09 01:11:44,789 - app.main - INFO - TEST_FORMAT_CHECK_F21
-2026-07-09 01:12:05,872 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 01:12:05,876 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:12:05,895 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis "HTTP/1.1 200 OK"
-2026-07-09 01:12:05,905 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/cashflow "HTTP/1.1 200 OK"
-2026-07-09 01:12:06,192 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 01:12:06,196 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:12:06,498 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/users/register "HTTP/1.1 200 OK"
-2026-07-09 01:12:06,510 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/users "HTTP/1.1 200 OK"
-2026-07-09 01:12:06,524 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/users/62 "HTTP/1.1 200 OK"
-2026-07-09 01:12:07,189 - app.main - INFO - Login exitoso usuario=workerf14@gymflow.com rol=worker
-2026-07-09 01:12:07,193 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:12:07,208 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/asistencias/batch "HTTP/1.1 200 OK"
-2026-07-09 01:12:07,497 - app.main - INFO - Login exitoso usuario=workerf14@gymflow.com rol=worker
-2026-07-09 01:12:07,501 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:12:07,512 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/asistencias/batch "HTTP/1.1 200 OK"
-2026-07-09 01:12:08,209 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 01:12:08,213 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:12:08,500 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 01:12:08,503 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:12:08,512 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 200 OK"
-2026-07-09 01:12:08,521 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 01:12:08,530 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 01:12:08,537 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 01:12:08,824 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 01:12:08,827 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:12:08,833 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 200 OK"
-2026-07-09 01:12:08,841 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/me "HTTP/1.1 200 OK"
-2026-07-09 01:12:08,850 - app.main - INFO - TEST_LOG_MESSAGE_F21
-2026-07-09 01:12:08,852 - app.main - ERROR - TEST_ERROR_MESSAGE_F21
-2026-07-09 01:12:08,854 - app.main - INFO - TEST_FORMAT_CHECK_F21
-2026-07-09 01:21:29,688 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 01:21:29,692 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:21:29,709 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis "HTTP/1.1 200 OK"
-2026-07-09 01:21:29,721 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/cashflow "HTTP/1.1 200 OK"
-2026-07-09 01:21:30,011 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 01:21:30,014 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:21:30,310 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/users/register "HTTP/1.1 200 OK"
-2026-07-09 01:21:30,323 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/users "HTTP/1.1 200 OK"
-2026-07-09 01:21:30,337 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/users/69 "HTTP/1.1 200 OK"
-2026-07-09 01:21:31,097 - app.main - INFO - Login exitoso usuario=workerf14@gymflow.com rol=worker
-2026-07-09 01:21:31,100 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:21:31,114 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/asistencias/batch "HTTP/1.1 200 OK"
-2026-07-09 01:21:31,405 - app.main - INFO - Login exitoso usuario=workerf14@gymflow.com rol=worker
-2026-07-09 01:21:31,407 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:21:31,416 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/asistencias/batch "HTTP/1.1 200 OK"
-2026-07-09 01:21:32,050 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 01:21:32,053 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:21:32,340 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 01:21:32,343 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:21:32,351 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 200 OK"
-2026-07-09 01:21:32,359 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 01:21:32,368 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 01:21:32,376 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 01:21:32,657 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 01:21:32,660 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:21:32,669 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 200 OK"
-2026-07-09 01:21:32,678 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/me "HTTP/1.1 200 OK"
-2026-07-09 01:21:32,689 - app.main - INFO - TEST_LOG_MESSAGE_F21
-2026-07-09 01:21:32,692 - app.main - ERROR - TEST_ERROR_MESSAGE_F21
-2026-07-09 01:21:32,695 - app.main - INFO - TEST_FORMAT_CHECK_F21
-2026-07-09 01:22:16,238 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 01:22:16,242 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:22:16,259 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis "HTTP/1.1 200 OK"
-2026-07-09 01:22:16,271 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/cashflow "HTTP/1.1 200 OK"
-2026-07-09 01:22:16,557 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 01:22:16,560 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:22:16,857 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/users/register "HTTP/1.1 200 OK"
-2026-07-09 01:22:16,868 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/users "HTTP/1.1 200 OK"
-2026-07-09 01:22:16,881 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/users/76 "HTTP/1.1 200 OK"
-2026-07-09 01:22:17,642 - app.main - INFO - Login exitoso usuario=workerf14@gymflow.com rol=worker
-2026-07-09 01:22:17,646 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:22:17,668 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/asistencias/batch "HTTP/1.1 200 OK"
-2026-07-09 01:22:17,957 - app.main - INFO - Login exitoso usuario=workerf14@gymflow.com rol=worker
-2026-07-09 01:22:17,961 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:22:17,972 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/asistencias/batch "HTTP/1.1 200 OK"
-2026-07-09 01:22:18,625 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 01:22:18,628 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:22:18,916 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 01:22:18,919 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:22:18,927 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 200 OK"
-2026-07-09 01:22:18,935 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 01:22:18,943 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 01:22:18,952 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 01:22:19,240 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 01:22:19,243 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:22:19,250 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 200 OK"
-2026-07-09 01:22:19,257 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/me "HTTP/1.1 200 OK"
-2026-07-09 01:22:19,266 - app.main - INFO - TEST_LOG_MESSAGE_F21
-2026-07-09 01:22:19,269 - app.main - ERROR - TEST_ERROR_MESSAGE_F21
-2026-07-09 01:22:19,272 - app.main - INFO - TEST_FORMAT_CHECK_F21
-2026-07-09 01:28:17,505 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 01:28:17,515 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 01:28:17,526 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 01:28:17,534 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 01:28:17,541 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 01:28:24,379 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 01:28:24,382 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:28:24,400 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis "HTTP/1.1 200 OK"
-2026-07-09 01:28:24,411 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/cashflow "HTTP/1.1 200 OK"
-2026-07-09 01:28:24,698 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 01:28:24,701 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:28:24,998 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/users/register "HTTP/1.1 200 OK"
-2026-07-09 01:28:25,012 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/users "HTTP/1.1 200 OK"
-2026-07-09 01:28:25,037 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/users/83 "HTTP/1.1 200 OK"
-2026-07-09 01:28:25,805 - app.main - INFO - Login exitoso usuario=workerf14@gymflow.com rol=worker
-2026-07-09 01:28:25,808 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:28:25,825 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/asistencias/batch "HTTP/1.1 200 OK"
-2026-07-09 01:28:26,112 - app.main - INFO - Login exitoso usuario=workerf14@gymflow.com rol=worker
-2026-07-09 01:28:26,116 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:28:26,125 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/asistencias/batch "HTTP/1.1 200 OK"
-2026-07-09 01:28:26,764 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 01:28:26,767 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:28:27,050 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 01:28:27,054 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:28:27,064 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 200 OK"
-2026-07-09 01:28:27,071 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 01:28:27,078 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 01:28:27,086 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 01:28:27,377 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 01:28:27,380 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 01:28:27,387 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 200 OK"
-2026-07-09 01:28:27,395 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/me "HTTP/1.1 200 OK"
-2026-07-09 01:28:27,408 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 01:28:27,418 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 01:28:27,429 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 01:28:27,438 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 01:28:27,448 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 01:28:27,455 - app.main - INFO - TEST_LOG_MESSAGE_F21
-2026-07-09 01:28:27,458 - app.main - ERROR - TEST_ERROR_MESSAGE_F21
-2026-07-09 01:28:27,460 - app.main - INFO - TEST_FORMAT_CHECK_F21
-2026-07-09 01:28:52,114 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 01:28:52,123 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 01:28:52,132 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 01:28:52,144 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 01:28:52,223 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 15:28:59,159 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
-2026-07-09 18:05:46,406 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:05:46,410 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:05:46,444 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=personalizado&desde=2020-01-01&hasta=2020-01-31 "HTTP/1.1 200 OK"
-2026-07-09 18:05:46,773 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:05:46,777 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:05:46,792 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis "HTTP/1.1 200 OK"
-2026-07-09 18:05:46,805 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/cashflow "HTTP/1.1 200 OK"
-2026-07-09 18:05:47,094 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:05:47,097 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:05:47,401 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/users/register "HTTP/1.1 200 OK"
-2026-07-09 18:05:47,415 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/users "HTTP/1.1 200 OK"
-2026-07-09 18:05:47,435 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/users/90 "HTTP/1.1 200 OK"
-2026-07-09 18:05:47,741 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:05:47,744 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:05:47,757 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=dia "HTTP/1.1 200 OK"
-2026-07-09 18:05:47,765 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/cashflow?rango=dia "HTTP/1.1 200 OK"
-2026-07-09 18:05:48,059 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:05:48,062 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:05:48,078 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=semana "HTTP/1.1 200 OK"
-2026-07-09 18:05:48,371 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:05:48,374 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:05:48,387 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=mes "HTTP/1.1 200 OK"
-2026-07-09 18:05:48,684 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:05:48,688 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:05:48,705 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=ano "HTTP/1.1 200 OK"
-2026-07-09 18:05:49,001 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:05:49,005 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:05:49,020 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=personalizado&desde=2026-07-09&hasta=2026-07-09 "HTTP/1.1 200 OK"
-2026-07-09 18:06:06,573 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:06:06,577 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:06:06,601 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=personalizado&desde=2020-01-01&hasta=2020-01-31 "HTTP/1.1 200 OK"
-2026-07-09 18:06:06,930 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:06:06,934 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:06:06,958 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis "HTTP/1.1 200 OK"
-2026-07-09 18:06:06,977 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/cashflow "HTTP/1.1 200 OK"
-2026-07-09 18:06:07,328 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:06:07,331 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:06:07,632 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/users/register "HTTP/1.1 200 OK"
-2026-07-09 18:06:07,643 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/users "HTTP/1.1 200 OK"
-2026-07-09 18:06:07,657 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/users/92 "HTTP/1.1 200 OK"
-2026-07-09 18:06:07,946 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:06:07,949 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:06:07,962 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=dia "HTTP/1.1 200 OK"
-2026-07-09 18:06:07,971 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/cashflow?rango=dia "HTTP/1.1 200 OK"
-2026-07-09 18:06:08,263 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:06:08,266 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:06:08,280 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=semana "HTTP/1.1 200 OK"
-2026-07-09 18:06:08,603 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:06:08,607 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:06:08,620 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=mes "HTTP/1.1 200 OK"
-2026-07-09 18:06:08,911 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:06:08,914 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:06:08,927 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=ano "HTTP/1.1 200 OK"
-2026-07-09 18:06:09,218 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:06:09,223 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:06:09,240 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=personalizado&desde=2026-07-09&hasta=2026-07-09 "HTTP/1.1 200 OK"
-2026-07-09 18:06:10,180 - app.main - INFO - Login exitoso usuario=workerf14@gymflow.com rol=worker
-2026-07-09 18:06:10,183 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:06:10,204 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/asistencias/batch "HTTP/1.1 200 OK"
-2026-07-09 18:06:10,494 - app.main - INFO - Login exitoso usuario=workerf14@gymflow.com rol=worker
-2026-07-09 18:06:10,497 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:06:10,506 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/asistencias/batch "HTTP/1.1 200 OK"
-2026-07-09 18:06:11,150 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 18:06:11,153 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:06:11,442 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 18:06:11,446 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:06:11,456 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 200 OK"
-2026-07-09 18:06:11,465 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 18:06:11,474 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 18:06:11,483 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 18:06:11,769 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 18:06:11,772 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:06:11,779 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 200 OK"
-2026-07-09 18:06:11,787 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/me "HTTP/1.1 200 OK"
-2026-07-09 18:06:11,799 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 18:06:11,809 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 18:06:11,818 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 18:06:11,827 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 18:06:11,836 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 18:06:11,841 - app.main - INFO - TEST_LOG_MESSAGE_F21
-2026-07-09 18:06:11,843 - app.main - ERROR - TEST_ERROR_MESSAGE_F21
-2026-07-09 18:06:11,845 - app.main - INFO - TEST_FORMAT_CHECK_F21
-2026-07-09 18:06:45,223 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:06:45,227 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:06:45,253 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=personalizado&desde=2020-01-01&hasta=2020-01-31 "HTTP/1.1 200 OK"
-2026-07-09 18:06:45,572 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:06:45,575 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:06:45,590 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis "HTTP/1.1 200 OK"
-2026-07-09 18:06:45,602 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/cashflow "HTTP/1.1 200 OK"
-2026-07-09 18:06:45,894 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:06:45,897 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:06:46,196 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/users/register "HTTP/1.1 200 OK"
-2026-07-09 18:06:46,207 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/users "HTTP/1.1 200 OK"
-2026-07-09 18:06:46,220 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/users/99 "HTTP/1.1 200 OK"
-2026-07-09 18:06:46,509 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:06:46,512 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:06:46,525 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=dia "HTTP/1.1 200 OK"
-2026-07-09 18:06:46,534 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/cashflow?rango=dia "HTTP/1.1 200 OK"
-2026-07-09 18:06:46,824 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:06:46,828 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:06:46,843 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=semana "HTTP/1.1 200 OK"
-2026-07-09 18:06:47,138 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:06:47,141 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:06:47,155 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=mes "HTTP/1.1 200 OK"
-2026-07-09 18:06:47,439 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:06:47,442 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:06:47,455 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=ano "HTTP/1.1 200 OK"
-2026-07-09 18:06:47,744 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:06:47,747 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:06:47,761 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=personalizado&desde=2026-07-09&hasta=2026-07-09 "HTTP/1.1 200 OK"
-2026-07-09 18:06:48,693 - app.main - INFO - Login exitoso usuario=workerf14@gymflow.com rol=worker
-2026-07-09 18:06:48,696 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:06:48,712 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/asistencias/batch "HTTP/1.1 200 OK"
-2026-07-09 18:06:49,000 - app.main - INFO - Login exitoso usuario=workerf14@gymflow.com rol=worker
-2026-07-09 18:06:49,004 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:06:49,012 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/asistencias/batch "HTTP/1.1 200 OK"
-2026-07-09 18:06:49,666 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 18:06:49,670 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:06:49,961 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 18:06:49,964 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:06:49,975 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 200 OK"
-2026-07-09 18:06:49,984 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 18:06:49,992 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 18:06:49,998 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 18:06:50,289 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 18:06:50,292 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:06:50,301 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 200 OK"
-2026-07-09 18:06:50,310 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/me "HTTP/1.1 200 OK"
-2026-07-09 18:06:50,325 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 18:06:50,335 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 18:06:50,347 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 18:06:50,357 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 18:06:50,366 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 18:06:50,372 - app.main - INFO - TEST_LOG_MESSAGE_F21
-2026-07-09 18:06:50,375 - app.main - ERROR - TEST_ERROR_MESSAGE_F21
-2026-07-09 18:06:50,378 - app.main - INFO - TEST_FORMAT_CHECK_F21
-2026-07-09 18:19:16,790 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:19:16,793 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:19:16,817 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=personalizado&desde=2020-01-01&hasta=2020-01-31 "HTTP/1.1 200 OK"
-2026-07-09 18:19:17,132 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:19:17,136 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:19:17,163 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/payments/34 "HTTP/1.1 200 OK"
-2026-07-09 18:19:17,549 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:19:17,552 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:19:18,202 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:19:18,206 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:19:18,215 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/payments/999999 "HTTP/1.1 404 Not Found"
-2026-07-09 18:19:18,590 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:19:18,595 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:19:18,615 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis "HTTP/1.1 200 OK"
-2026-07-09 18:19:18,630 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/cashflow "HTTP/1.1 200 OK"
-2026-07-09 18:19:18,922 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:19:18,925 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:19:19,223 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/users/register "HTTP/1.1 200 OK"
-2026-07-09 18:19:19,233 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/users "HTTP/1.1 200 OK"
-2026-07-09 18:19:19,248 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/users/106 "HTTP/1.1 200 OK"
-2026-07-09 18:19:19,534 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:19:19,538 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:19:19,552 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=dia "HTTP/1.1 200 OK"
-2026-07-09 18:19:19,561 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/cashflow?rango=dia "HTTP/1.1 200 OK"
-2026-07-09 18:19:19,845 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:19:19,848 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:19:19,861 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=semana "HTTP/1.1 200 OK"
-2026-07-09 18:19:20,151 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:19:20,155 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:19:20,167 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=mes "HTTP/1.1 200 OK"
-2026-07-09 18:19:20,455 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:19:20,457 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:19:20,472 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=ano "HTTP/1.1 200 OK"
-2026-07-09 18:19:20,759 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:19:20,762 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:19:20,775 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=personalizado&desde=2026-07-09&hasta=2026-07-09 "HTTP/1.1 200 OK"
-2026-07-09 18:19:22,336 - app.main - INFO - Login exitoso usuario=workerf14@gymflow.com rol=worker
-2026-07-09 18:19:22,339 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:19:22,357 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/asistencias/batch "HTTP/1.1 200 OK"
-2026-07-09 18:19:22,646 - app.main - INFO - Login exitoso usuario=workerf14@gymflow.com rol=worker
-2026-07-09 18:19:22,650 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:19:22,658 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/asistencias/batch "HTTP/1.1 200 OK"
-2026-07-09 18:19:23,303 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 18:19:23,306 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:19:23,594 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 18:19:23,597 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:19:23,605 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 200 OK"
-2026-07-09 18:19:23,612 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 18:19:23,621 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 18:19:23,628 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 18:19:23,914 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 18:19:23,917 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:19:23,925 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 200 OK"
-2026-07-09 18:19:23,934 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/me "HTTP/1.1 200 OK"
-2026-07-09 18:19:23,948 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 18:19:23,958 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 18:19:23,969 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 18:19:23,978 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 18:19:23,986 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 18:19:23,992 - app.main - INFO - TEST_LOG_MESSAGE_F21
-2026-07-09 18:19:23,995 - app.main - ERROR - TEST_ERROR_MESSAGE_F21
-2026-07-09 18:19:23,997 - app.main - INFO - TEST_FORMAT_CHECK_F21
-2026-07-09 18:20:03,319 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:20:03,323 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:03,353 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=personalizado&desde=2020-01-01&hasta=2020-01-31 "HTTP/1.1 200 OK"
-2026-07-09 18:20:03,663 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:20:03,669 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:03,693 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/payments/38 "HTTP/1.1 200 OK"
-2026-07-09 18:20:04,057 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:20:04,061 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:04,074 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/payments/39 "HTTP/1.1 200 OK"
-2026-07-09 18:20:04,371 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:20:04,374 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:04,383 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/payments/999999 "HTTP/1.1 404 Not Found"
-2026-07-09 18:20:04,687 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:20:04,690 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:04,703 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis "HTTP/1.1 200 OK"
-2026-07-09 18:20:04,715 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/cashflow "HTTP/1.1 200 OK"
-2026-07-09 18:20:05,030 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:20:05,033 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:05,326 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/users/register "HTTP/1.1 200 OK"
-2026-07-09 18:20:05,337 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/users "HTTP/1.1 200 OK"
-2026-07-09 18:20:05,351 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/users/113 "HTTP/1.1 200 OK"
-2026-07-09 18:20:05,643 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:20:05,646 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:05,659 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=dia "HTTP/1.1 200 OK"
-2026-07-09 18:20:05,668 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/cashflow?rango=dia "HTTP/1.1 200 OK"
-2026-07-09 18:20:05,954 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:20:05,957 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:05,971 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=semana "HTTP/1.1 200 OK"
-2026-07-09 18:20:06,261 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:20:06,264 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:06,281 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=mes "HTTP/1.1 200 OK"
-2026-07-09 18:20:06,569 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:20:06,572 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:06,585 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=ano "HTTP/1.1 200 OK"
-2026-07-09 18:20:06,871 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:20:06,874 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:06,889 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=personalizado&desde=2026-07-09&hasta=2026-07-09 "HTTP/1.1 200 OK"
-2026-07-09 18:20:22,157 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:20:22,160 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:22,186 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=personalizado&desde=2020-01-01&hasta=2020-01-31 "HTTP/1.1 200 OK"
-2026-07-09 18:20:22,490 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:20:22,494 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:22,524 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/payments/40 "HTTP/1.1 200 OK"
-2026-07-09 18:20:22,922 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:20:22,925 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:22,936 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/payments/41 "HTTP/1.1 200 OK"
-2026-07-09 18:20:23,236 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:20:23,239 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:23,247 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/payments/999999 "HTTP/1.1 404 Not Found"
-2026-07-09 18:20:23,549 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:20:23,552 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:23,567 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis "HTTP/1.1 200 OK"
-2026-07-09 18:20:23,580 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/cashflow "HTTP/1.1 200 OK"
-2026-07-09 18:20:23,873 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:20:23,877 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:24,172 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/users/register "HTTP/1.1 200 OK"
-2026-07-09 18:20:24,183 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/users "HTTP/1.1 200 OK"
-2026-07-09 18:20:24,198 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/users/115 "HTTP/1.1 200 OK"
-2026-07-09 18:20:24,489 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:20:24,492 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:24,506 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=dia "HTTP/1.1 200 OK"
-2026-07-09 18:20:24,516 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/cashflow?rango=dia "HTTP/1.1 200 OK"
-2026-07-09 18:20:24,807 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:20:24,809 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:24,824 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=semana "HTTP/1.1 200 OK"
-2026-07-09 18:20:25,112 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:20:25,115 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:25,130 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=mes "HTTP/1.1 200 OK"
-2026-07-09 18:20:25,416 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:20:25,419 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:25,432 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=ano "HTTP/1.1 200 OK"
-2026-07-09 18:20:25,727 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:20:25,730 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:25,743 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=personalizado&desde=2026-07-09&hasta=2026-07-09 "HTTP/1.1 200 OK"
-2026-07-09 18:20:26,522 - app.main - INFO - Login exitoso usuario=workerf14@gymflow.com rol=worker
-2026-07-09 18:20:26,525 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:26,542 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/asistencias/batch "HTTP/1.1 200 OK"
-2026-07-09 18:20:26,835 - app.main - INFO - Login exitoso usuario=workerf14@gymflow.com rol=worker
-2026-07-09 18:20:26,838 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:26,848 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/asistencias/batch "HTTP/1.1 200 OK"
-2026-07-09 18:20:27,665 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 18:20:27,673 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:27,970 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 18:20:27,973 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:27,981 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 200 OK"
-2026-07-09 18:20:27,988 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 18:20:27,997 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 18:20:28,005 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 18:20:28,296 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 18:20:28,300 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:20:28,309 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 200 OK"
-2026-07-09 18:20:28,317 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/me "HTTP/1.1 200 OK"
-2026-07-09 18:20:28,330 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 18:20:28,343 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 18:20:28,356 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 18:20:28,369 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 18:20:28,382 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 18:20:28,392 - app.main - INFO - TEST_LOG_MESSAGE_F21
-2026-07-09 18:20:28,395 - app.main - ERROR - TEST_ERROR_MESSAGE_F21
-2026-07-09 18:20:28,398 - app.main - INFO - TEST_FORMAT_CHECK_F21
-2026-07-09 18:21:12,694 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:21:12,699 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:21:12,726 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=personalizado&desde=2020-01-01&hasta=2020-01-31 "HTTP/1.1 200 OK"
-2026-07-09 18:21:13,031 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:21:13,034 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:21:13,053 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/payments/44 "HTTP/1.1 200 OK"
-2026-07-09 18:21:13,422 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:21:13,425 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:21:13,436 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/payments/45 "HTTP/1.1 200 OK"
-2026-07-09 18:21:13,732 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:21:13,735 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:21:13,743 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/payments/999999 "HTTP/1.1 404 Not Found"
-2026-07-09 18:21:14,048 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:21:14,051 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:21:14,064 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis "HTTP/1.1 200 OK"
-2026-07-09 18:21:14,076 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/cashflow "HTTP/1.1 200 OK"
-2026-07-09 18:21:14,366 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:21:14,369 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:21:14,744 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/users/register "HTTP/1.1 200 OK"
-2026-07-09 18:21:14,756 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/users "HTTP/1.1 200 OK"
-2026-07-09 18:21:14,770 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/users/122 "HTTP/1.1 200 OK"
-2026-07-09 18:21:15,060 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:21:15,064 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:21:15,076 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=dia "HTTP/1.1 200 OK"
-2026-07-09 18:21:15,087 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/cashflow?rango=dia "HTTP/1.1 200 OK"
-2026-07-09 18:21:15,383 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:21:15,386 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:21:15,402 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=semana "HTTP/1.1 200 OK"
-2026-07-09 18:21:15,698 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:21:15,701 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:21:15,714 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=mes "HTTP/1.1 200 OK"
-2026-07-09 18:21:16,005 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:21:16,008 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:21:16,022 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=ano "HTTP/1.1 200 OK"
-2026-07-09 18:21:16,310 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:21:16,313 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:21:16,326 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=personalizado&desde=2026-07-09&hasta=2026-07-09 "HTTP/1.1 200 OK"
-2026-07-09 18:21:17,225 - app.main - INFO - Login exitoso usuario=workerf14@gymflow.com rol=worker
-2026-07-09 18:21:17,228 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:21:17,247 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/asistencias/batch "HTTP/1.1 200 OK"
-2026-07-09 18:21:17,536 - app.main - INFO - Login exitoso usuario=workerf14@gymflow.com rol=worker
-2026-07-09 18:21:17,539 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:21:17,548 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/asistencias/batch "HTTP/1.1 200 OK"
-2026-07-09 18:21:18,306 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 18:21:18,310 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:21:18,600 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 18:21:18,604 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:21:18,611 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 200 OK"
-2026-07-09 18:21:18,618 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 18:21:18,628 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 18:21:18,637 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 401 Unauthorized"
-2026-07-09 18:21:18,929 - app.main - INFO - Login exitoso usuario=workerf20@gymflow.com rol=worker
-2026-07-09 18:21:18,933 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:21:18,940 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/session "HTTP/1.1 200 OK"
-2026-07-09 18:21:18,948 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/me "HTTP/1.1 200 OK"
-2026-07-09 18:21:18,963 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 18:21:18,973 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 18:21:18,982 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 18:21:18,991 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 18:21:19,001 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
-2026-07-09 18:21:19,008 - app.main - INFO - TEST_LOG_MESSAGE_F21
-2026-07-09 18:21:19,011 - app.main - ERROR - TEST_ERROR_MESSAGE_F21
-2026-07-09 18:21:19,014 - app.main - INFO - TEST_FORMAT_CHECK_F21
-2026-07-09 18:28:50,292 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:28:50,295 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:28:50,319 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=personalizado&desde=2020-01-01&hasta=2020-01-31 "HTTP/1.1 200 OK"
-2026-07-09 18:28:50,631 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:28:50,635 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:28:50,653 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/payments/48 "HTTP/1.1 200 OK"
-2026-07-09 18:28:51,015 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:28:51,018 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:28:51,029 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/payments/49 "HTTP/1.1 200 OK"
-2026-07-09 18:28:51,327 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:28:51,330 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:28:51,339 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/payments/999999 "HTTP/1.1 404 Not Found"
-2026-07-09 18:28:51,643 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:28:51,647 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:28:51,671 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/vencidos "HTTP/1.1 200 OK"
-2026-07-09 18:28:51,979 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:28:51,983 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:28:51,994 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/vencidos "HTTP/1.1 200 OK"
-2026-07-09 18:28:52,301 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:28:52,305 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:28:52,320 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis "HTTP/1.1 200 OK"
-2026-07-09 18:28:52,332 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/cashflow "HTTP/1.1 200 OK"
-2026-07-09 18:28:52,627 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:28:52,630 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:28:52,940 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/users/register "HTTP/1.1 200 OK"
-2026-07-09 18:28:52,961 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/users "HTTP/1.1 200 OK"
-2026-07-09 18:28:53,044 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/users/129 "HTTP/1.1 200 OK"
-2026-07-09 18:28:53,355 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:28:53,358 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:28:53,370 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=dia "HTTP/1.1 200 OK"
-2026-07-09 18:28:53,384 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/cashflow?rango=dia "HTTP/1.1 200 OK"
-2026-07-09 18:28:53,676 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:28:53,680 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:28:53,695 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=semana "HTTP/1.1 200 OK"
-2026-07-09 18:28:53,991 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:28:53,994 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:28:54,007 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=mes "HTTP/1.1 200 OK"
-2026-07-09 18:28:54,303 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:28:54,306 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:28:54,319 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=ano "HTTP/1.1 200 OK"
-2026-07-09 18:28:54,615 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:28:54,618 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:28:54,631 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis?rango=personalizado&desde=2026-07-09&hasta=2026-07-09 "HTTP/1.1 200 OK"
-2026-07-09 18:29:46,210 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:29:46,215 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:29:46,256 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/vencidos "HTTP/1.1 200 OK"
-2026-07-09 18:29:46,568 - app.main - INFO - Login exitoso usuario=admintestfix@gymflow.com rol=admin
-2026-07-09 18:29:46,572 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
-2026-07-09 18:29:46,581 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/vencidos "HTTP/1.1 200 OK"
-2026-07-09 18:32:34,575 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
-2026-07-09 18:32:56,542 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
-2026-07-09 18:34:49,766 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
-2026-07-09 18:40:56,341 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
-2026-07-09 18:46:50,733 - app.main - INFO - Pago por cédula registrado id=51 monto_usd=45.00 cedula=V-30412267 por_usuario=46
-2026-07-09 19:49:15,249 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
-2026-07-09 19:54:16,452 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
-2026-07-09 19:54:40,627 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
-2026-07-09 19:59:07,369 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
-2026-07-09 19:59:31,603 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
-2026-07-09 20:06:05,939 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
-2026-07-09 20:06:46,831 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
-2026-07-09 20:08:16,158 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
-2026-07-09 20:12:21,352 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
-2026-07-09 20:15:52,427 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
-2026-07-09 20:19:57,742 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-10 21:12:19,212 - app.main - INFO - Login exitoso usuario=admin2@gymflow.com rol=admin
+2026-07-10 21:12:19,221 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:19,233 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/users "HTTP/1.1 200 OK"
+2026-07-10 21:12:19,513 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-10 21:12:19,516 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:19,537 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/cashflow "HTTP/1.1 200 OK"
+2026-07-10 21:12:19,824 - app.main - INFO - Login exitoso usuario=admin2@gymflow.com rol=admin
+2026-07-10 21:12:19,827 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:19,838 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/asistencias/checkin "HTTP/1.1 404 Not Found"
+2026-07-10 21:12:20,119 - app.main - INFO - Login exitoso usuario=admin2@gymflow.com rol=admin
+2026-07-10 21:12:20,122 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:20,139 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis "HTTP/1.1 200 OK"
+2026-07-10 21:12:20,419 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-10 21:12:20,422 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:20,437 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis "HTTP/1.1 200 OK"
+2026-07-10 21:12:20,719 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-10 21:12:20,722 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:20,732 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/members/search/V-88888888 "HTTP/1.1 404 Not Found"
+2026-07-10 21:12:21,014 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-10 21:12:21,017 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:21,031 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/members "HTTP/1.1 200 OK"
+2026-07-10 21:12:21,316 - app.main - INFO - Login exitoso usuario=admin2@gymflow.com rol=admin
+2026-07-10 21:12:21,319 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:21,328 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/members "HTTP/1.1 200 OK"
+2026-07-10 21:12:21,651 - app.main - INFO - Login exitoso usuario=admin2@gymflow.com rol=admin
+2026-07-10 21:12:21,654 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:21,680 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/payments/1 "HTTP/1.1 404 Not Found"
+2026-07-10 21:12:21,969 - app.main - INFO - Login exitoso usuario=admin2@gymflow.com rol=admin
+2026-07-10 21:12:21,972 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:22,275 - app.main - INFO - Login exitoso usuario=admin2@gymflow.com rol=admin
+2026-07-10 21:12:22,278 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:22,293 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/planes "HTTP/1.1 200 OK"
+2026-07-10 21:12:22,576 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-10 21:12:22,579 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:22,588 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/planes "HTTP/1.1 200 OK"
+2026-07-10 21:12:22,872 - app.main - INFO - Login exitoso usuario=admin2@gymflow.com rol=admin
+2026-07-10 21:12:22,875 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:22,887 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/users/2 "HTTP/1.1 404 Not Found"
+2026-07-10 21:12:23,168 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-10 21:12:23,171 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:23,180 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/users "HTTP/1.1 200 OK"
+2026-07-10 21:12:23,461 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-10 21:12:23,464 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:23,478 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/vencidos "HTTP/1.1 200 OK"
+2026-07-10 21:12:43,460 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-10 21:12:43,464 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:43,472 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/me "HTTP/1.1 200 OK"
+2026-07-10 21:12:43,760 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-10 21:12:43,763 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:43,771 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/me "HTTP/1.1 401 Unauthorized"
+2026-07-10 21:12:44,071 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-10 21:12:44,075 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:44,439 - app.main - INFO - Login exitoso usuario=admin2@gymflow.com rol=admin
+2026-07-10 21:12:44,442 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:44,453 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/users "HTTP/1.1 200 OK"
+2026-07-10 21:12:44,731 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-10 21:12:44,734 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:44,748 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/cashflow "HTTP/1.1 200 OK"
+2026-07-10 21:12:45,031 - app.main - INFO - Login exitoso usuario=admin2@gymflow.com rol=admin
+2026-07-10 21:12:45,034 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:45,046 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/asistencias/checkin "HTTP/1.1 404 Not Found"
+2026-07-10 21:12:45,328 - app.main - INFO - Login exitoso usuario=admin2@gymflow.com rol=admin
+2026-07-10 21:12:45,331 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:45,343 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis "HTTP/1.1 200 OK"
+2026-07-10 21:12:45,621 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-10 21:12:45,624 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:45,637 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis "HTTP/1.1 200 OK"
+2026-07-10 21:12:45,915 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-10 21:12:45,918 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:45,929 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/members/search/V-88888888 "HTTP/1.1 404 Not Found"
+2026-07-10 21:12:46,207 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-10 21:12:46,210 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:46,224 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/members "HTTP/1.1 200 OK"
+2026-07-10 21:12:46,504 - app.main - INFO - Login exitoso usuario=admin2@gymflow.com rol=admin
+2026-07-10 21:12:46,507 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:46,516 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/members "HTTP/1.1 200 OK"
+2026-07-10 21:12:46,792 - app.main - INFO - Login exitoso usuario=admin2@gymflow.com rol=admin
+2026-07-10 21:12:46,795 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:46,806 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/payments/1 "HTTP/1.1 404 Not Found"
+2026-07-10 21:12:47,111 - app.main - INFO - Login exitoso usuario=admin2@gymflow.com rol=admin
+2026-07-10 21:12:47,114 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:47,395 - app.main - INFO - Login exitoso usuario=admin2@gymflow.com rol=admin
+2026-07-10 21:12:47,398 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:47,415 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/planes "HTTP/1.1 200 OK"
+2026-07-10 21:12:47,693 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-10 21:12:47,696 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:47,705 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/planes "HTTP/1.1 200 OK"
+2026-07-10 21:12:47,988 - app.main - INFO - Login exitoso usuario=admin2@gymflow.com rol=admin
+2026-07-10 21:12:47,991 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:48,002 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/users/2 "HTTP/1.1 404 Not Found"
+2026-07-10 21:12:48,281 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-10 21:12:48,284 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:48,292 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/users "HTTP/1.1 200 OK"
+2026-07-10 21:12:48,579 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-10 21:12:48,582 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:12:48,596 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/vencidos "HTTP/1.1 200 OK"
+2026-07-10 21:13:32,966 - app.main - ERROR - Error no controlado en POST /api/v1/auth/login: (psycopg2.errors.UndefinedTable) no existe la relación «usuarios»
+LINE 2: FROM usuarios 
+             ^
+
+[SQL: SELECT usuarios.id AS usuarios_id, usuarios.gym_id AS usuarios_gym_id, usuarios.cedula AS usuarios_cedula, usuarios.nombre AS usuarios_nombre, usuarios.correo AS usuarios_correo, usuarios.password_hash AS usuarios_password_hash, usuarios.rol AS usuarios_rol, usuarios.estado_logico AS usuarios_estado_logico 
+FROM usuarios 
+WHERE usuarios.correo = %(correo_1)s AND usuarios.estado_logico = true 
+ LIMIT %(param_1)s]
+[parameters: {'correo_1': 'admin@gymflow.com', 'param_1': 1}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+Traceback (most recent call last):
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedTable: no existe la relación «usuarios»
+LINE 2: FROM usuarios 
+             ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\middleware\cors.py", line 88, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\routing.py", line 680, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\fastapi\routing.py", line 1220, in handle
+    await super().handle(scope, receive, send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\fastapi\routing.py", line 143, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\fastapi\routing.py", line 129, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\fastapi\routing.py", line 683, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\fastapi\routing.py", line 339, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\concurrency.py", line 34, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\anyio\to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2592, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 1029, in run
+    result = context.run(func, *args)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\app\main.py", line 116, in login
+    usuario = db.query(Usuario).filter(Usuario.correo == payload.correo, Usuario.estado_logico == True).first()
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2766, in first
+    return self.limit(1)._iter().first()  # type: ignore
+           ~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2864, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2373, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2271, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\orm\context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1421, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedTable) no existe la relación «usuarios»
+LINE 2: FROM usuarios 
+             ^
+
+[SQL: SELECT usuarios.id AS usuarios_id, usuarios.gym_id AS usuarios_gym_id, usuarios.cedula AS usuarios_cedula, usuarios.nombre AS usuarios_nombre, usuarios.correo AS usuarios_correo, usuarios.password_hash AS usuarios_password_hash, usuarios.rol AS usuarios_rol, usuarios.estado_logico AS usuarios_estado_logico 
+FROM usuarios 
+WHERE usuarios.correo = %(correo_1)s AND usuarios.estado_logico = true 
+ LIMIT %(param_1)s]
+[parameters: {'correo_1': 'admin@gymflow.com', 'param_1': 1}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-07-10 21:13:34,258 - app.main - ERROR - Error no controlado en POST /api/v1/auth/login: (psycopg2.errors.UndefinedTable) no existe la relación «usuarios»
+LINE 2: FROM usuarios 
+             ^
+
+[SQL: SELECT usuarios.id AS usuarios_id, usuarios.gym_id AS usuarios_gym_id, usuarios.cedula AS usuarios_cedula, usuarios.nombre AS usuarios_nombre, usuarios.correo AS usuarios_correo, usuarios.password_hash AS usuarios_password_hash, usuarios.rol AS usuarios_rol, usuarios.estado_logico AS usuarios_estado_logico 
+FROM usuarios 
+WHERE usuarios.correo = %(correo_1)s AND usuarios.estado_logico = true 
+ LIMIT %(param_1)s]
+[parameters: {'correo_1': 'admin@gymflow.com', 'param_1': 1}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+Traceback (most recent call last):
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedTable: no existe la relación «usuarios»
+LINE 2: FROM usuarios 
+             ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\middleware\cors.py", line 88, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\routing.py", line 680, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\fastapi\routing.py", line 1220, in handle
+    await super().handle(scope, receive, send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\fastapi\routing.py", line 143, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\fastapi\routing.py", line 129, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\fastapi\routing.py", line 683, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\fastapi\routing.py", line 339, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\concurrency.py", line 34, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\anyio\to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2592, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 1029, in run
+    result = context.run(func, *args)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\app\main.py", line 116, in login
+    usuario = db.query(Usuario).filter(Usuario.correo == payload.correo, Usuario.estado_logico == True).first()
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2766, in first
+    return self.limit(1)._iter().first()  # type: ignore
+           ~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2864, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2373, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2271, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\orm\context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1421, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedTable) no existe la relación «usuarios»
+LINE 2: FROM usuarios 
+             ^
+
+[SQL: SELECT usuarios.id AS usuarios_id, usuarios.gym_id AS usuarios_gym_id, usuarios.cedula AS usuarios_cedula, usuarios.nombre AS usuarios_nombre, usuarios.correo AS usuarios_correo, usuarios.password_hash AS usuarios_password_hash, usuarios.rol AS usuarios_rol, usuarios.estado_logico AS usuarios_estado_logico 
+FROM usuarios 
+WHERE usuarios.correo = %(correo_1)s AND usuarios.estado_logico = true 
+ LIMIT %(param_1)s]
+[parameters: {'correo_1': 'admin@gymflow.com', 'param_1': 1}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-07-10 21:13:35,451 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/auth/me "HTTP/1.1 401 Unauthorized"
+2026-07-10 21:13:35,459 - app.main - ERROR - Error no controlado en POST /api/v1/auth/login: (psycopg2.errors.UndefinedTable) no existe la relación «usuarios»
+LINE 2: FROM usuarios 
+             ^
+
+[SQL: SELECT usuarios.id AS usuarios_id, usuarios.gym_id AS usuarios_gym_id, usuarios.cedula AS usuarios_cedula, usuarios.nombre AS usuarios_nombre, usuarios.correo AS usuarios_correo, usuarios.password_hash AS usuarios_password_hash, usuarios.rol AS usuarios_rol, usuarios.estado_logico AS usuarios_estado_logico 
+FROM usuarios 
+WHERE usuarios.correo = %(correo_1)s AND usuarios.estado_logico = true 
+ LIMIT %(param_1)s]
+[parameters: {'correo_1': 'admin@gymflow.com', 'param_1': 1}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+Traceback (most recent call last):
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedTable: no existe la relación «usuarios»
+LINE 2: FROM usuarios 
+             ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\middleware\cors.py", line 88, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\routing.py", line 680, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\fastapi\routing.py", line 1220, in handle
+    await super().handle(scope, receive, send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\fastapi\routing.py", line 143, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\fastapi\routing.py", line 129, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\fastapi\routing.py", line 683, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\fastapi\routing.py", line 339, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\starlette\concurrency.py", line 34, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\anyio\to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2592, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 1029, in run
+    result = context.run(func, *args)
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\app\main.py", line 116, in login
+    usuario = db.query(Usuario).filter(Usuario.correo == payload.correo, Usuario.estado_logico == True).first()
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2766, in first
+    return self.limit(1)._iter().first()  # type: ignore
+           ~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2864, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2373, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2271, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\orm\context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1421, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\qwerty\Documents\GitHub\GymFlow\backend\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedTable) no existe la relación «usuarios»
+LINE 2: FROM usuarios 
+             ^
+
+[SQL: SELECT usuarios.id AS usuarios_id, usuarios.gym_id AS usuarios_gym_id, usuarios.cedula AS usuarios_cedula, usuarios.nombre AS usuarios_nombre, usuarios.correo AS usuarios_correo, usuarios.password_hash AS usuarios_password_hash, usuarios.rol AS usuarios_rol, usuarios.estado_logico AS usuarios_estado_logico 
+FROM usuarios 
+WHERE usuarios.correo = %(correo_1)s AND usuarios.estado_logico = true 
+ LIMIT %(param_1)s]
+[parameters: {'correo_1': 'admin@gymflow.com', 'param_1': 1}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-07-10 21:14:38,093 - app.main - INFO - Login exitoso usuario=admin2@gymflow.com rol=admin
+2026-07-10 21:14:38,097 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:14:38,108 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/users "HTTP/1.1 200 OK"
+2026-07-10 21:14:38,396 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-10 21:14:38,399 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:14:38,414 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/cashflow "HTTP/1.1 200 OK"
+2026-07-10 21:14:38,698 - app.main - INFO - Login exitoso usuario=admin2@gymflow.com rol=admin
+2026-07-10 21:14:38,701 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:14:38,713 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/asistencias/checkin "HTTP/1.1 404 Not Found"
+2026-07-10 21:14:38,994 - app.main - INFO - Login exitoso usuario=admin2@gymflow.com rol=admin
+2026-07-10 21:14:38,997 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:14:39,013 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis "HTTP/1.1 200 OK"
+2026-07-10 21:14:39,294 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-10 21:14:39,298 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:14:39,310 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/kpis "HTTP/1.1 200 OK"
+2026-07-10 21:14:39,589 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-10 21:14:39,592 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:14:39,601 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/members/search/V-88888888 "HTTP/1.1 404 Not Found"
+2026-07-10 21:14:39,883 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-10 21:14:39,886 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:14:39,901 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/members "HTTP/1.1 200 OK"
+2026-07-10 21:14:40,181 - app.main - INFO - Login exitoso usuario=admin2@gymflow.com rol=admin
+2026-07-10 21:14:40,184 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:14:40,194 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/members "HTTP/1.1 200 OK"
+2026-07-10 21:14:40,475 - app.main - INFO - Login exitoso usuario=admin2@gymflow.com rol=admin
+2026-07-10 21:14:40,478 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:14:40,490 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/payments/1 "HTTP/1.1 404 Not Found"
+2026-07-10 21:14:40,773 - app.main - INFO - Login exitoso usuario=admin2@gymflow.com rol=admin
+2026-07-10 21:14:40,776 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:14:41,057 - app.main - INFO - Login exitoso usuario=admin2@gymflow.com rol=admin
+2026-07-10 21:14:41,060 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:14:41,074 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/planes "HTTP/1.1 200 OK"
+2026-07-10 21:14:41,355 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-10 21:14:41,359 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:14:41,369 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/planes "HTTP/1.1 200 OK"
+2026-07-10 21:14:41,653 - app.main - INFO - Login exitoso usuario=admin2@gymflow.com rol=admin
+2026-07-10 21:14:41,656 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:14:41,668 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/users/2 "HTTP/1.1 404 Not Found"
+2026-07-10 21:14:41,949 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-10 21:14:41,952 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:14:41,961 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/users "HTTP/1.1 200 OK"
+2026-07-10 21:14:42,270 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin
+2026-07-10 21:14:42,273 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-07-10 21:14:42,286 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/admin/vencidos "HTTP/1.1 200 OK"
+2026-07-10 21:16:42,684 - app.main - INFO - Login exitoso usuario=admin@gymflow.com rol=admin

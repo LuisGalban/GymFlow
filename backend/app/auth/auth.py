@@ -57,7 +57,8 @@ def obtener_usuario_actual(token: str = Depends(oauth2_scheme), db: Session = De
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         correo: str = payload.get("sub")
-        if correo is None:
+        gym_id: int = payload.get("gym_id")
+        if correo is None or gym_id is None:
             raise credentials_exception
     except JWTError:
         raise credentials_exception
@@ -96,7 +97,8 @@ def obtener_usuario_por_token(token: str, db: Session) -> Usuario:
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         correo: str = payload.get("sub")
-        if correo is None:
+        gym_id: int = payload.get("gym_id")
+        if correo is None or gym_id is None:
             raise credentials_exception
     except JWTError:
         raise credentials_exception

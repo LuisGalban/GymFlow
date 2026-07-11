@@ -2,7 +2,7 @@ import enum
 from datetime import datetime
 # pyrefly: ignore [missing-import]
 from sqlalchemy import (
-    Column, Integer, String, Boolean, Numeric, Date, DateTime, ForeignKey, Index, BigInteger, text, CheckConstraint
+    Column, Integer, String, Boolean, Numeric, Date, DateTime, ForeignKey, Index, BigInteger, text, CheckConstraint, UniqueConstraint
 )
 # pyrefly: ignore [missing-import]
 from sqlalchemy.orm import relationship
@@ -31,10 +31,38 @@ class MembershipStatus(str, enum.Enum):
     vencido = "vencido"
 
 
+class GymSubscriptionStatus(str, enum.Enum):
+    activo = "activo"
+    pausado = "pausado"
+    suspendido = "suspendido"
+
+
+class Gym(Base):
+    __tablename__ = "gyms"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String(100), unique=True, nullable=False)
+    direccion = Column(String(255), nullable=False)
+    telefono = Column(String(20), nullable=True)
+    dias_gracia_default = Column(Integer, default=5, nullable=False)
+    moneda_base = Column(String(10), default=PaymentCurrency.USD, nullable=False)
+    fecha_alta = Column(DateTime, default=datetime.utcnow, nullable=False)
+    estado_suscripcion = Column(String(20), default=GymSubscriptionStatus.activo, nullable=False)
+    estado_logico = Column(Boolean, default=True, nullable=False)
+
+    # Relaciones inversas (backrefs)
+    usuarios = relationship("Usuario", back_populates="gym")
+    miembros = relationship("Miembro", back_populates="gym")
+    planes = relationship("Plan", back_populates="gym")
+    pagos = relationship("Pago", back_populates="gym")
+    asistencias = relationship("Asistencia", back_populates="gym")
+
+
 class Usuario(Base):
     __tablename__ = "usuarios"
 
     id = Column(Integer, primary_key=True, index=True)
+    gym_id = Column(Integer, ForeignKey("gyms.id", ondelete="RESTRICT"), nullable=False)
     cedula = Column(String(20), unique=True, index=True, nullable=False)
     nombre = Column(String(100), nullable=False)
     correo = Column(String(150), unique=True, index=True, nullable=False)
@@ -43,6 +71,7 @@ class Usuario(Base):
     estado_logico = Column(Boolean, default=True, nullable=False)
 
     # Relaciones
+    gym = relationship("Gym", back_populates="usuarios")
     pagos_registrados = relationship("Pago", back_populates="registrador")
 
 
@@ -50,12 +79,14 @@ class Miembro(Base):
     __tablename__ = "miembros"
 
     id = Column(Integer, primary_key=True, index=True)
+    gym_id = Column(Integer, ForeignKey("gyms.id", ondelete="RESTRICT"), nullable=False)
     cedula = Column(String(20), unique=True, index=True, nullable=False)
     nombre = Column(String(100), nullable=False)
     telefono = Column(String(20), nullable=True)
     estado_logico = Column(Boolean, default=True, nullable=False)
 
     # Relaciones
+    gym = relationship("Gym", back_populates="miembros")
     membresias = relationship("MembresiaMiembro", back_populates="miembro")
     asistencias = relationship("Asistencia", back_populates="miembro", cascade="all, delete-orphan")
 
@@ -64,15 +95,18 @@ class Plan(Base):
     __tablename__ = "planes"
     __table_args__ = (
         CheckConstraint('precio_usd >= 0', name='ck_plan_precio_usd_no_negativo'),
+        UniqueConstraint('nombre', 'gym_id', name='uq_plan_nombre_gym'),
     )
 
     id = Column(Integer, primary_key=True, index=True)
+    gym_id = Column(Integer, ForeignKey("gyms.id", ondelete="RESTRICT"), nullable=False)
     nombre = Column(String(50), nullable=False)
     duracion_dias = Column(Integer, nullable=False)
     precio_usd = Column(Numeric(10, 2), nullable=False)
     estado_logico = Column(Boolean, default=True, nullable=False)
 
     # Relaciones
+    gym = relationship("Gym", back_populates="planes")
     membresias = relationship("MembresiaMiembro", back_populates="plan")
 
 
@@ -100,6 +134,7 @@ class Pago(Base):
     )
 
     id = Column(Integer, primary_key=True, index=True)
+    gym_id = Column(Integer, ForeignKey("gyms.id", ondelete="RESTRICT"), nullable=False)
     membresia_miembro_id = Column(Integer, ForeignKey("membresias_miembros.id", ondelete="RESTRICT"), nullable=False)
     registrado_por = Column(Integer, ForeignKey("usuarios.id", ondelete="RESTRICT"), nullable=False)
     monto_original = Column(Numeric(12, 2), nullable=False)
@@ -111,6 +146,7 @@ class Pago(Base):
     fecha_pago = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     # Relaciones
+    gym = relationship("Gym", back_populates="pagos")
     membresia_miembro = relationship("MembresiaMiembro", back_populates="pagos")
     registrador = relationship("Usuario", back_populates="pagos_registrados")
 
@@ -119,10 +155,12 @@ class Asistencia(Base):
     __tablename__ = "asistencias"
 
     id = Column(BigInteger, primary_key=True, index=True)
+    gym_id = Column(Integer, ForeignKey("gyms.id", ondelete="RESTRICT"), nullable=False)
     miembro_id = Column(Integer, ForeignKey("miembros.id", ondelete="CASCADE"), nullable=False)
     fecha_entrada = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     # Relaciones
+    gym = relationship("Gym", back_populates="asistencias")
     miembro = relationship("Miembro", back_populates="asistencias")
 
 

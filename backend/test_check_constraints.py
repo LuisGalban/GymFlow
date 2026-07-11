@@ -9,7 +9,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 
-from app.models import Plan, Pago, MembresiaMiembro, Miembro, Usuario, UserRole
+from app.models import Gym, Plan, Pago, MembresiaMiembro, Miembro, Usuario, UserRole, GymSubscriptionStatus, PaymentCurrency
 from app.database import Base
 
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:admin@localhost:5432/gymflow_db")
@@ -23,21 +23,38 @@ class TestCheckConstraints(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        Base.metadata.create_all(bind=engine)
         cls.db = TestingSessionLocal()
         cls._clean_test_data(cls.db)
 
+        cls.gym = Gym(
+            nombre="Gym Test F22",
+            direccion="Dir Test F22",
+            dias_gracia_default=5,
+            moneda_base=PaymentCurrency.USD,
+            fecha_alta=datetime.utcnow(),
+            estado_suscripcion=GymSubscriptionStatus.activo,
+            estado_logico=True,
+        )
+        cls.db.add(cls.gym)
+        cls.db.commit()
+        cls.db.refresh(cls.gym)
+
         cls.miembro = Miembro(
+            gym_id=cls.gym.id,
             cedula=f"{TEST_CEDULA_PREFIX}-MIEMBRO",
             nombre="Test Miembro F22",
             estado_logico=True
         )
         cls.plan_valido = Plan(
+            gym_id=cls.gym.id,
             nombre="Plan Test F22",
             duracion_dias=30,
             precio_usd=10.00,
             estado_logico=True
         )
         cls.usuario = Usuario(
+            gym_id=cls.gym.id,
             cedula=f"{TEST_CEDULA_PREFIX}-USER",
             nombre="Test User F22",
             correo="testuserf22@gymflow.com",
@@ -62,6 +79,7 @@ class TestCheckConstraints(unittest.TestCase):
     def tearDownClass(cls):
         cls._clean_test_data(cls.db)
         cls.db.close()
+        Base.metadata.drop_all(bind=engine)
 
     @classmethod
     def _clean_test_data(cls, session):
@@ -92,11 +110,16 @@ class TestCheckConstraints(unittest.TestCase):
         session.query(Usuario).filter(
             Usuario.correo.like("testuserf22%")
         ).delete(synchronize_session=False)
+
+        session.query(Gym).filter(
+            Gym.nombre.like("Gym Test F22%")
+        ).delete(synchronize_session=False)
         session.commit()
 
     def test_1_plan_precio_negativo_rechazado(self):
         """RED->GREEN: Plan con precio_usd=-10 debe ser rechazado por CHECK constraint"""
         plan_malo = Plan(
+            gym_id=self.gym.id,
             nombre="Plan Malo F22",
             duracion_dias=30,
             precio_usd=-10.00,
@@ -112,6 +135,7 @@ class TestCheckConstraints(unittest.TestCase):
     def test_2_pago_monto_original_cero_rechazado(self):
         """RED->GREEN: Pago con monto_original=0 debe ser rechazado por CHECK constraint"""
         pago_malo = Pago(
+            gym_id=self.gym.id,
             membresia_miembro_id=self.membresia.id,
             registrado_por=self.usuario.id,
             monto_original=0,
@@ -131,6 +155,7 @@ class TestCheckConstraints(unittest.TestCase):
     def test_3_pago_tasa_cambio_negativa_rechazado(self):
         """RED->GREEN: Pago con tasa_cambio=-1 debe ser rechazado por CHECK constraint"""
         pago_malo = Pago(
+            gym_id=self.gym.id,
             membresia_miembro_id=self.membresia.id,
             registrado_por=self.usuario.id,
             monto_original=100,

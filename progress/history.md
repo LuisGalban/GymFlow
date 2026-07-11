@@ -375,3 +375,48 @@
 - **Criterios de Aceptación:** 4/4 cumplidos.
 - **Acción:** Agregadas reglas CSS `select option` en `globals.css` con `background-color: #1a1a2e` y `color: #f4f4f5`. Fix CSS-only — sin cambios en classNames de los `<select>`.
 - **Resultado:** TypeScript 0 errores. Reviewer APPROVED (12/12 checklist items).
+
+---
+
+## F4-01 — Modelo de Sedes (Gyms)
+- **Fecha:** 2026-07-10
+- **Prioridad:** P0 (Fase 4: Escalabilidad Multi-Gimnasio)
+- **Agente Implementador:** Implementador (sub-agent)
+- **Agente Revisor:** Reviewer (sub-agent)
+- **Descripción:** Creación de la tabla `gyms` como raíz del modelo multi-tenant. Almacena datos maestros de cada sede: nombre, dirección, teléfono, configuración de gracia, moneda base, estado de suscripción y borrado lógico.
+- **Criterios de Aceptación:** 6/6 cumplidos.
+- **Acciones:**
+  - Modelo `Gym` creado en `backend/app/models.py` con columnas: id, nombre (unique), direccion, telefono, dias_gracia_default, moneda_base, fecha_alta, estado_suscripcion, estado_logico.
+  - Enums `GymSubscriptionStatus` (activo/pausado/suspendido) y reutilización de `PaymentCurrency` para `moneda_base`.
+  - Migración Alembic generada y ejecutada sin pérdida de datos.
+  - Test file `backend/test_f4_01_gyms.py` con 6 pruebas: creación, defaults, unicidad de nombre, borrado lógico, enum subscription status, telefono nullable.
+- **Resultado:** Revisor APPROVED. 6 tests pasados. `feature_list.json` actualizado a `done`.
+
+---
+
+## F4-02 — Migración de Esquema — gym_id como FK en Entidades Críticas
+- **Fecha:** 2026-07-10
+- **Prioridad:** P0 (Fase 4: Escalabilidad Multi-Gimnasio)
+- **Agente Implementador:** Implementador (sub-agent)
+- **Agente Revisor:** Reviewer (sub-agent)
+- **Descripción:** Añadir columna `gym_id` (FK → gyms.id, NOT NULL) a las 5 tablas críticas: usuarios, miembros, planes, pagos, asistencias. Seed de migración con gym por defecto. Establece aislamiento lógico multi-tenant a nivel de esquema.
+- **Criterios de Aceptación:** 10/10 cumplidos.
+- **Acciones:**
+  - Columna `gym_id` agregada a: `Usuario`, `Miembro`, `Plan`, `Pago`, `Asistencia` con `ForeignKey("gyms.id", ondelete="RESTRICT")`.
+  - Relaciones inversas agregadas en `Gym` model (`backref` para cada entidad).
+  - Migración Alembic: seed gym default (`id=1, nombre='GymFlow Sede Central'`), UPDATE todas las filas existentes a `gym_id=1`, ALTER COLUMN NOT NULL, CREATE FOREIGN KEY con RESTRICT.
+  - Tests (`test_f4_02_gym_id_migration.py`): 10 pruebas — columnas, FK RESTRICT, seed data, query sin filtro, USD intacto, planes independientes por gym, borrado lógico de planes.
+  - Tests existentes adaptados para incluir `gym_id` en setup.
+- **Resultado:** Revisor APPROVED (8/8 checklist items). 30 tests totales, todos verdes. Sin regresiones.
+
+## Sesión: 2026-07-10
+- **Estado Inicial:** Tarea F4-03 (P0) en estado `pending`. BD restaurada tras destrucción por `test_f4_02`.
+- **Acciones Realizadas:**
+  - **Recuperación de BD:** Tablas recreadas (`Base.metadata.create_all`), constraints NOT NULL + FK RESTRICT aplicados, Alembic version stamped (`b7d3f1a9c8e2`), seed data restaurado (2 usuarios, 3 planes, 3 miembros, 3 membresías, 3 pagos con `gym_id=1`).
+  - **Hotfix:** `test_f4_02_gym_id_migration.py` corregido — eliminado `Base.metadata.drop_all()` de `tearDown` que causaba destrucción de la BD real.
+  - **F4-03 (gym_id en JWT):**
+    - `auth.py`: `obtener_usuario_actual()` y `obtener_usuario_por_token()` extraen `gym_id` del payload JWT, rechazan tokens legacy sin `gym_id`.
+    - `main.py`: Login crea token con `"gym_id": usuario.gym_id` y lo retorna en la respuesta.
+    - `schemas.py`: `Token` y `TokenData` actualizados con `gym_id: int`.
+    - Tests (`test_f4_03_jwt_gym_id.py`): 5 pruebas — login OK con gym_id, JWT payload contiene gym_id, `/me` funciona, tokens legacy rechazados (401).
+- **Resultado:** Revisor APPROVED (8/8 checklist items). Login verificado (`admin@gymflow.com` → JWT con `gym_id=1`).

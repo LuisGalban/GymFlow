@@ -121,7 +121,7 @@ def login(payload: LoginRequest, response: Response, request: Request, db: Sessi
             detail="Correo o contraseña incorrectos",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token = crear_token_acceso(data={"sub": usuario.correo, "rol": usuario.rol})
+    access_token = crear_token_acceso(data={"sub": usuario.correo, "rol": usuario.rol, "gym_id": usuario.gym_id})
     response.set_cookie(
         key="gymflow_token",
         value=access_token,
@@ -132,7 +132,7 @@ def login(payload: LoginRequest, response: Response, request: Request, db: Sessi
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
     logger.info("Login exitoso usuario=%s rol=%s", usuario.correo, usuario.rol)
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "bearer", "gym_id": usuario.gym_id}
 
 @app.get("/api/v1/auth/me", response_model=UserResponse)
 def get_me(usuario_actual: Usuario = Depends(obtener_usuario_actual)):
@@ -148,7 +148,7 @@ def get_session(request: Request, db: Session = Depends(get_db)):
 
 # --- ENDPOINTS DE USUARIOS (Solo Admin) ---
 @app.post("/api/v1/users/register", response_model=UserResponse, dependencies=[Depends(requerir_admin)])
-def register_user(payload: UserCreate, db: Session = Depends(get_db)):
+def register_user(payload: UserCreate, db: Session = Depends(get_db), usuario_actual: Usuario = Depends(obtener_usuario_actual)):
     # Verificar si el correo ya existe
     existe_correo = db.query(Usuario).filter(Usuario.correo == payload.correo).first()
     if existe_correo:
@@ -160,6 +160,7 @@ def register_user(payload: UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="La cédula ya está registrada")
         
     nuevo_usuario = Usuario(
+        gym_id=usuario_actual.gym_id,
         cedula=payload.cedula,
         nombre=payload.nombre,
         correo=payload.correo,
@@ -173,19 +174,19 @@ def register_user(payload: UserCreate, db: Session = Depends(get_db)):
     return nuevo_usuario
 
 @app.get("/api/v1/users", response_model=List[UserResponse], dependencies=[Depends(requerir_admin)])
-def list_users(db: Session = Depends(get_db)):
-    return db.query(Usuario).filter(Usuario.estado_logico == True).order_by(Usuario.id).all()
+def list_users(db: Session = Depends(get_db), usuario_actual: Usuario = Depends(obtener_usuario_actual)):
+    return db.query(Usuario).filter(Usuario.estado_logico == True, Usuario.gym_id == usuario_actual.gym_id).order_by(Usuario.id).all()
 
 @app.get("/api/v1/users/{id}", response_model=UserResponse, dependencies=[Depends(requerir_admin)])
-def get_user(id: int, db: Session = Depends(get_db)):
-    usuario = db.query(Usuario).filter(Usuario.id == id, Usuario.estado_logico == True).first()
+def get_user(id: int, db: Session = Depends(get_db), usuario_actual: Usuario = Depends(obtener_usuario_actual)):
+    usuario = db.query(Usuario).filter(Usuario.id == id, Usuario.gym_id == usuario_actual.gym_id, Usuario.estado_logico == True).first()
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return usuario
 
 @app.put("/api/v1/users/{id}", response_model=UserResponse, dependencies=[Depends(requerir_admin)])
-def update_user(id: int, payload: UserUpdate, db: Session = Depends(get_db)):
-    usuario = db.query(Usuario).filter(Usuario.id == id).first()
+def update_user(id: int, payload: UserUpdate, db: Session = Depends(get_db), usuario_actual: Usuario = Depends(obtener_usuario_actual)):
+    usuario = db.query(Usuario).filter(Usuario.id == id, Usuario.gym_id == usuario_actual.gym_id).first()
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     if not usuario.estado_logico:
@@ -208,8 +209,8 @@ def update_user(id: int, payload: UserUpdate, db: Session = Depends(get_db)):
     return usuario
 
 @app.delete("/api/v1/users/{id}", dependencies=[Depends(requerir_admin)])
-def logical_delete_user(id: int, db: Session = Depends(get_db)):
-    usuario = db.query(Usuario).filter(Usuario.id == id).first()
+def logical_delete_user(id: int, db: Session = Depends(get_db), usuario_actual: Usuario = Depends(obtener_usuario_actual)):
+    usuario = db.query(Usuario).filter(Usuario.id == id, Usuario.gym_id == usuario_actual.gym_id).first()
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     usuario.estado_logico = False
@@ -218,12 +219,13 @@ def logical_delete_user(id: int, db: Session = Depends(get_db)):
 
 # --- ENDPOINTS DE PLANES (Lectura: Trabajador, Escritura: Admin) ---
 @app.get("/api/v1/planes", response_model=List[PlanResponse], dependencies=[Depends(requerir_trabajador)])
-def list_plans(db: Session = Depends(get_db)):
-    return db.query(Plan).filter(Plan.estado_logico == True).all()
+def list_plans(db: Session = Depends(get_db), usuario_actual: Usuario = Depends(obtener_usuario_actual)):
+    return db.query(Plan).filter(Plan.estado_logico == True, Plan.gym_id == usuario_actual.gym_id).all()
 
 @app.post("/api/v1/planes", response_model=PlanResponse, dependencies=[Depends(requerir_admin)])
-def create_plan(payload: PlanCreate, db: Session = Depends(get_db)):
+def create_plan(payload: PlanCreate, db: Session = Depends(get_db), usuario_actual: Usuario = Depends(obtener_usuario_actual)):
     nuevo_plan = Plan(
+        gym_id=usuario_actual.gym_id,
         nombre=payload.nombre,
         duracion_dias=payload.duracion_dias,
         precio_usd=payload.precio_usd,
@@ -236,8 +238,8 @@ def create_plan(payload: PlanCreate, db: Session = Depends(get_db)):
 
 # --- ENDPOINTS DE MIEMBROS ---
 @app.get("/api/v1/members", response_model=List[MiembroResponse], dependencies=[Depends(requerir_trabajador)])
-def list_members(db: Session = Depends(get_db)):
-    miembros = db.query(Miembro).filter(Miembro.estado_logico == True).all()
+def list_members(db: Session = Depends(get_db), usuario_actual: Usuario = Depends(obtener_usuario_actual)):
+    miembros = db.query(Miembro).filter(Miembro.estado_logico == True, Miembro.gym_id == usuario_actual.gym_id).all()
     response_data = []
     for m in miembros:
         # Buscar su membresía más reciente y su plan
@@ -264,9 +266,8 @@ def list_members(db: Session = Depends(get_db)):
     return response_data
 
 @app.get("/api/v1/members/search/{cedula}", response_model=MiembroResponse, dependencies=[Depends(requerir_trabajador)])
-def search_member_by_cedula(cedula: str, db: Session = Depends(get_db)):
-    # Búsqueda optimizada por Cédula (índice B-tree)
-    miembro = db.query(Miembro).filter(Miembro.cedula == cedula, Miembro.estado_logico == True).first()
+def search_member_by_cedula(cedula: str, db: Session = Depends(get_db), usuario_actual: Usuario = Depends(obtener_usuario_actual)):
+    miembro = db.query(Miembro).filter(Miembro.cedula == cedula, Miembro.gym_id == usuario_actual.gym_id, Miembro.estado_logico == True).first()
     if not miembro:
         raise HTTPException(status_code=404, detail="Miembro no encontrado")
         
@@ -292,14 +293,14 @@ def search_member_by_cedula(cedula: str, db: Session = Depends(get_db)):
     )
 
 @app.post("/api/v1/members", response_model=MiembroResponse, dependencies=[Depends(requerir_trabajador)])
-def register_member(payload: MiembroCreate, db: Session = Depends(get_db)):
+def register_member(payload: MiembroCreate, db: Session = Depends(get_db), usuario_actual: Usuario = Depends(obtener_usuario_actual)):
     # Verificar si el plan existe
     plan = db.query(Plan).filter(Plan.id == payload.plan_id, Plan.estado_logico == True).first()
     if not plan:
         raise HTTPException(status_code=404, detail="Plan no encontrado")
 
     # Verificar si ya existe la cédula
-    existe = db.query(Miembro).filter(Miembro.cedula == payload.cedula).first()
+    existe = db.query(Miembro).filter(Miembro.cedula == payload.cedula, Miembro.gym_id == usuario_actual.gym_id).first()
     if existe:
         if not existe.estado_logico:
             # Restaurar borrado lógico
@@ -334,6 +335,7 @@ def register_member(payload: MiembroCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Ya existe un miembro activo con esta cédula")
         
     nuevo_miembro = Miembro(
+        gym_id=usuario_actual.gym_id,
         cedula=payload.cedula,
         nombre=payload.nombre,
         telefono=payload.telefono,
@@ -367,8 +369,8 @@ def register_member(payload: MiembroCreate, db: Session = Depends(get_db)):
     )
 
 @app.delete("/api/v1/members/{id}", dependencies=[Depends(requerir_admin)])
-def logical_delete_member(id: int, db: Session = Depends(get_db)):
-    miembro = db.query(Miembro).filter(Miembro.id == id).first()
+def logical_delete_member(id: int, db: Session = Depends(get_db), usuario_actual: Usuario = Depends(obtener_usuario_actual)):
+    miembro = db.query(Miembro).filter(Miembro.id == id, Miembro.gym_id == usuario_actual.gym_id).first()
     if not miembro:
         raise HTTPException(status_code=404, detail="Miembro no encontrado")
     
@@ -383,6 +385,10 @@ def register_payment(payload: PagoCreate, db: Session = Depends(get_db), usuario
     # Buscar membresía
     membresia = db.query(MembresiaMiembro).filter(MembresiaMiembro.id == payload.membresia_miembro_id).first()
     if not membresia:
+        raise HTTPException(status_code=404, detail="Membresía no encontrada")
+        
+    miembro_membresia = db.query(Miembro).filter(Miembro.id == membresia.miembro_id, Miembro.gym_id == usuario_actual.gym_id).first()
+    if not miembro_membresia:
         raise HTTPException(status_code=404, detail="Membresía no encontrada")
         
     # Obtener el plan para conocer la duración y costo
@@ -407,6 +413,7 @@ def register_payment(payload: PagoCreate, db: Session = Depends(get_db), usuario
     
     # Registrar el Pago al 100% (No se permiten abonos, se registra completo)
     nuevo_pago = Pago(
+        gym_id=usuario_actual.gym_id,
         membresia_miembro_id=payload.membresia_miembro_id,
         registrado_por=usuario_actual.id,
         monto_original=payload.monto_original,
@@ -440,7 +447,7 @@ def register_payment(payload: PagoCreate, db: Session = Depends(get_db), usuario
 @app.post("/api/v1/payments/by-cedula", response_model=PagoResponse, dependencies=[Depends(requerir_trabajador)])
 def register_payment_by_cedula(payload: PagoCedulaCreate, db: Session = Depends(get_db), usuario_actual: Usuario = Depends(obtener_usuario_actual)):
     # Buscar miembro por cédula
-    miembro = db.query(Miembro).filter(Miembro.cedula == payload.cedula, Miembro.estado_logico == True).first()
+    miembro = db.query(Miembro).filter(Miembro.cedula == payload.cedula, Miembro.gym_id == usuario_actual.gym_id, Miembro.estado_logico == True).first()
     if not miembro:
         raise HTTPException(status_code=404, detail="Miembro no encontrado")
     # Obtener última membresía del miembro
@@ -488,6 +495,7 @@ def register_payment_by_cedula(payload: PagoCedulaCreate, db: Session = Depends(
         monto_usd_calculado = Decimal(payload.monto_original) / Decimal(tasa_usd_final)
 
     nuevo_pago = Pago(
+        gym_id=usuario_actual.gym_id,
         membresia_miembro_id=membresia.id,
         registrado_por=usuario_actual.id,
         monto_original=payload.monto_original,
@@ -515,8 +523,12 @@ def register_payment_by_cedula(payload: PagoCedulaCreate, db: Session = Depends(
 
 # --- ENDPOINTS DE MEMBRESÍAS ---
 @app.post("/api/v1/memberships", response_model=MembresiaResponse, dependencies=[Depends(requerir_trabajador)])
-def assign_membership(payload: MembresiaCreate, db: Session = Depends(get_db)):
-    plan = db.query(Plan).filter(Plan.id == payload.plan_id, Plan.estado_logico == True).first()
+def assign_membership(payload: MembresiaCreate, db: Session = Depends(get_db), usuario_actual: Usuario = Depends(obtener_usuario_actual)):
+    # Verificar que el miembro pertenece a la misma sede
+    miembro = db.query(Miembro).filter(Miembro.id == payload.miembro_id, Miembro.gym_id == usuario_actual.gym_id).first()
+    if not miembro:
+        raise HTTPException(status_code=404, detail="Miembro no encontrado en esta sede")
+    plan = db.query(Plan).filter(Plan.id == payload.plan_id, Plan.estado_logico == True, Plan.gym_id == usuario_actual.gym_id).first()
     if not plan:
         raise HTTPException(status_code=404, detail="Plan no encontrado o inactivo")
         
@@ -537,9 +549,9 @@ def assign_membership(payload: MembresiaCreate, db: Session = Depends(get_db)):
 
 # --- ENDPOINTS DE CONTROL DE ACCESO (Check-in) ---
 @app.post("/api/v1/asistencias/checkin", response_model=AsistenciaResponse, dependencies=[Depends(requerir_trabajador)])
-def register_checkin(payload: AsistenciaCreate, db: Session = Depends(get_db)):
-    # Buscar el miembro
-    miembro = db.query(Miembro).filter(Miembro.id == payload.miembro_id, Miembro.estado_logico == True).first()
+def register_checkin(payload: AsistenciaCreate, db: Session = Depends(get_db), usuario_actual: Usuario = Depends(obtener_usuario_actual)):
+    # Buscar el miembro (solo en la misma sede)
+    miembro = db.query(Miembro).filter(Miembro.id == payload.miembro_id, Miembro.gym_id == usuario_actual.gym_id, Miembro.estado_logico == True).first()
     if not miembro:
         raise HTTPException(status_code=404, detail="Miembro no encontrado o inactivo")
         
@@ -564,15 +576,15 @@ def register_checkin(payload: AsistenciaCreate, db: Session = Depends(get_db)):
 
 # --- BATCH / COLA DE ASISTENCIA OFFLINE ---
 @app.post("/api/v1/asistencias/batch", dependencies=[Depends(requerir_trabajador)])
-def register_batch_checkin(checkins: List[dict], db: Session = Depends(get_db)):
+def register_batch_checkin(checkins: List[dict], db: Session = Depends(get_db), usuario_actual: Usuario = Depends(obtener_usuario_actual)):
     registrados = 0
     rechazados = 0
     for chk in checkins:
         miembro_id = chk.get("miembro_id")
         fecha_str = chk.get("fecha_entrada")
         
-        # Validar miembro
-        miembro = db.query(Miembro).filter(Miembro.id == miembro_id, Miembro.estado_logico == True).first()
+        # Validar miembro (solo en la misma sede)
+        miembro = db.query(Miembro).filter(Miembro.id == miembro_id, Miembro.gym_id == usuario_actual.gym_id, Miembro.estado_logico == True).first()
         if not miembro:
             rechazados += 1
             continue
@@ -644,6 +656,7 @@ def _calcular_rango_fechas(rango: Optional[str], desde: Optional[str], hasta: Op
 @app.get("/api/v1/admin/kpis", response_model=KpiSummary, dependencies=[Depends(requerir_admin)])
 def get_kpis(
     db: Session = Depends(get_db),
+    usuario_actual: Usuario = Depends(obtener_usuario_actual),
     rango: Optional[str] = Query(None),
     desde: Optional[str] = Query(None),
     hasta: Optional[str] = Query(None),
@@ -653,13 +666,11 @@ def get_kpis(
     ingresos = db.query(func.sum(Pago.monto_usd))\
         .join(MembresiaMiembro, Pago.membresia_miembro_id == MembresiaMiembro.id)\
         .join(Miembro, MembresiaMiembro.miembro_id == Miembro.id)\
-        .filter(Miembro.estado_logico == True)\
+        .filter(Miembro.estado_logico == True, Miembro.gym_id == usuario_actual.gym_id)\
         .filter(Pago.fecha_pago >= desde_dt, Pago.fecha_pago <= hasta_dt)\
         .scalar() or Decimal(0)
     
-    # 2. Atletas Activos (miembros activos o en gracia en su última membresía)
-    # Buscamos miembros cuya última membresía no esté vencida ni en la base de datos ni calculada como tal
-    todos_miembros = db.query(Miembro).filter(Miembro.estado_logico == True).all()
+    todos_miembros = db.query(Miembro).filter(Miembro.estado_logico == True, Miembro.gym_id == usuario_actual.gym_id).all()
     activos = 0
     alertas_vencidos = 0
     
@@ -680,6 +691,7 @@ def get_kpis(
 @app.get("/api/v1/admin/cashflow", response_model=CashFlowReport, dependencies=[Depends(requerir_admin)])
 def get_cashflow_report(
     db: Session = Depends(get_db),
+    usuario_actual: Usuario = Depends(obtener_usuario_actual),
     rango: Optional[str] = Query(None),
     desde: Optional[str] = Query(None),
     hasta: Optional[str] = Query(None),
@@ -689,7 +701,7 @@ def get_cashflow_report(
     pagos = db.query(Pago)\
         .join(MembresiaMiembro, Pago.membresia_miembro_id == MembresiaMiembro.id)\
         .join(Miembro, MembresiaMiembro.miembro_id == Miembro.id)\
-        .filter(Miembro.estado_logico == True)\
+        .filter(Miembro.estado_logico == True, Miembro.gym_id == usuario_actual.gym_id)\
         .filter(Pago.fecha_pago >= desde_dt, Pago.fecha_pago <= hasta_dt)\
         .order_by(Pago.fecha_pago.desc()).all()
     ingresos_totales = sum(p.monto_usd for p in pagos)
@@ -701,8 +713,8 @@ def get_cashflow_report(
 
 
 @app.get("/api/v1/admin/payments/{id}", response_model=PagoDetalleResponse, dependencies=[Depends(requerir_admin)])
-def get_payment_detail(id: int, db: Session = Depends(get_db)):
-    pago = db.query(Pago).filter(Pago.id == id).first()
+def get_payment_detail(id: int, db: Session = Depends(get_db), usuario_actual: Usuario = Depends(obtener_usuario_actual)):
+    pago = db.query(Pago).filter(Pago.id == id, Pago.gym_id == usuario_actual.gym_id).first()
     if not pago:
         raise HTTPException(404, "Pago no encontrado")
 
@@ -735,13 +747,14 @@ def get_payment_detail(id: int, db: Session = Depends(get_db)):
     )
 
 @app.get("/api/v1/admin/vencidos", response_model=List[dict], dependencies=[Depends(requerir_admin)])
-def get_miembros_vencidos(db: Session = Depends(get_db)):
+def get_miembros_vencidos(db: Session = Depends(get_db), usuario_actual: Usuario = Depends(obtener_usuario_actual)):
     hoy = date.today()
     miembros_vencidos = (
         db.query(Miembro)
         .join(MembresiaMiembro)
         .filter(
             Miembro.estado_logico == True,
+            Miembro.gym_id == usuario_actual.gym_id,
             MembresiaMiembro.estatus_pago == "vencido",
             MembresiaMiembro.fecha_vencimiento < hoy,
         )

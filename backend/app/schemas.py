@@ -60,10 +60,12 @@ class LoginRequest(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+    gym_id: int
 
 class TokenData(BaseModel):
     correo: Optional[str] = None
     rol: Optional[str] = None
+    gym_id: Optional[int] = None
 
 
 # --- ESQUEMAS DE PLANES ---
