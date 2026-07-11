@@ -557,7 +557,7 @@
         "Prueba que verifique el flujo completo de onboarding: super_admin crea sede → genera token → usuario se registra con token → queda vinculado con rol admin y gym_id correcto.",
         "Prueba que verifique que un token de sede ya utilizado es rechazado (un solo admin por sede vía auto-registro)."
       ],
-      "status": "pending"
+      "status": "done"
     }
   ]
 }

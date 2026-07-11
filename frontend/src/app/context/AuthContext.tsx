@@ -17,7 +17,7 @@ interface User {
   cedula: string;
   nombre: string;
   correo: string;
-  rol: "admin" | "worker";
+  rol: "admin" | "worker" | "super_admin";
   estado_logico: boolean;
 }
 
@@ -28,6 +28,7 @@ interface AuthContextType {
   login: (correo: string, password: string) => Promise<void>;
   logout: () => void;
   isAdmin: boolean;
+  isSuperAdmin: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -94,7 +95,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       headers: { Authorization: `Bearer ${access_token}` },
     });
     setUser(meRes.data);
-    router.push("/dashboard/reception");
+    if (meRes.data.rol === "super_admin") {
+      router.push("/super-admin/gyms");
+    } else {
+      router.push("/dashboard/reception");
+    }
   }
 
   function logout() {
@@ -106,7 +111,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, token, isLoading, login, logout, isAdmin: user?.rol === "admin" }}
+      value={{ user, token, isLoading, login, logout, isAdmin: user?.rol === "admin", isSuperAdmin: user?.rol === "super_admin" }}
     >
       {children}
     </AuthContext.Provider>

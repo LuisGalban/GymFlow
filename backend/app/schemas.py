@@ -8,6 +8,7 @@ from enum import Enum
 class RoleEnum(str, Enum):
     admin = "admin"
     worker = "worker"
+    super_admin = "super_admin"
 
 class PaymentCurrencyEnum(str, Enum):
     USD = "USD"
@@ -196,3 +197,30 @@ class CashFlowReport(BaseModel):
     )
     pagos: List[PagoResponse]
     ingresos_totales_usd: Decimal
+
+
+# --- ESQUEMAS DE SUPER ADMIN ---
+class SuperAdminGymCreate(BaseModel):
+    nombre: str = Field(..., min_length=2, max_length=100)
+    direccion: str = Field(..., min_length=2, max_length=255)
+
+class SuperAdminGymResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    nombre: str
+    direccion: str
+    telefono: Optional[str] = None
+    estado_suscripcion: str
+    token_sede: Optional[str] = None
+    estado_logico: bool
+    miembros_activos: int = 0
+    ingresos_mensuales_usd: float = 0.0
+
+class SuscripcionUpdate(BaseModel):
+    estado_suscripcion: str = Field(..., pattern="^(activo|pausado|suspendido)$")
+
+class RegisterGymAdminRequest(BaseModel):
+    token_sede: str
+    nombre: str = Field(..., min_length=3, max_length=100)
+    correo: EmailStr
+    password: str = Field(..., min_length=6)

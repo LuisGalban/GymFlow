@@ -89,6 +89,15 @@ def requerir_trabajador(usuario_actual: Usuario = Depends(obtener_usuario_actual
         )
     return usuario_actual
 
+# Dependencia para requerir rol de Super Admin
+def requerir_super_admin(usuario_actual: Usuario = Depends(obtener_usuario_actual)) -> Usuario:
+    if usuario_actual.rol != "super_admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Acceso denegado: Se requieren privilegios de Super Admin"
+        )
+    return usuario_actual
+
 def obtener_usuario_por_token(token: str, db: Session) -> Usuario:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,

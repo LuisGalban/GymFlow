@@ -12,6 +12,7 @@ import {
   Dumbbell,
   X,
   Menu,
+  Building2,
 } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
 
@@ -22,6 +23,7 @@ const navItems = [
   { href: "/payments/register", label: "Registrar Pago", icon: CreditCard, roles: ["admin", "worker"] },
   { href: "/dashboard/admin", label: "Panel Admin", icon: BarChart3, roles: ["admin"] },
   { href: "/staff/list", label: "Gestionar Personal", icon: Users, roles: ["admin"] },
+  { href: "/super-admin/gyms", label: "Gestionar Sedes", icon: Building2, roles: ["super_admin"] },
 ];
 
 function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
@@ -72,7 +74,7 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-xs font-medium text-white/80 truncate">{user?.nombre}</p>
-            <p className="text-xs text-white/30">{isAdmin ? "Administrador" : "Recepcionista"}</p>
+            <p className="text-xs text-white/30">{user?.rol === "super_admin" ? "Super Admin" : isAdmin ? "Administrador" : "Recepcionista"}</p>
           </div>
         </div>
         <button

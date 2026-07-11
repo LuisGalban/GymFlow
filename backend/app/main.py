@@ -1,4 +1,5 @@
 import os
+import uuid
 from datetime import datetime, date, timedelta
 from decimal import Decimal
 import logging
@@ -30,16 +31,17 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 from app.database import engine, Base, get_db
-from app.models import Usuario, Miembro, Plan, MembresiaMiembro, Pago, Asistencia, UserRole, PaymentCurrency, PaymentMethod, MembershipStatus
+from app.models import Gym, Usuario, Miembro, Plan, MembresiaMiembro, Pago, Asistencia, UserRole, PaymentCurrency, PaymentMethod, MembershipStatus, GymSubscriptionStatus
 from app.schemas import (
     UserCreate, UserUpdate, UserResponse, LoginRequest, Token,
     MiembroCreate, MiembroResponse, PlanCreate, PlanResponse,
-    MembresiaCreate, MembresiaResponse, PagoCreate, PagoCedulaCreate, PagoResponse, PagoDetalleResponse, PaymentCurrencyEnum, PaymentMethodEnum, AsistenciaCreate, AsistenciaResponse, KpiSummary, CashFlowReport
+    MembresiaCreate, MembresiaResponse, PagoCreate, PagoCedulaCreate, PagoResponse, PagoDetalleResponse, PaymentCurrencyEnum, PaymentMethodEnum, AsistenciaCreate, AsistenciaResponse, KpiSummary, CashFlowReport,
+    SuperAdminGymCreate, SuperAdminGymResponse, SuscripcionUpdate, RegisterGymAdminRequest
 )
 from app.auth.auth import (
     obtener_password_hash, verificar_password, crear_token_acceso,
     obtener_usuario_actual, requerir_admin, requerir_trabajador,
-    ACCESS_TOKEN_EXPIRE_MINUTES, obtener_usuario_por_token
+    ACCESS_TOKEN_EXPIRE_MINUTES, obtener_usuario_por_token, requerir_super_admin
 )
 
 app = FastAPI(
@@ -779,3 +781,132 @@ def get_miembros_vencidos(db: Session = Depends(get_db), usuario_actual: Usuario
             "telefono": m.telefono,
         })
     return resultado
+
+
+# --- ENDPOINTS DE SUPER ADMIN (Gestión de Sedes) ---
+@app.post("/api/v1/super-admin/gyms", response_model=SuperAdminGymResponse, dependencies=[Depends(requerir_super_admin)])
+def create_gym_super_admin(payload: SuperAdminGymCreate, db: Session = Depends(get_db)):
+    existe = db.query(Gym).filter(Gym.nombre == payload.nombre).first()
+    if existe:
+        raise HTTPException(status_code=400, detail="Ya existe un gimnasio con ese nombre")
+    token_sede = uuid.uuid4()
+    nuevo_gym = Gym(
+        nombre=payload.nombre,
+        direccion=payload.direccion,
+        dias_gracia_default=5,
+        moneda_base=PaymentCurrency.USD,
+        estado_suscripcion=GymSubscriptionStatus.activo,
+        token_sede=token_sede,
+        estado_logico=True,
+    )
+    db.add(nuevo_gym)
+    db.commit()
+    db.refresh(nuevo_gym)
+    return SuperAdminGymResponse(
+        id=nuevo_gym.id,
+        nombre=nuevo_gym.nombre,
+        direccion=nuevo_gym.direccion,
+        telefono=nuevo_gym.telefono,
+        estado_suscripcion=nuevo_gym.estado_suscripcion,
+        token_sede=str(nuevo_gym.token_sede),
+        estado_logico=nuevo_gym.estado_logico,
+        miembros_activos=0,
+        ingresos_mensuales_usd=0.0,
+    )
+
+
+@app.get("/api/v1/super-admin/gyms", response_model=List[SuperAdminGymResponse], dependencies=[Depends(requerir_super_admin)])
+def list_gyms_super_admin(db: Session = Depends(get_db)):
+    gyms = db.query(Gym).filter(Gym.estado_logico == True).all()
+    result = []
+    hoy = date.today()
+    for g in gyms:
+        miembros_activos = (
+            db.query(Miembro)
+            .filter(Miembro.gym_id == g.id, Miembro.estado_logico == True)
+            .count()
+        )
+        inicio_mes = datetime(hoy.year, hoy.month, 1)
+        ingresos = db.query(func.sum(Pago.monto_usd))\
+            .join(MembresiaMiembro, Pago.membresia_miembro_id == MembresiaMiembro.id)\
+            .join(Miembro, MembresiaMiembro.miembro_id == Miembro.id)\
+            .filter(Miembro.gym_id == g.id, Miembro.estado_logico == True)\
+            .filter(Pago.fecha_pago >= inicio_mes)\
+            .scalar() or Decimal(0)
+        result.append(SuperAdminGymResponse(
+            id=g.id,
+            nombre=g.nombre,
+            direccion=g.direccion,
+            telefono=g.telefono,
+            estado_suscripcion=g.estado_suscripcion,
+            token_sede=str(g.token_sede) if g.token_sede else None,
+            estado_logico=g.estado_logico,
+            miembros_activos=miembros_activos,
+            ingresos_mensuales_usd=float(ingresos),
+        ))
+    return result
+
+
+@app.put("/api/v1/super-admin/gyms/{gym_id}/suscripcion", response_model=SuperAdminGymResponse, dependencies=[Depends(requerir_super_admin)])
+def update_suscripcion(gym_id: int, payload: SuscripcionUpdate, db: Session = Depends(get_db)):
+    gym = db.query(Gym).filter(Gym.id == gym_id, Gym.estado_logico == True).first()
+    if not gym:
+        raise HTTPException(status_code=404, detail="Gimnasio no encontrado")
+    gym.estado_suscripcion = payload.estado_suscripcion
+    db.commit()
+    db.refresh(gym)
+    return SuperAdminGymResponse(
+        id=gym.id,
+        nombre=gym.nombre,
+        direccion=gym.direccion,
+        telefono=gym.telefono,
+        estado_suscripcion=gym.estado_suscripcion,
+        token_sede=str(gym.token_sede) if gym.token_sede else None,
+        estado_logico=gym.estado_logico,
+    )
+
+
+# --- ENDPOINT PÚBLICO: Registro de Admin de Sede ---
+@app.post("/api/v1/auth/register-gym-admin", response_model=Token)
+def register_gym_admin(payload: RegisterGymAdminRequest, db: Session = Depends(get_db)):
+    try:
+        token_uuid = uuid.UUID(payload.token_sede)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Token de sede inválido")
+
+    gym = db.query(Gym).filter(Gym.token_sede == token_uuid, Gym.estado_logico == True).first()
+    if not gym:
+        raise HTTPException(status_code=404, detail="Token de sede inválido o gimnasio no encontrado")
+
+    if gym.estado_suscripcion != "activo":
+        raise HTTPException(status_code=400, detail="Este gimnasio está pausado o suspendido. Contacte al soporte.")
+
+    existe_admin = db.query(Usuario).filter(
+        Usuario.gym_id == gym.id,
+        Usuario.rol == "admin",
+        Usuario.estado_logico == True,
+    ).first()
+    if existe_admin:
+        raise HTTPException(status_code=400, detail="Este gimnasio ya tiene un administrador registrado")
+
+    existe_correo = db.query(Usuario).filter(Usuario.correo == payload.correo).first()
+    if existe_correo:
+        raise HTTPException(status_code=400, detail="El correo ya está registrado")
+
+    nuevo_admin = Usuario(
+        gym_id=gym.id,
+        cedula=f"G-{gym.id}",
+        nombre=payload.nombre,
+        correo=payload.correo,
+        password_hash=obtener_password_hash(payload.password),
+        rol="admin",
+        estado_logico=True,
+    )
+    db.add(nuevo_admin)
+
+    gym.token_sede = None
+    db.commit()
+    db.refresh(nuevo_admin)
+
+    access_token = crear_token_acceso(data={"sub": nuevo_admin.correo, "rol": nuevo_admin.rol, "gym_id": nuevo_admin.gym_id})
+    return {"access_token": access_token, "token_type": "bearer", "gym_id": nuevo_admin.gym_id}

@@ -222,7 +222,7 @@ Las siguientes reglas de negocio **NO se alteran** y se extienden al contexto mu
 | F4-02 | Migración de Esquema — gym_id como FK | P0 | ✅ Done |
 | F4-03 | Refactor de Auth — gym_id en JWT | P0 | ✅ Done |
 | F4-04 | Middleware de Filtrado Automático por gym_id | P0 | ✅ Done |
-| F4-05 | Panel SuperAdmin — Gestión de Sedes | P1 | ⏳ Pending |
+| F4-05 | Panel SuperAdmin — Gestión de Sedes | P1 | ✅ Done |
 
 ### Orden de Ejecución Recomendado
 `F4-01` → `F4-02` → `F4-03` → `F4-04` → `F4-05`
@@ -271,3 +271,39 @@ Las siguientes reglas de negocio **NO se alteran** y se extienden al contexto mu
   - Plan con mismo nombre en diferente gym permitido
 - **BD restaurada**: Tablas recreadas tras falla eléctrica + seed de datos actualizado con `gym_id`
 - **Reviewer:** APPROVED — 15/15 tests pasan. Sin regresiones.
+
+## ✅ Completada — F4-05 (Panel SuperAdmin — Gestión de Sedes y Onboarding Descentralizado)
+
+### Resumen de cambios
+- **Modelo** (`backend/app/models.py`): Agregado `super_admin` al enum `UserRole`. Agregada columna `token_sede` (UUID, nullable) al modelo `Gym` para onboarding.
+- **Schemas** (`backend/app/schemas.py`): Nuevos schemas `SuperAdminGymCreate`, `SuperAdminGymResponse`, `SuscripcionUpdate`, `RegisterGymAdminRequest`.
+- **Auth** (`backend/app/auth/auth.py`): Nueva dependencia `requerir_super_admin` para RBAC.
+- **Endpoints** (`backend/app/main.py`): 4 nuevos endpoints:
+  - `POST /api/v1/super-admin/gyms` — Crear sede (retorna token_sede UUID)
+  - `GET /api/v1/super-admin/gyms` — Listar sedes con métricas
+  - `PUT /api/v1/super-admin/gyms/{id}/suscripcion` — Pausar/reanudar/suspender
+  - `POST /api/v1/auth/register-gym-admin` — Registro público con token (un solo admin por sede)
+- **Migración** (`backend/alembic/versions/f4a05b01c123_add_token_sede_to_gyms.py`): Columna `token_sede` UUID nullable con índice único.
+- **Frontend**:
+  - `super-admin/gyms/page.tsx` — Panel de gestión de sedes con tabla, métricas, botón crear, visualización de token
+  - `register-gym/[token_sede]/page.tsx` — Página pública de registro de dueño de sede
+  - `Sidebar.tsx` — Nuevo item "Gestionar Sedes" visible solo para super_admin
+  - `AuthContext.tsx` — Soporte para rol `super_admin` y flag `isSuperAdmin`
+- **Tests** (`backend/test_f4_05_super_admin.py`): 12 tests — admin 403, unauthenticated, CRUD sedes, flujo onboarding, reutilización de token, token inválido, sede pausada.
+- **Reviewer:** APPROVED — 12/12 checklist items. Sin regresiones.
+
+## 🎉 **Fase 4 Completada** — Tareas F4-01 a F4-05 implementadas, revisadas y cerradas.
+
+### Estado Final de la Fase 4
+| ID | Tarea | Prioridad | Estado |
+|----|-------|-----------|--------|
+| F4-01 | Modelo de Sedes (Gyms) | P0 | ✅ Done |
+| F4-02 | Migración de Esquema — gym_id como FK | P0 | ✅ Done |
+| F4-03 | Refactor de Auth — gym_id en JWT | P0 | ✅ Done |
+| F4-04 | Middleware de Filtrado Automático por gym_id | P0 | ✅ Done |
+| F4-05 | Panel SuperAdmin — Gestión de Sedes | P1 | ✅ Done |
+
+### Siguiente paso
+Todas las tareas del feature_list.json están en estado `done`. El proyecto está listo para:
+1. **Auditoría general de Fase 4** — Verificación manual de multi-tenancy
+2. **Fase 5** — Si se definen nuevas features (ej: dashboard super_admin, métricas cross-sede, etc.)

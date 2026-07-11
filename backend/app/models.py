@@ -2,7 +2,7 @@ import enum
 from datetime import datetime
 # pyrefly: ignore [missing-import]
 from sqlalchemy import (
-    Column, Integer, String, Boolean, Numeric, Date, DateTime, ForeignKey, Index, BigInteger, text, CheckConstraint, UniqueConstraint
+    Column, Integer, String, Boolean, Numeric, Date, DateTime, ForeignKey, Index, BigInteger, text, CheckConstraint, UniqueConstraint, UUID
 )
 # pyrefly: ignore [missing-import]
 from sqlalchemy.orm import relationship
@@ -12,6 +12,7 @@ from .database import Base
 class UserRole(str, enum.Enum):
     admin = "admin"
     worker = "worker"
+    super_admin = "super_admin"
 
 class PaymentCurrency(str, enum.Enum):
     USD = "USD"
@@ -48,6 +49,7 @@ class Gym(Base):
     moneda_base = Column(String(10), default=PaymentCurrency.USD, nullable=False)
     fecha_alta = Column(DateTime, default=datetime.utcnow, nullable=False)
     estado_suscripcion = Column(String(20), default=GymSubscriptionStatus.activo, nullable=False)
+    token_sede = Column(UUID(as_uuid=True), nullable=True, unique=True, index=True)
     estado_logico = Column(Boolean, default=True, nullable=False)
 
     # Relaciones inversas (backrefs)
