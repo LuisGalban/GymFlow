@@ -188,4 +188,3 @@ Este proyecto está bajo la Licencia **MIT**. Consulta el archivo LICENSE para o
 *Desarrollador de Software | Ingeniería en Informática*
 
 * 🐙 GitHub: [@LuisGalban](https://github.com/LuisGalban)
-* 💼 LinkedIn: [Luis Galban](https://www.linkedin.com/in/luis-galban)
