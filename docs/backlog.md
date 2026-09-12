@@ -6,6 +6,8 @@
 
 ## Aplazables (Post-MVP)
 
+> **Nota (Fase 4 Extensión):** Los ítems "Período de gracia hardcodeado" y "Visualización de días restantes en Recepción" fueron promovidos a `feature_list.json` como F4-09 y F4-08 respectivamente. Ya no están en backlog.
+
 | Item | Motivo de Aplazamiento |
 |------|------------------------|
 | **Soft-Delete Global Middleware** | Actualmente el filtro `estado_logico == True` se hace manual endpoint por endpoint. Bajo riesgo si se mantiene disciplina. Implementar como `@property` del modelo o middleware cuando el código crezca. |
@@ -13,10 +15,8 @@
 | **Passlib vs Raw bcrypt** | El código usa `bcrypt` directamente en vez de `passlib[bcrypt]`. Funcionalmente idéntico. Refactor cosmético, no urgente. |
 | **CORS Restrictivo (`allow_origins` fijo)** | Ya no aplica. Migrado a `allow_origins=["http://localhost:3000"]` con `allow_credentials=True` en F-20. |
 | **Enum `MembershipStatus` incompleto** | P3 — El enum en `models.py` solo incluye `por_vencer` y `vencido`. Faltan `activo` y `en_gracia`. El cálculo dinámico funciona, pero es incoherente con la documentación y el frontend. |
-| **Período de gracia hardcodeado (5 días)** | P3 — `calcular_estado_miembro()` usa literal `5` para gracia y `6` para cron. No parametrizado en DB ni config. Objetivo post-MVP: parametrizar en DB **y** permitir que el Administrador configure y modifique este período de gracia directamente desde la interfaz gráfica del panel de control. Aceptable para MVP, frágil si cambia la regla. |
 | **Semáforo duplicado inline** | P4 — La lógica del semáforo (colores, iconos, etiquetas) está copiada en `reception/page.tsx` y `members/list/page.tsx`. Extraer a componente compartido `SemaforoBadge`. |
 | **Sin endpoint dedicado de cambio de contraseña** | P4 — `PUT /api/v1/users/{id}` permite actualizar datos, pero no hay un endpoint `/change-password` con validación de contraseña anterior. |
-| **Visualización de días restantes o vencimiento en Recepción** | P3 — Recepción requiere visibilidad proactiva del tiempo de membresía. Solución: mostrar en la tarjeta de recepción cuántos días le quedan de membresía vigentes, o si ya está vencida, indicar de forma explícita hace cuántos días caducó. |
 
 ## Recomendaciones Futuras / Icebox (Post-Auditoría Técnica)
 
@@ -33,6 +33,20 @@
 | OPT-12 | **Soporte de color-scheme en Selectores de Dropdowns** | P3 | `globals.css` no cubre `<select>` nativos dentro de dropdowns con clase `kinetic-glass`, lo que podría causar discontinuidad visual de fondo en ciertos motores de renderizado. Solución: añadir `color-scheme: dark;` al selector del `select` en `globals.css` para forzar la paleta oscura nativa. |
 | OPT-13 | **Preservación de Estado de Scroll en Sidebar Mobile** | P2 | El renderizado condicional `{mobileOpen && (...)}` en `Sidebar.tsx:110` desmonta el componente y pierde la posición de scroll al cerrarse. No es crítico actualmente por el bajo número de ítems (~7). Solución Post-MVP: si el menú crece, extraer el estado de scroll a un `useRef` o usar CSS `overscroll-behavior`. |
 | OPT-14 | **Atributos de Accesibilidad ARIA en Sidebar Mobile** | P2 | El botón hamburguesa y el botón de cierre en `Sidebar.tsx` carecen de propiedades ARIA completas para lectores de pantalla (WCAG 2.1). Solución: agregar `aria-controls="mobile-sidebar"` y `aria-expanded={mobileOpen}` al hamburguesa; `id` y `role` al `<aside>`; y `aria-label="Cerrar menú"` al botón X. |
+
+## Recomendaciones Fase 4 — Auditoría Técnica (Post-Auditoría)
+
+> Hallazgos clasificados como P2-P3 durante la auditoría de F4-01→F4-05. No bloquean producción pero mejoran seguridad y coherencia.
+
+| ID | Item | Prioridad | Motivo de Aplazamiento |
+|----|------|-----------|------------------------|
+| H-08 | **register-gym-admin: cédula collision → error 500** | P2 | El endpoint genera cédula `G-{id}` sin verificar unicidad. Si colisiona, el COMMIT falla con IntegrityError que se propaga como 500 genérico. Riesgo bajo porque `id` es secuencial. Fix: try/except IntegrityError con 400 descriptivo. |
+| H-09 | **/auth/session retorna JWT en body** | P2 | El endpoint retorna el access_token completo en el body. La cookie httponly ya maneja la autenticación. Exposición teórica a XSS si un script malicioso se ejecuta en el dominio. Fix: remover `access_token` de la respuesta. |
+| H-10 | **POST /members accesible por worker** | P2 | El endpoint usa `requerir_trabajador`. Un worker puede crear miembros sin justificación clara según business_rules.md §4. Puede ser intencional para recepción. Fix: cambiar a `requerir_admin` o documentar en business_rules.md. |
+| H-11 | **Campo observaciones en schema pero no en modelo** | P2 | El schema PagoCreate incluye `observaciones` pero el modelo Pago no tiene la columna. El frontend envía datos que se descartan silenciosamente. Fix: agregar columna al modelo + migración, o remover del schema. |
+| H-12 | **requerir_super_admin usa string vs Enum** | P3 | La función auth.py:94 compara `"super_admin"` como string literal en vez de `UserRole.super_admin`. Funciona correctamente pero es inconsistente con `requerir_admin`. Fix: cambio cosmético. |
+| H-13 | **membresias_miembros sin gym_id FK** | P3 | La tabla membresias_miembros no tiene columna gym_id. Requiere JOIN con miembros para filtrar por sede. Diseño defensivo: si en futuro se agrega un endpoint directo de membresías, podría filtrarse incorrectamente. Fix: agregar FK + migración. |
+| H-14 | **token_sede visible en URL sin validación frontend** | P3 | La página /register-gym/{token_sede} no valida formato UUID antes de enviar al backend. El backend valida correctamente, pero es buena práctica validar en frontend. Fix: regex `/^[0-9a-f-]{36}$/i` antes del submit. |
 
 ## Descartados (No Implementar)
 

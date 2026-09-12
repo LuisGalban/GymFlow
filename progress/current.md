@@ -304,6 +304,91 @@ Las siguientes reglas de negocio **NO se alteran** y se extienden al contexto mu
 | F4-05 | Panel SuperAdmin — Gestión de Sedes | P1 | ✅ Done |
 
 ### Siguiente paso
-Todas las tareas del feature_list.json están en estado `done`. El proyecto está listo para:
-1. **Auditoría general de Fase 4** — Verificación manual de multi-tenancy
-2. **Fase 5** — Si se definen nuevas features (ej: dashboard super_admin, métricas cross-sede, etc.)
+Todas las tareas F4-01→F4-05 están en estado `done`. Auditoría técnica completada.
+
+---
+
+## 🔍 Auditoría Técnica Fase 4 — Multi-Tenancy (Cerrada)
+
+- **Alcance:** F4-01, F4-02, F4-03, F4-04, F4-05 (todo el aislamiento multi-sede).
+- **Analista:** Auditoría exhaustiva contra `docs/PRD.md`, `docs/business_rules.md`, `docs/design_system.md`.
+- **Multi-tenancy:** 0 fugas detectadas en 17 endpoints auditados. Aislamiento por gym_id sólido.
+- **Borrado lógico:** 0 violaciones. Todos los endpoints usan `estado_logico=False`.
+- **Hallazgos P0 (Bloqueantes):** 2 — H-01 (JWT_SECRET default predecible), H-02 (dias_restantes_gracia ausente en schema).
+- **Hallazgos P1 (Urgentes):** 5 — H-03 (Cron sin RBAC adecuado), H-04 (Cookie secure=False), H-05 (Batch sin Pydantic), H-06 (Race condition TOCTOU), H-07 (Migración vacía UniqueConstraint).
+- **Hallazgos P2 (Mejoras):** 4 — H-08 a H-11 → movidos a `docs/backlog.md`.
+- **Hallazgos P3 (Sugerencias):** 3 — H-12 a H-14 → movidos a `docs/backlog.md`.
+- **`feature_list.json` actualizado** con H-01 a H-07 como tareas `pending`.
+- **`docs/backlog.md` actualizado** con H-08 a H-14 en sección Icebox.
+- **Roadmap refinado:** Fase 4 base completada. Siguiente ciclo: resolver H-01→H-07 antes de producción.
+
+---
+
+## 🔧 Blindaje Post-Auditoría — H-01 a H-07 (CERRADA)
+
+| ID | Tarea | Prioridad | Estado |
+|----|-------|-----------|--------|
+| H-01 | Seguridad JWT — Eliminar Default de JWT_SECRET | P0 | ✅ Done |
+| H-02 | Schema MiembroResponse — Agregar dias_restantes_gracia | P0 | ✅ Done |
+| H-03 | RBAC Cron — Proteger endpoint update-statuses | P1 | ✅ Done |
+| H-04 | Cookie Seguridad — Parametrizar secure flag | P1 | ✅ Done |
+| H-05 | Batch Check-in — Agregar schema Pydantic y límite | P1 | ✅ Done |
+| H-06 | Race Condition — Atomicidad en register-gym-admin | P1 | ✅ Done |
+| H-07 | Migración UniqueConstraint Planes — Aplicar restricción | P1 | ✅ Done |
+
+## ✅ Completada — H-01 (Seguridad JWT — Eliminar Default de JWT_SECRET)
+
+### Resumen de cambios
+- **Auth** (`backend/app/auth/auth.py:16-19`): Eliminado fallback `"super_secret_key_default"` de `os.getenv()`. Agregado `ValueError` explícito si `JWT_SECRET` no está configurado, siguiendo el mismo patrón de `database.py` para `DATABASE_URL`.
+- **Tests** (`backend/test_h01_jwt_secret.py`): 3 tests — ValueError cuando falta env, sin default hardcodeado en source, mensaje de error contiene "JWT_SECRET".
+- **Reviewer:** APPROVED — 5/5 checklist items. Sin regresiones.
+
+## ✅ Completada — H-02 (Schema MiembroResponse — Agregar dias_restantes_gracia)
+
+### Resumen de cambios
+- **Schemas** (`backend/app/schemas.py:103`): Agregado `dias_restantes_gracia: Optional[int] = None` al schema `MiembroResponse`. El campo ya era calculado y pasado en los endpoints `GET /members` y `GET /members/search/{cedula}` pero Pydantic v2 lo descartaba silenciosamente al no estar declarado.
+- **Tests** (`backend/test_h02_dias_gracia.py`): 6 tests — existencia del campo, tipo `Optional[int]`, serialización con valor explícito, default `None`, y verificación de que los endpoints usan `MiembroResponse`.
+- **Reviewer:** APPROVED — 5/5 checklist items. Sin regresiones.
+
+## ✅ Completada — H-05 (Batch Check-in — Agregar schema Pydantic y límite)
+
+### Resumen de cambios
+- **Schemas** (`backend/app/schemas.py:177-181`): Nuevos schemas `AsistenciaBatchItem(miembro_id: int, fecha_entrada: Optional[str])` y `AsistenciaBatchRequest(items: List[AsistenciaBatchItem])`.
+- **Endpoint** (`backend/app/main.py:580-612`): `/api/v1/asistencias/batch` ahora usa `AsistenciaBatchRequest` en lugar de `List[dict]`. Validación explícita de límite 500 items con retorno 400 Bad Request. Iteración del schema con acceso directo a atributos en lugar de `.get()`.
+- **Tests** (`backend/test_h05_batch_schema.py`): 10 tests — batch vacío, batch con miembro inexistente, batch múltiple items, batch con `fecha_entrada` opcional, batch de exactamente 500, batch que excede 500→400, body sin key `items`→422, `items` no es lista→422, item sin `miembro_id`→422, no autenticado→401.
+- **Reviewer:** APPROVED — 5/5 checklist items. Sin regresiones.
+
+## ✅ Completada — H-03 (RBAC Cron — Proteger endpoint update-statuses)
+
+### Resumen de cambios
+- **Endpoints** (`backend/app/main.py:610`): Cambiada la dependencia de `/api/v1/cron/update-statuses` de `requerir_trabajador` a `requerir_super_admin`. Ahora solo el rol super_admin puede invocar el job de mutación masiva de estados de membresía.
+- **Tests** (`backend/test_h03_cron_rbac.py`): 4 tests — worker→403, admin→403, super_admin→200, unauthenticated→401.
+- **Reviewer:** APPROVED — 5/5 checklist items. Sin regresiones.
+
+---
+
+## 🚀 Fase 4 Extensión: Gestión Avanzada y Configuración por Sede — Abierta
+
+### Contexto
+Tras completar el blindaje post-auditoría (H-01→H-07), se expande la Fase 4 con funcionalidades de gestión y configuración que aprovechan la arquitectura multi-tenant ya establecida. Estas tareas resuelven carencias funcionales identificadas en el código actual:
+- Solo existen endpoints GET+POST de planes (sin PUT/DELETE, sin frontend dedicado).
+- `calcular_estado_miembro()` usa literal `5` para gracia en vez de leer `Gym.dias_gracia_default`.
+- Recepción solo muestra `dias_restantes_gracia`, sin días disponibles ni gracia transcurridos.
+- No hay recálculo automático al modificar la duración de un plan.
+
+### Tareas Promovidas desde Backlog
+- "Período de gracia hardcodeado (5 días)" → **F4-09** (promovida a `pending`)
+- "Visualización de días restantes o vencimiento en Recepción" → **F4-08** (promovida a `pending`)
+
+### Tablero de Tareas
+
+| ID | Tarea | Prioridad | Estado |
+|----|-------|-----------|--------|
+| F4-06 | Gestión Parametrizada de Planes (CRUD Completo) | P0 | ⏳ Pending |
+| F4-07 | Recálculo Reactivo de Membresías al Modificar Plan | P0 | ⏳ Pending |
+| F4-08 | UI de Recepción con Estatus Detallado | P1 | ⏳ Pending |
+| F4-09 | Motor de Gracia Configurable por Sede | P1 | ⏳ Pending |
+
+### Orden de Ejecución Recomendado
+`F4-06` → `F4-07` → `F4-08` → `F4-09`
+(Dependencias: F4-07 requiere F4-06 completada para el PUT de planes. F4-08 y F4-09 son independientes entre sí pero ambas dependen de la infraestructura multi-tenant de F4-01→F4-05.)

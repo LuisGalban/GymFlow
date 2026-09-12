@@ -9,36 +9,52 @@ if backend_dir not in sys.path:
     sys.path.append(backend_dir)
 
 from app.database import SessionLocal, Base
-from app.models import Usuario, Miembro, Plan, MembresiaMiembro, Pago, Asistencia, UserRole
+from app.models import Usuario, Miembro, Plan, MembresiaMiembro, Pago, Asistencia, UserRole, Gym
 from app.auth.auth import obtener_password_hash
+
+DEFAULT_GYM_ID = 1
 
 def seed_database():
     db = SessionLocal()
     try:
         print("Limpiando tablas para la siembra limpia...")
-        # Limpiar en orden inverso de dependencias
         db.query(Asistencia).delete()
         db.query(Pago).delete()
         db.query(MembresiaMiembro).delete()
         db.query(Plan).delete()
         db.query(Miembro).delete()
         db.query(Usuario).delete()
+        db.query(Gym).delete()
+        db.commit()
+
+        print("Creando gym por defecto...")
+        gym = Gym(
+            id=DEFAULT_GYM_ID,
+            nombre="GymFlow Sede Central",
+            direccion="Maracaibo, Zulia",
+            dias_gracia_default=5,
+            estado_logico=True,
+        )
+        db.add(gym)
         db.commit()
 
         print("Creando planes base...")
         plan_basico = Plan(
+            gym_id=DEFAULT_GYM_ID,
             nombre="Plan Básico",
             duracion_dias=30,
             precio_usd=Decimal("15.00"),
             estado_logico=True
         )
         plan_intermedio = Plan(
+            gym_id=DEFAULT_GYM_ID,
             nombre="Plan Intermedio",
             duracion_dias=30,
             precio_usd=Decimal("30.00"),
             estado_logico=True
         )
         plan_premium = Plan(
+            gym_id=DEFAULT_GYM_ID,
             nombre="Plan Premium",
             duracion_dias=30,
             precio_usd=Decimal("45.00"),
@@ -48,11 +64,11 @@ def seed_database():
         db.commit()
 
         print("Creando usuarios del personal (Admin y Trabajador)...")
-        # Contraseñas cifradas con bcrypt
         pwd_admin = obtener_password_hash("admin123")
         pwd_recep = obtener_password_hash("worker123")
 
         admin = Usuario(
+            gym_id=DEFAULT_GYM_ID,
             cedula="V-12345678",
             nombre="Luis Galbán (Admin)",
             correo="admin@gymflow.com",
@@ -61,6 +77,7 @@ def seed_database():
             estado_logico=True
         )
         worker = Usuario(
+            gym_id=DEFAULT_GYM_ID,
             cedula="V-87654321",
             nombre="María Recepcionista",
             correo="recepcion@gymflow.com",
@@ -72,10 +89,10 @@ def seed_database():
         db.commit()
 
         print("Creando atletas (Miembros)...")
-        m_activo = Miembro(cedula="V-25111222", nombre="Carlos Atleta Activo", telefono="0412-1111111", estado_logico=True)
-        m_gracia = Miembro(cedula="V-26222333", nombre="Ana En Periodo Gracia", telefono="0414-2222222", estado_logico=True)
-        m_vencido = Miembro(cedula="V-27333444", nombre="José Bloqueado Vencido", telefono="0424-3333333", estado_logico=True)
-        m_borrado = Miembro(cedula="V-28444555", nombre="Pedro Eliminado Lógico", telefono="0416-4444444", estado_logico=False)
+        m_activo = Miembro(gym_id=DEFAULT_GYM_ID, cedula="V-25111222", nombre="Carlos Atleta Activo", telefono="0412-1111111", estado_logico=True)
+        m_gracia = Miembro(gym_id=DEFAULT_GYM_ID, cedula="V-26222333", nombre="Ana En Periodo Gracia", telefono="0414-2222222", estado_logico=True)
+        m_vencido = Miembro(gym_id=DEFAULT_GYM_ID, cedula="V-27333444", nombre="José Bloqueado Vencido", telefono="0424-3333333", estado_logico=True)
+        m_borrado = Miembro(gym_id=DEFAULT_GYM_ID, cedula="V-28444555", nombre="Pedro Eliminado Lógico", telefono="0416-4444444", estado_logico=False)
         db.add_all([m_activo, m_gracia, m_vencido, m_borrado])
         db.commit()
 
@@ -94,6 +111,7 @@ def seed_database():
         db.commit()
 
         pago_activo = Pago(
+            gym_id=DEFAULT_GYM_ID,
             membresia_miembro_id=membresia_activa.id,
             registrado_por=worker.id,
             monto_original=Decimal("30.00"),
@@ -118,6 +136,7 @@ def seed_database():
 
         # Pago realizado en Bolívares normalizado a tasa de 36.50
         pago_gracia = Pago(
+            gym_id=DEFAULT_GYM_ID,
             membresia_miembro_id=membresia_gracia.id,
             registrado_por=worker.id,
             monto_original=Decimal("547.50"), # 547.50 Bs / 36.50 = 15 USD
@@ -142,6 +161,7 @@ def seed_database():
         db.commit()
 
         pago_vencido = Pago(
+            gym_id=DEFAULT_GYM_ID,
             membresia_miembro_id=membresia_vencida.id,
             registrado_por=admin.id,
             monto_original=Decimal("45.00"),

@@ -36,7 +36,8 @@ from app.schemas import (
     UserCreate, UserUpdate, UserResponse, LoginRequest, Token,
     MiembroCreate, MiembroResponse, PlanCreate, PlanResponse,
     MembresiaCreate, MembresiaResponse, PagoCreate, PagoCedulaCreate, PagoResponse, PagoDetalleResponse, PaymentCurrencyEnum, PaymentMethodEnum, AsistenciaCreate, AsistenciaResponse, KpiSummary, CashFlowReport,
-    SuperAdminGymCreate, SuperAdminGymResponse, SuscripcionUpdate, RegisterGymAdminRequest
+    SuperAdminGymCreate, SuperAdminGymResponse, SuscripcionUpdate, RegisterGymAdminRequest,
+    AsistenciaBatchRequest
 )
 from app.auth.auth import (
     obtener_password_hash, verificar_password, crear_token_acceso,
@@ -128,7 +129,7 @@ def login(payload: LoginRequest, response: Response, request: Request, db: Sessi
         key="gymflow_token",
         value=access_token,
         httponly=True,
-        secure=False,
+        secure=os.environ.get("COOKIE_SECURE", "false").lower() == "true",
         samesite="lax",
         path="/",
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
@@ -177,7 +178,7 @@ def register_user(payload: UserCreate, db: Session = Depends(get_db), usuario_ac
 
 @app.get("/api/v1/users", response_model=List[UserResponse], dependencies=[Depends(requerir_admin)])
 def list_users(db: Session = Depends(get_db), usuario_actual: Usuario = Depends(obtener_usuario_actual)):
-    return db.query(Usuario).filter(Usuario.estado_logico == True, Usuario.gym_id == usuario_actual.gym_id).order_by(Usuario.id).all()
+    return db.query(Usuario).filter(Usuario.estado_logico == True, Usuario.gym_id == usuario_actual.gym_id, Usuario.rol != "super_admin").order_by(Usuario.id).all()
 
 @app.get("/api/v1/users/{id}", response_model=UserResponse, dependencies=[Depends(requerir_admin)])
 def get_user(id: int, db: Session = Depends(get_db), usuario_actual: Usuario = Depends(obtener_usuario_actual)):
@@ -578,12 +579,17 @@ def register_checkin(payload: AsistenciaCreate, db: Session = Depends(get_db), u
 
 # --- BATCH / COLA DE ASISTENCIA OFFLINE ---
 @app.post("/api/v1/asistencias/batch", dependencies=[Depends(requerir_trabajador)])
-def register_batch_checkin(checkins: List[dict], db: Session = Depends(get_db), usuario_actual: Usuario = Depends(obtener_usuario_actual)):
+def register_batch_checkin(payload: AsistenciaBatchRequest, db: Session = Depends(get_db), usuario_actual: Usuario = Depends(obtener_usuario_actual)):
+    if len(payload.items) > 500:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El lote no puede contener más de 500 ítems"
+        )
     registrados = 0
     rechazados = 0
-    for chk in checkins:
-        miembro_id = chk.get("miembro_id")
-        fecha_str = chk.get("fecha_entrada")
+    for chk in payload.items:
+        miembro_id = chk.miembro_id
+        fecha_str = chk.fecha_entrada
         
         # Validar miembro (solo en la misma sede)
         miembro = db.query(Miembro).filter(Miembro.id == miembro_id, Miembro.gym_id == usuario_actual.gym_id, Miembro.estado_logico == True).first()
@@ -607,7 +613,7 @@ def register_batch_checkin(checkins: List[dict], db: Session = Depends(get_db), 
     return {"message": "Sincronización masiva de asistencias completada", "registrados": registrados, "rechazados": rechazados}
 
 # --- ENDPOINT DEL CRON JOB DIARIO (Llamada externa protegida) ---
-@app.post("/api/v1/cron/update-statuses", dependencies=[Depends(requerir_trabajador)])
+@app.post("/api/v1/cron/update-statuses", dependencies=[Depends(requerir_super_admin)])
 def daily_cron_update_statuses(db: Session = Depends(get_db)):
     hoy = date.today()
     # 1. Mutar a vencido todas las membresías activas/por_vencer cuya fecha_vencimiento sea estrictamente menor a hoy en 6 días o más
@@ -878,6 +884,8 @@ def register_gym_admin(payload: RegisterGymAdminRequest, db: Session = Depends(g
     if not gym:
         raise HTTPException(status_code=404, detail="Token de sede inválido o gimnasio no encontrado")
 
+    gym = db.query(Gym).filter(Gym.id == gym.id).with_for_update().first()
+
     if gym.estado_suscripcion != "activo":
         raise HTTPException(status_code=400, detail="Este gimnasio está pausado o suspendido. Contacte al soporte.")
 
@@ -887,7 +895,7 @@ def register_gym_admin(payload: RegisterGymAdminRequest, db: Session = Depends(g
         Usuario.estado_logico == True,
     ).first()
     if existe_admin:
-        raise HTTPException(status_code=400, detail="Este gimnasio ya tiene un administrador registrado")
+        raise HTTPException(status_code=400, detail="Token ya utilizado")
 
     existe_correo = db.query(Usuario).filter(Usuario.correo == payload.correo).first()
     if existe_correo:

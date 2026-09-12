@@ -558,6 +558,156 @@
         "Prueba que verifique que un token de sede ya utilizado es rechazado (un solo admin por sede vía auto-registro)."
       ],
       "status": "done"
+    },
+    {
+      "id": "H-01",
+      "name": "Seguridad JWT — Eliminar Default de JWT_SECRET",
+      "description": "P0 — El fallback de JWT_SECRET en auth.py es 'super_secret_key_default'. Si la variable de entorno no está definida, el sistema arranca con un secreto predecible y público, permitiendo que cualquier atacante forje tokens JWT válidos para cualquier usuario y cualquier gym.",
+      "criteria_to_accept": [
+        "Si JWT_SECRET no existe en .env, el backend lanza ValueError al arrancar (similar a DATABASE_URL en database.py).",
+        "Ningún valor default hardcodeado en auth.py para JWT_SECRET.",
+        "El sistema NO arranca sin JWT_SECRET configurado.",
+        "Test que verifique que sin JWT_SECRET definido, el backend falla al iniciar."
+      ],
+      "status": "done"
+    },
+    {
+      "id": "H-02",
+      "name": "Schema MiembroResponse — Agregar dias_restantes_gracia",
+      "description": "P0 — El campo dias_restantes_gracia NO está definido en el schema MiembroResponse. Pydantic v2 lo descarta silenciosamente. La API nunca retorna los días restantes de gracia al frontend, rompiendo la funcionalidad del Semáforo Visual en recepción.",
+      "criteria_to_accept": [
+        "Campo 'dias_restantes_gracia: Optional[int] = None' agregado al schema MiembroResponse en schemas.py.",
+        "El endpoint GET /api/v1/members/search/{cedula} retorna los días restantes de gracia en la respuesta.",
+        "El endpoint GET /api/v1/members retorna dias_restantes_gracia para cada miembro.",
+        "Test que verifique que el campo aparece en la respuesta del endpoint de búsqueda."
+      ],
+      "status": "done"
+    },
+    {
+      "id": "H-03",
+      "name": "RBAC Cron — Proteger endpoint update-statuses",
+      "description": "P1 — El endpoint /api/v1/cron/update-statuses usa requerir_trabajador como dependencia, permitiendo que cualquier usuario con rol worker desde cualquier gym invoque el job de mutación masiva de estados de membresía. Un worker malintencionado podría forzar el bloqueo prematuro de membresías.",
+      "criteria_to_accept": [
+        "El endpoint /api/v1/cron/update-statuses cambia su dependencia de requerir_trabajador a requerir_super_admin.",
+        "Un usuario con rol worker recibe 403 Forbidden al intentar invocar /api/v1/cron/update-statuses.",
+        "Un usuario con rol admin normal recibe 403 Forbidden al intentar invocar /api/v1/cron/update-statuses.",
+        "Test que verifique que solo super_admin puede acceder al endpoint cron."
+      ],
+      "status": "done"
+    },
+    {
+      "id": "H-04",
+      "name": "Cookie Seguridad — Parametrizar secure flag",
+      "description": "P1 — La cookie gymflow_token tiene secure=False hardcodeado. Esto permite que el token JWT se transmita por HTTP sin cifrar, exponiéndolo a ataques man-in-the-middle en red local.",
+      "criteria_to_accept": [
+        "El flag secure de la cookie se lee desde una variable de entorno COOKIE_SECURE (default False solo para desarrollo).",
+        "En producción, COOKIE_SECURE=True fuerza que la cookie solo se envíe por HTTPS.",
+        "El valor NO está hardcodeado en el código fuente.",
+        "Test que verifique que la cookie respeta el valor de la variable de entorno."
+      ],
+      "status": "done"
+    },
+    {
+      "id": "H-05",
+      "name": "Batch Check-in — Agregar schema Pydantic y límite",
+      "description": "P1 — El endpoint /api/v1/asistencias/batch acepta List[dict] sin schema Pydantic ni límite de tamaño. Un atacante podría enviar un array de millones de elementos causando denegación de servicio.",
+      "criteria_to_accept": [
+        "Schema AsistenciaBatchItem(miembro_id: int, fecha_entrada: Optional[str]) definido en schemas.py.",
+        "Schema AsistenciaBatchRequest(items: List[AsistenciaBatchItem]) con max_length=500.",
+        "El endpoint /api/v1/asistencias/batch usa el schema para validar la entrada.",
+        "Request con más de 500 items retorna 400 Bad Request con mensaje descriptivo.",
+        "Test que verifique que un batch vacío, uno válido y uno que exceda el límite se manejan correctamente."
+      ],
+      "status": "done"
+    },
+    {
+      "id": "H-06",
+      "name": "Race Condition — Atomicidad en register-gym-admin",
+      "description": "P1 — El endpoint register-gym-admin tiene una condición TOCTOU. La verificación de existencia de admin y el commit no están en una transacción atómica con lock. Dos requests concurrentes con el mismo token_sede pueden crear dos administradores para el mismo gym.",
+      "criteria_to_accept": [
+        "El query del Gym en register-gym-admin usa SELECT ... FOR UPDATE (with_for_update()) antes de verificar la existencia del admin.",
+        "La verificación de admin existente y la creación del nuevo admin ocurren dentro de la misma transacción atómica.",
+        "Test que simule dos requests concurrentes con el mismo token y verifique que solo uno tiene éxito.",
+        "El segundo request retorna 400 con mensaje 'Token ya utilizado' o similar."
+      ],
+      "status": "done"
+    },
+    {
+      "id": "H-07",
+      "name": "Migración UniqueConstraint Planes — Aplicar restricción",
+      "description": "P1 — La migración 5e13ef50a67b tiene upgrade() vacío (pass). La restricción UniqueConstraint('nombre', 'gym_id') del modelo Plan NUNCA se aplicó a la base de datos. Un admin podría crear planes duplicados con el mismo nombre dentro de su gym.",
+      "criteria_to_accept": [
+        "Nueva migración Alembic que ejecute: op.create_unique_constraint('uq_plan_nombre_gym', 'planes', ['nombre', 'gym_id']).",
+        "La migración se aplica exitosamente sin perder datos existentes.",
+        "Intentar insertar un plan con nombre duplicado en el mismo gym retorna error de integridad.",
+        "Insertar un plan con el mismo nombre en un gym diferente SÍ es permitido.",
+        "Test que verifique que la restricción de unicidad está activa en la BD."
+      ],
+      "status": "done"
+    },
+    {
+      "id": "F4-06",
+      "name": "Gestión Parametrizada de Planes (CRUD Completo)",
+      "description": "P0 — Completar el CRUD de planes (Crear, Leer, Actualizar, Desactivar) con frontend dedicado. Actualmente solo existen GET (listar) y POST (crear) en backend, sin endpoints PUT/DELETE y sin vista de administración de planes en el frontend. El administrador de cada sede debe poder modificar costo, duración y nombre de los planes, así como desactivarlos lógicamente.",
+      "criteria_to_accept": [
+        "Endpoint `PUT /api/v1/planes/{id}` que actualice nombre, duracion_dias y precio_usd de un plan. Restringido a rol admin. Filtra por gym_id del usuario autenticado. Rechaza 404 si el plan no pertenece a la sede del admin.",
+        "Endpoint `DELETE /api/v1/planes/{id}` que aplique borrado lógico (estado_logico=False) en lugar de eliminación física. Restringido a admin. Filtra por gym_id. Rechaza 404 si el plan no pertenece a la sede. NO permite desactivar un plan que tenga membresías activas asociadas (estatus_pago en ['activo', 'por_vencer', 'en_gracia']) — retorna 409 Conflict.",
+        "Validación Pydantic en el PUT: nombre (str, 3-50 chars), duracion_dias (int, >0), precio_usd (Decimal, >=0 con CHECK constraint existente). Rechaza 422 si no cumple.",
+        "Página `/plans/list` en el frontend que liste todos los planes activos de la sede en una tabla con columnas: Nombre, Duración (días), Precio (USD), Estado. Filas con estado_logico=False muestran opacidad reducida al 40% y botones deshabilitados (mismo patrón que /members/list).",
+        "Página `/plans/register` en el formulario con campos: Nombre, Duración (días), Precio (USD). Validado con Zod en frontend. Al enviar, concatena el gym_id del contexto del usuario autenticado.",
+        "Opción 'Gestionar Planes' en el Sidebar visible únicamente para usuarios con rol 'admin', que enlace a '/plans/list'.",
+        "Todos los endpoints de planes filtran por `gym_id`: un admin del Gimnasio A NO puede ver, editar ni eliminar planes del Gimnasio B.",
+        "Prueba automática que verifique: (1) creación de plan vía API, (2) actualización de nombre/precio/duración, (3) borrado lógico conserva el registro en BD, (4) un admin de otro gym recibe 404 al intentar editar un plan ajeno, (5) intento de desactivar plan con membresías activas retorna 409."
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "F4-07",
+      "name": "Recálculo Reactivo de Membresías al Modificar Plan",
+      "description": "P0 — Cuando se modifica la duración de un plan (duracion_dias) vía PUT /api/v1/planes/{id}, el sistema debe actualizar automáticamente la fecha_vencimiento de todas las membresías activas asociadas a ese plan. Esto garantiza que un cambio de tarifa/duración se refleje inmediatamente en la vigencia de los atletas, sin esperar un nuevo pago.",
+      "criteria_to_accept": [
+        "Al ejecutar PUT /api/v1/planes/{id} con un cambio en `duracion_dias`, el backend recalcule `fecha_vencimiento = fecha_inicio + timedelta(days=nueva_duracion_dias)` para TODAS las membresías del plan donde `estatus_pago IN ('activo', 'por_vencer', 'en_gracia')` y `gym_id = usuario_actual.gym_id`.",
+        "Las membresías con estatus_pago = 'vencido' NO se modifican (ya expiraron, el recálculo no aplica).",
+        "Si `duracion_dias` no cambia en el PUT, no se ejecuta ningún recálculo (skip).",
+        "El recálculo se ejecuta dentro de la misma transacción que la actualización del plan (atomicidad).",
+        "Logging: el backend registra con `logger.info()` la cantidad de membresías recalculadas y el ID del plan modificado.",
+        "Prueba que simule: crear plan (30 días) → crear 3 membresías activas → cambiar plan a 45 días → verificar que las 3 membresías tienen fecha_vencimiento = fecha_inicio + 45 días.",
+        "Prueba que verifique que membresías vencidas NO se recalculan al modificar el plan.",
+        "Prueba que verifique que un admin de otro gym NO puede modificar un plan ajeno (aislamiento gym_id)."
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "F4-08",
+      "name": "UI de Recepción con Estatus Detallado",
+      "description": "P1 — Expandir la respuesta del endpoint de búsqueda en recepción para mostrar contadores específicos de: días disponibles del plan vigente, días de gracia transcurridos (si aplica), y días de suspensión/pausa. Actualmente solo retorna `dias_restantes_gracia` y `estatus_actual`. Se requiere visibilidad proactiva del tiempo de membresía para que el recepcionista pueda informar al atleta sin necesidad de navegar al panel admin.",
+      "criteria_to_accept": [
+        "Schema `MiembroResponse` ampliado con campos: `dias_disponibles` (int, días restantes de plan vigente o 0 si vencido), `dias_gracia_transcurridos` (int, días de gracia usados o 0 si no está en gracia), `fecha_vencimiento` (date, fecha de vencimiento de la membresía activa).",
+        "Endpoint `GET /api/v1/members/search/{cedula}` retorna los nuevos campos calculados.",
+        "Endpoint `GET /api/v1/members` también retorna los nuevos campos para cada miembro.",
+        "Cálculo de `dias_disponibles`: si estatus es 'activo' o 'por_vencer', retorna `max(0, (fecha_vencimiento - fecha_actual).days)`. Si es 'en_gracia' o 'vencido', retorna 0.",
+        "Cálculo de `dias_gracia_transcurridos`: si estatus es 'en_gracia', retorna `(fecha_actual - fecha_vencimiento).days`. En cualquier otro caso, retorna 0.",
+        "Frontend (`reception/page.tsx`): la tarjeta del miembro muestra los contadores debajo del semáforo: 'Días disponibles: X', 'Días de gracia: X/Y' (transcurridos/simula configured), 'Vence: DD/MM/YYYY'.",
+        "Los contadores se ocultan si el miembro no tiene membresía activa.",
+        "Prueba que verifique que los campos aparecen en la respuesta del endpoint de búsqueda y que los cálculos son correctos para cada estatus (activo, por_vencer, en_gracia, vencido)."
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "F4-09",
+      "name": "Motor de Gracia Configurable por Sede",
+      "description": "P1 — Hacer que el período de gracia (Regla 2.5 del PRD) sea configurable individualmente en la tabla de configuración de cada gimnasio, en lugar de ser una constante global hardcodeada (literal 5). Actualmente `Gym.dias_gracia_default` existe en el modelo pero `calcular_estado_miembro()` en main.py usa el número 5 directamente. El administrador debe poder modificar este valor desde la interfaz de configuración.",
+      "criteria_to_accept": [
+        "Función `calcular_estado_miembro()` recibe un parámetro adicional `dias_gracia: int` (o `gym_id: int` para buscar en la tabla Gym) en lugar de usar el literal 5.",
+        "Todos los puntos de llamada a `calcular_estado_miembro()` (list_members, search_member, admin dashboard, cron) pasan el `dias_gracia_default` obtenido del `Gym` del usuario autenticado.",
+        "Endpoint `PUT /api/v1/admin/gym-config` que permita al admin modificar `dias_gracia_default` de su sede. Validación: mínimo 0, máximo 30 días. Solo admin. Filtra por gym_id.",
+        "Endpoint `GET /api/v1/admin/gym-config` que retorne la configuración actual de la sede (incluyendo `dias_gracia_default`).",
+        "El cron job diario (`/api/v1/cron/update-statuses`) usa el `dias_gracia_default` de CADA sede para calcular el bloqueo, no un literal global.",
+        "Frontend: página de configuración accessible desde el Sidebar (solo admin) que muestra y permite editar el período de gracia.",
+        "Prueba que verifique: (1) un gym con gracia=3 bloquea al día 4, (2) un gym con gracia=7 bloquea al día 8, (3) el admin puede cambiar el valor, (4) un worker recibe 403 al intentar modificar la configuración.",
+        "Prueba que verifique que el cálculo de `dias_restantes_gracia` en la respuesta del endpoint de búsqueda refleja el valor configurable, no el literal 5."
+      ],
+      "status": "pending"
     }
   ]
 }

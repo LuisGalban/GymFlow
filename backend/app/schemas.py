@@ -100,6 +100,7 @@ class MiembroResponse(MiembroBase):
     id: int
     estado_logico: bool
     estatus_actual: Optional[str] = None  # Calculado dinámicamente: activo, en_gracia, vencido
+    dias_restantes_gracia: Optional[int] = None  # Días restantes del período de gracia
     plan_nombre: Optional[str] = None  # Nombre del plan asociado
     plan_id: Optional[int] = None  # ID del plan asociado
 
@@ -172,6 +173,13 @@ class PagoDetalleResponse(PagoResponse):
 # --- ESQUEMAS DE ASISTENCIAS ---
 class AsistenciaCreate(BaseModel):
     miembro_id: int
+
+class AsistenciaBatchItem(BaseModel):
+    miembro_id: int
+    fecha_entrada: Optional[str] = None
+
+class AsistenciaBatchRequest(BaseModel):
+    items: List[AsistenciaBatchItem] = Field(..., max_length=500)
 
 class AsistenciaResponse(BaseModel):
     id: int

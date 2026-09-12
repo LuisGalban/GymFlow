@@ -420,3 +420,51 @@
     - `schemas.py`: `Token` y `TokenData` actualizados con `gym_id: int`.
     - Tests (`test_f4_03_jwt_gym_id.py`): 5 pruebas — login OK con gym_id, JWT payload contiene gym_id, `/me` funciona, tokens legacy rechazados (401).
 - **Resultado:** Revisor APPROVED (8/8 checklist items). Login verificado (`admin@gymflow.com` → JWT con `gym_id=1`).
+
+## Sesión: 2026-07-11
+- **Estado Inicial:** H-04 ya implementada (solo inconsistencia de tracking), H-05 pendiente (P1). Tareas H-06 y H-07 pendientes.
+- **Acciones Realizadas:**
+  - **H-04 (Cookie Seguridad):** Verificada como ya implementada en `main.py:131` (`os.environ.get("COOKIE_SECURE", "false")`). 4 tests pasan en `test_h04_cookie_secure.py`. Solo se corrigió `feature_list.json` para marcar `status: done`.
+  - **H-05 (Batch Check-in — Schema Pydantic + Límite):**
+    - **Implementador:** `schemas.py` — Nuevos schemas `AsistenciaBatchItem(miembro_id: int, fecha_entrada: Optional[str])` y `AsistenciaBatchRequest(items: List[AsistenciaBatchItem])` con `Field(..., max_length=500)`. Endpoint batch en `main.py` usa el schema, retorna 400 si >500 items. Tests en `test_h05_batch_schema.py` con 10 pruebas.
+    - **Revisión #1:** REJECTED — schema sin `max_length=500` a nivel Pydantic y tests con error de setup (tablas `gyms` no existían).
+    - **Implementador (fix):** Agregado `Field(..., max_length=500)` al schema. Tests ajustados con `Base.metadata.create_all()` incluyendo tabla `gyms`.
+    - **Revisión #2:** APPROVED (5/5 checklist items). 10/10 tests pasan.
+- **Resultado:** H-04 y H-05 completadas. Blindaje post-auditoría avanzado. Pendientes: H-06 (Race Condition) y H-07 (Migración UniqueConstraint).
+
+## Sesión: 2026-07-11 (H-06)
+- **Estado Inicial:** H-06 (P1) como siguiente tarea pending tras H-05.
+- **Acciones Realizadas:**
+  - **H-06 (Race Condition — Atomicidad en register-gym-admin):**
+    - **Implementador:** Endpoint `register-gym-admin` en `main.py:883-896` — Dos fases: (1) query de Gym por `token_sede`, (2) `with_for_update()` por PK antes de verificar admin existente. Check + creación + nullificación de token en misma transacción (`db.commit()`). Mensaje de error: "Token ya utilizado".
+    - **Tests** (`test_h06_race_condition.py`): `threading.Barrier(2)` dispara 2 requests concurrentes con mismo `token_sede`. Verifica exactamente 1 éxito (200) y 1 rechazo (400), con solo 1 admin en BD.
+    - **Revisión:** APPROVED (4/4 checklist items). Sin DELETE físicos. Sin violaciones de seguridad.
+- **Resultado:** H-06 completada. 28/28 tests pasan. Pendiente: H-07 (Migración UniqueConstraint).
+
+## Sesión: 2026-07-11 (H-07)
+- **Estado Inicial:** H-07 (P1) como última tarea pending del Blindaje Post-Auditoría.
+- **Acciones Realizadas:**
+  - **H-07 (Migración UniqueConstraint Planes — Aplicar restricción):**
+    - **Implementador:** Corregida la migración `5e13ef50a67b` (que tenía `upgrade()` vacío con `pass`) para ejecutar `op.create_unique_constraint('uq_plan_nombre_gym', 'planes', ['nombre', 'gym_id'])`. Migración idempotente con guard `IF NOT EXISTS`. `downgrade()` ejecuta `op.drop_constraint`.
+    - **Tests** (`test_h07_unique_constraint.py`): 3 pruebas — plan duplicado en mismo gym → `IntegrityError`, mismo nombre en gym diferente → permitido, verificación live en `pg_constraint`.
+    - **Revisión:** APPROVED (5/5 checklist items). Sin DELETE físicos. Sin violaciones de seguridad.
+- **Resultado:** H-07 completada. **Blindaje Post-Auditoría (H-01 a H-07) 100% CERRADO.** Todas las tareas de `feature_list.json` en estado `done`.
+
+## Sesión: 2026-07-11 (Roadmap Fase 4 Extensión)
+- **Estado Inicial:** `feature_list.json` al 100% `done` (H-07 completada). Blindaje post-auditoría cerrado.
+- **Análisis Documental:**
+  - Revisado `PRD.md` (RF-2: Gestión de Planes, Regla 2.5: Gracia, §1.2: Baja Carga Cognitiva).
+  - Revisado `business_rules.md` (Normalización USD, Borrado Lógico, RBAC, Semáforo).
+  - Revisado `docs/backlog.md` para identificar ítems promovibles.
+- **Hallazgos de Código:**
+  - Plans: solo `GET /api/v1/planes` y `POST /api/v1/planes`. Sin PUT/DELETE. Sin frontend `/plans/*`.
+  - Grace period: `Gym.dias_gracia_default` existe en modelo (default=5) pero `calcular_estado_miembro()` usa literal `5`.
+  - Reception: retorna `estatus_actual` y `dias_restantes_gracia`. Faltan días disponibles, gracia transcurridos, fecha_vencimiento.
+  - Recálculo: no existe. Cambiar duración de plan no afecta membresías activas.
+- **Acciones Realizadas:**
+  - **F4-06** (CRUD Planes): P0 — PUT+DELETE backend, frontend `/plans/list` + `/plans/register`, Sidebar, aislamiento gym_id, 5 tests.
+  - **F4-07** (Recálculo Reactivo): P0 — Recálculo automático de `fecha_vencimiento` al cambiar duración, atomicidad, logging, 3 tests.
+  - **F4-08** (UI Recepción Detallada): P1 — Schema ampliado (`dias_disponibles`, `dias_gracia_transcurridos`, `fecha_vencimiento`), cálculos por estatus, frontend con contadores, 1 test.
+  - **F4-09** (Gracia por Sede): P1 — `calcular_estado_miembro()` parametrizable, endpoint `PUT/GET /api/v1/admin/gym-config`, cron por sede, frontend configuración, 4 tests.
+  - **Backlog limpiado:** "Período de gracia hardcodeado" y "Visualización días restantes" movidos de backlog a feature_list.json como F4-08 y F4-09.
+- **Resultado:** 4 nuevas tareas (F4-06→F4-09) agregadas a `feature_list.json` en estado `pending`. `progress/current.md` actualizado con tablero Fase 4 Extensión.

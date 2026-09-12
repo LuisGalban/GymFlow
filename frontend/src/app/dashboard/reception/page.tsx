@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import DashboardLayout from "@/app/components/DashboardLayout";
 import { useAuth } from "@/app/context/AuthContext";
@@ -55,6 +55,14 @@ const SEMAFORO = {
 };
 
 export default function ReceptionPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen text-white">Cargando...</div>}>
+      <ReceptionContent />
+    </Suspense>
+  );
+}
+
+function ReceptionContent() {
   const { token } = useAuth();
   const [cedula, setCedula] = useState("");
   const [miembro, setMiembro] = useState<MiembroResponse | null>(null);

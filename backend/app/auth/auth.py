@@ -13,7 +13,10 @@ backend_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__
 dotenv_path = os.path.join(backend_dir, ".env")
 load_dotenv(dotenv_path)
 
-JWT_SECRET = os.getenv("JWT_SECRET", "super_secret_key_default")
+JWT_SECRET = os.getenv("JWT_SECRET")
+
+if not JWT_SECRET:
+    raise ValueError("JWT_SECRET no está configurado en las variables de entorno.")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "480"))
 
