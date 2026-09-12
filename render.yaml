@@ -22,10 +22,7 @@ services:
       - key: COOKIE_SECURE
         value: "true"
       - key: ALLOWED_ORIGINS
-        fromService:
-          name: gymflow-web
-          type: web
-          envVarKey: RENDER_EXTERNAL_URL
+        value: https://gymflow-web-wwdz.onrender.com,http://localhost:3000,http://127.0.0.1:3000
 
   - type: web
     name: gymflow-web
@@ -33,13 +30,10 @@ services:
     plan: free
     rootDir: frontend
     buildCommand: corepack enable && corepack prepare pnpm@10.12.1 --activate && pnpm install && pnpm build
-    startCommand: pnpm start -- -p $PORT
+    startCommand: pnpm start
     autoDeploy: true
     envVars:
       - key: NODE_VERSION
         value: 22.14.0
       - key: NEXT_PUBLIC_API_URL
-        fromService:
-          name: gymflow-api
-          type: web
-          envVarKey: RENDER_EXTERNAL_URL
+        value: https://gymflow-api-0e5g.onrender.com
