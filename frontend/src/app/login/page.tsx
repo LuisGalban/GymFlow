@@ -2,7 +2,28 @@
 
 import { useState } from "react";
 import { useAuth } from "@/app/context/AuthContext";
-import { Dumbbell, Mail, Lock, Loader2, AlertCircle } from "lucide-react";
+import {
+  Dumbbell,
+  Mail,
+  Lock,
+  Loader2,
+  AlertCircle,
+  UserRound,
+  KeyRound,
+} from "lucide-react";
+
+const DEMO_ACCOUNTS = [
+  {
+    label: "Administrador",
+    correo: "admin@gymflow.com",
+    password: "admin123",
+  },
+  {
+    label: "Recepción",
+    correo: "recepcion@gymflow.com",
+    password: "worker123",
+  },
+];
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -67,7 +88,7 @@ export default function LoginPage() {
                 type="email"
                 value={correo}
                 onChange={(e) => setCorreo(e.target.value)}
-                placeholder="admin@gimflow.com"
+                placeholder="admin@gymflow.com"
                 required
                 className="w-full bg-white/5 border border-white/8 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-400/50 focus:bg-indigo-500/5 transition-all duration-200"
               />
@@ -107,6 +128,36 @@ export default function LoginPage() {
             )}
           </button>
         </form>
+
+        {/* Cuentas demo */}
+        <div className="kinetic-glass rounded-2xl mt-4 p-4">
+          <p className="text-[11px] font-medium text-white/40 uppercase tracking-wider">
+            Cuentas demo · clic para autocompletar
+          </p>
+          <div className="mt-3 flex flex-col gap-2">
+            {DEMO_ACCOUNTS.map((account) => (
+              <button
+                key={account.correo}
+                type="button"
+                onClick={() => {
+                  setCorreo(account.correo);
+                  setPassword(account.password);
+                  setError("");
+                }}
+                className="flex items-center justify-between gap-3 rounded-xl border border-white/8 bg-white/5 px-3.5 py-2.5 text-left text-sm text-white/60 transition-all duration-200 hover:border-indigo-400/40 hover:bg-indigo-500/10 hover:text-white"
+              >
+                <span className="flex min-w-0 items-center gap-2.5">
+                  <UserRound className="h-4 w-4 shrink-0 text-white/25" />
+                  <span className="truncate font-medium">{account.label}</span>
+                </span>
+                <span className="flex shrink-0 items-center gap-1.5 font-mono text-[11px] text-white/35">
+                  <KeyRound className="h-3 w-3 text-white/20" />
+                  {account.correo} / {account.password}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
 
         <p className="text-center text-xs text-white/20 mt-6">
           GymFlow Analytics © 2026 · Maracaibo, Zulia
