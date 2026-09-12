@@ -22,7 +22,10 @@ services:
       - key: COOKIE_SECURE
         value: "true"
       - key: ALLOWED_ORIGINS
-        value: https://gymflow-web.onrender.com
+        fromService:
+          name: gymflow-web
+          type: web
+          envVarKey: RENDER_EXTERNAL_URL
 
   - type: web
     name: gymflow-web
@@ -36,4 +39,7 @@ services:
       - key: NODE_VERSION
         value: 22.14.0
       - key: NEXT_PUBLIC_API_URL
-        value: https://gymflow-api.onrender.com
+        fromService:
+          name: gymflow-api
+          type: web
+          envVarKey: RENDER_EXTERNAL_URL
